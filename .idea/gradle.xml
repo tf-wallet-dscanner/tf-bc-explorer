@@ -3,12 +3,17 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
+        <option name="delegatedBuild" value="false" />
+        <option name="testRunner" value="PLATFORM" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$/collector" />
-        <option name="gradleJvm" value="azul-15" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/api" />
             <option value="$PROJECT_DIR$/collector" />
+            <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/dto" />
           </set>
         </option>
       </GradleProjectSettings>

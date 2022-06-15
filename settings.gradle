@@ -1,0 +1,6 @@
+rootProject.name = 'tf-bc-explorer'
+include 'api'
+include 'core'
+include 'dto'
+include 'collector'
+

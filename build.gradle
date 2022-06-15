@@ -1,0 +1,192 @@
+buildscript {
+    ext {
+        version_springboot = '2.4.2'
+        version_dependencyManagement = '1.0.11.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${version_springboot}")
+        classpath "io.spring.gradle:dependency-management-plugin:${version_dependencyManagement}"
+    }
+}
+
+subprojects {
+
+    // 공통모듈 - 로깅 적용
+    repositories {
+        mavenCentral()
+        maven {
+            credentials {
+                username project.nexusUsername
+                password project.nexusPassword
+            }
+            url project.nexusReleaseUrl
+        }
+        //caver-java
+        maven { url 'https://jitpack.io' }
+    }
+
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    group = 'io.dkargo'
+    version = '0.0.1-SNAPSHOT'
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                repository(url: project.properties["nexusReleaseUrl"]) {
+                    authentication(userName: project.properties["nexusUsername"], password: project.properties["nexusPassword"])
+                }
+                snapshotRepository(url: project.properties["nexusSnapshotUrl"]) {
+                    authentication(userName: project.properties["nexusUsername"], password: project.properties["nexusPassword"])
+                }
+            }
+        }
+    }
+
+    ext {
+        version_project = "${version}"
+        version_lombok = '1.18.16'
+        version_jackson = '2.11.0'
+        version_swagger = '2.9.2'
+        version_java = '1.8'
+        version_modelmapper = '2.3.0'
+        version_spring_validation = '2.3.7.RELEASE'
+        version_junit = '5.2.0'
+        version_jetty = '1.5.7.RELEASE'
+        project_build_sourceEncoding = 'UTF-8'
+
+        version_munzi_log = '0.1.1'
+        version_log4j = '2.17.0'
+        version_s3 = '0.0.3'
+    }
+
+    sourceCompatibility = "${version_java}"
+    targetCompatibility = "${version_java}"
+
+    compileJava.options.encoding = "${project_build_sourceEncoding}"
+
+    configurations {
+        /**
+         * 컴파일 단계에서 annotaion을 스캔하고 처리함.
+         */
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+
+        all {
+            // log4j2를 사용하기 위해, spring의 default인 logback을 제외
+
+            exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+            exclude group: 'org.bgee.log4jdbc-log4j2', module: 'log4jdbc-log4j2-jdbc4.1'
+            exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-jpa'
+            resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+        }
+
+        /**
+         * tomcat 제외 설정
+         */
+        compile.exclude module: "spring-boot-starter-tomcat"
+        all {
+            exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+        }
+    }
+
+    dependencies {
+
+        implementation ('org.springframework.boot:spring-boot-starter-web')
+
+        compileOnly 'org.projectlombok:lombok'
+        developmentOnly 'org.springframework.boot:spring-boot-devtools'
+        annotationProcessor 'org.projectlombok:lombok'
+        annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+        implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: "${version_spring_validation}"
+        implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jetty', version: "${version_jetty}"
+        testImplementation('org.springframework.boot:spring-boot-starter-test') {
+            exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+        }
+
+        implementation group: 'org.modelmapper', name: 'modelmapper', version: "${version_modelmapper}"
+
+        // log
+        implementation group: 'log.munzi', name: 'munzi-log', version: "${version_munzi_log}"
+        implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: "${version_log4j}"
+        implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: "${version_log4j}"
+        implementation group: 'org.apache.logging.log4j', name: 'log4j-jul', version: "${version_log4j}"
+        implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: "${version_log4j}"
+        implementation group: 'org.apache.logging.log4j', name: 'log4j-web', version: "${version_log4j}"
+
+        compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: "${version_jackson}"
+        compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.0'
+        implementation group: 'io.dkargo', name: 'dkargo-httpclient', version: '0.0.25'
+
+        annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+        annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+
+        // caver-java
+//        implementation 'com.klaytn.caver:core:1.6.2'
+//        implementation 'com.klaytn.caver:core:1.8.0'
+
+        // KAS SDK
+        implementation 'xyz.groundx.caver:caver-java-ext-kas:1.9.0'
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+    bootJar {
+        launchScript()
+    }
+}
+
+/**
+ * [core]
+ */
+project(':core') {
+    dependencies {
+
+    }
+    bootJar {
+        enabled = false
+    }
+    jar {
+        enabled = true
+    }
+}
+
+/**
+ * [dto]
+ */
+project(':dto') {
+    dependencies {
+        implementation project(':core')
+    }
+    bootJar {
+        enabled = false
+    }
+    jar {
+        enabled = true
+    }
+}
+
+/**
+ * [api]
+ */
+project(':api') {
+    dependencies {
+        implementation project(':core')
+        implementation project(':dto')
+    }
+    bootJar {
+        enabled = true
+    }
+    jar {
+        enabled = true
+    }
+}
