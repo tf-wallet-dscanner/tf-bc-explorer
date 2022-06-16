@@ -4,6 +4,9 @@ import io.dkargo.bcexplorer.api.domain.entity.Test;
 import io.dkargo.bcexplorer.api.domain.repository.TestRepository;
 import io.dkargo.bcexplorer.api.service.TestService;
 import io.dkargo.bcexplorer.api.service.converter.TestConverter;
+import io.dkargo.bcexplorer.dto.api.request.ReqCreateTestDTO;
+import io.dkargo.bcexplorer.dto.api.request.ReqTestDTO;
+import io.dkargo.bcexplorer.dto.api.response.ResCreateTestDTO;
 import io.dkargo.bcexplorer.dto.api.response.ResGetTestDTO;
 import io.dkargo.bcexplorer.dto.api.response.ResGetTestListDTO;
 import io.dkargo.bcexplorer.dto.api.response.ResTestDTO;
@@ -36,10 +39,6 @@ public class TestServiceImpl implements TestService {
         return resTestDTO;
     }
 
-    /**
-     * test collection 에 있는 데이터 모두 조회
-     * @return
-     */
     @Override
     public ResGetTestListDTO getTestListByAll() {
 
@@ -50,12 +49,39 @@ public class TestServiceImpl implements TestService {
         for(Test test : tests) {
 
             ResTestDTO resTestDTO = TestConverter.of(test);
-            log.info("name : {}" , test.getName());
-
             resGetTestDTOS.add(new ResGetTestDTO(resTestDTO));
         }
 
+        return new ResGetTestListDTO(resGetTestDTOS);
+    }
+
+    @Override
+    public ResGetTestListDTO getTestListByFilter(String name) {
+
+        List<Test> tests = testRepository.findAllByNameRegex(name);
+
+        List<ResGetTestDTO> resGetTestDTOS = new ArrayList<>();
+
+        for (Test test : tests) {
+
+            ResTestDTO resTestDTO = TestConverter.of(test);
+            resGetTestDTOS.add(new ResGetTestDTO(resTestDTO));
+        }
 
         return new ResGetTestListDTO(resGetTestDTOS);
+    }
+
+    @Override
+    public ResCreateTestDTO createTest(ReqCreateTestDTO reqCreateTestDTO) {
+
+        ReqTestDTO reqTestDTO = ReqTestDTO.builder()
+                .name(reqCreateTestDTO.getName())
+                .old(reqCreateTestDTO.getOld())
+                .etc(reqCreateTestDTO.getEtc())
+                .build();
+
+        Test test = testRepository.save(TestConverter.of(reqTestDTO));
+
+        return new ResCreateTestDTO(test.getId());
     }
 }

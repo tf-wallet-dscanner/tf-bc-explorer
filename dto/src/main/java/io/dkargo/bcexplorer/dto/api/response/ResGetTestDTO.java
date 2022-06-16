@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class ResGetTestDTO {
 
-    @ApiModelProperty(value = "person ID")
+    @ApiModelProperty(value = "test ID")
     @NotNull
     private String id;
 
