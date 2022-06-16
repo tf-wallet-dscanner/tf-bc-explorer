@@ -1,4 +1,4 @@
-package io.dkargo.bcexplorer.dto.api.response;
+package io.dkargo.bcexplorer.dto.collector.response;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;

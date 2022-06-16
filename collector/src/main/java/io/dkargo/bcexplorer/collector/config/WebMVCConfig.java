@@ -1,4 +1,4 @@
-package io.dkargo.bcexplorer.api.config;
+package io.dkargo.bcexplorer.collector.config;
 
 import log.munzi.interceptor.LoggingInterceptor;
 import lombok.RequiredArgsConstructor;

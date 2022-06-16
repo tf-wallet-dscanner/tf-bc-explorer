@@ -1,4 +1,4 @@
-package io.dkargo.bcexplorer.api.config;
+package io.dkargo.bcexplorer.collector.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

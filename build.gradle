@@ -127,13 +127,6 @@ subprojects {
 
         annotationProcessor("jakarta.persistence:jakarta.persistence-api")
         annotationProcessor("jakarta.annotation:jakarta.annotation-api")
-
-        // caver-java
-//        implementation 'com.klaytn.caver:core:1.6.2'
-//        implementation 'com.klaytn.caver:core:1.8.0'
-
-        // KAS SDK
-        implementation 'xyz.groundx.caver:caver-java-ext-kas:1.9.0'
     }
 
     test {
@@ -179,6 +172,22 @@ project(':dto') {
  * [api]
  */
 project(':api') {
+    dependencies {
+        implementation project(':core')
+        implementation project(':dto')
+    }
+    bootJar {
+        enabled = true
+    }
+    jar {
+        enabled = true
+    }
+}
+
+/**
+ * [collector]
+ */
+project(':collector') {
     dependencies {
         implementation project(':core')
         implementation project(':dto')

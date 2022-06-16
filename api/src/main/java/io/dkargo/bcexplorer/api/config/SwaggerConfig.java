@@ -32,7 +32,7 @@ public class SwaggerConfig {
     @Bean
     public Docket apiV1() {
         version = getFullVersion();
-        title = "TF-BC-Explorer API";
+        title = "TF-BC-Explorer [API]";
 
         return new Docket(DocumentationType.SWAGGER_2)
                 //.globalOperationParameters(roles)
@@ -50,7 +50,7 @@ public class SwaggerConfig {
     private ApiInfo apiInfo(String title, String version) {
         return new ApiInfo(
                 title,
-                "TF-BC-Explorer API Server",
+                "TF-BC-Explorer [API] Server",
                 version,
                 "dkargo.io",
                 new Contact("dkargo","dkargo.io","wjsqudgns92@gamil.com"),
