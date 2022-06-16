@@ -24,9 +24,9 @@ public class TestController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "test", response = ResTestDTO.class)
     })
-    @GetMapping("/createAccount")
+    @GetMapping("/test")
     @ResponseStatus(HttpStatus.OK)
-    public ResTestDTO createAccount(@RequestParam(value = "testValue", required = true) String testValue) {
+    public ResTestDTO test(@RequestParam(value = "testValue", required = true) String testValue) {
 
         return testService.test(testValue);
     }

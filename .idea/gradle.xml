@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$/api" />
             <option value="$PROJECT_DIR$/collector" />
             <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/domain" />
             <option value="$PROJECT_DIR$/dto" />
           </set>
         </option>

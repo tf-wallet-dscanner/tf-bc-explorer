@@ -19,7 +19,7 @@ dependencies {
     implementation 'org.web3j:core:5.0.0'
     implementation 'com.squareup.okhttp3:okhttp:4.9.3'
 
-    //Swagger
+    // Swagger
     implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
     implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
 }

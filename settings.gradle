@@ -3,4 +3,5 @@ include 'api'
 include 'core'
 include 'dto'
 include 'collector'
+include 'domain'
 
