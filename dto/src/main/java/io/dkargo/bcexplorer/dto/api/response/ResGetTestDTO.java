@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class ResTestDTO {
+public class ResGetTestDTO {
 
     @ApiModelProperty(value = "person ID")
     @NotNull
@@ -25,4 +25,14 @@ public class ResTestDTO {
 
     @ApiModelProperty(value = "등등")
     private String etc;
+
+    public ResGetTestDTO(ResTestDTO resTestDTO) {
+
+        this.id = resTestDTO.getId();
+        this.name = resTestDTO.getName();
+        this.old = resTestDTO.getOld();
+        this.etc = resTestDTO.getEtc();
+    }
+
+
 }

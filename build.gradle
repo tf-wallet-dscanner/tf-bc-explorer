@@ -208,6 +208,7 @@ project(':collector') {
     dependencies {
         implementation project(':core')
         implementation project(':dto')
+        implementation project(':domain')
     }
     bootJar {
         enabled = true

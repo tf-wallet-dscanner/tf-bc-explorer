@@ -1,6 +1,7 @@
 package io.dkargo.bcexplorer.api.controller;
 
 import io.dkargo.bcexplorer.api.service.TestService;
+import io.dkargo.bcexplorer.dto.api.response.ResGetTestListDTO;
 import io.dkargo.bcexplorer.dto.api.response.ResTestDTO;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
@@ -14,20 +15,36 @@ public class TestController {
 
     private final TestService testService;
 
+//    @ApiOperation(
+//            value = "test",
+//            notes = "test"
+//    )
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "testValue", value = "test value", required = true, defaultValue = "test", dataType = "string", paramType = "query")
+//    })
+//    @ApiResponses(value = {
+//            @ApiResponse(code = 200, message = "test", response = ResTestDTO.class)
+//    })
+//    @GetMapping()
+//    @ResponseStatus(HttpStatus.OK)
+//    public ResTestDTO test(@RequestParam(value = "testValue", required = true) String testValue) {
+//
+//        return testService.test(testValue);
+//    }
+
     @ApiOperation(
-            value = "test",
-            notes = "test"
+            value = "getTestListByAll",
+            notes = "test collection 에 있는 데이터 모두 조회"
     )
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "testValue", value = "test value", required = true, defaultValue = "test", dataType = "string", paramType = "query")
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "test", response = ResTestDTO.class)
+            @ApiResponse(code = 200, message = "getTestListByAll", response = ResGetTestListDTO.class)
     })
-    @GetMapping("/test")
+    @GetMapping()
     @ResponseStatus(HttpStatus.OK)
-    public ResTestDTO test(@RequestParam(value = "testValue", required = true) String testValue) {
+    public ResGetTestListDTO getTestListByAll( ) {
 
-        return testService.test(testValue);
+        return testService.getTestListByAll();
     }
 }

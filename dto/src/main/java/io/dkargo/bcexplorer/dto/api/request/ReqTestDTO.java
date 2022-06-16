@@ -1,4 +1,4 @@
-package io.dkargo.bcexplorer.dto.api.response;
+package io.dkargo.bcexplorer.dto.api.request;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -9,17 +9,13 @@ import javax.validation.constraints.NotNull;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class ResTestDTO {
+public class ReqTestDTO {
 
-    @ApiModelProperty(value = "person ID")
-    @NotNull
-    private String id;
-
-    @ApiModelProperty(value = "이름")
+    @ApiModelProperty(value = "이름", required = true)
     @NotNull
     private String name;
 
-    @ApiModelProperty(value = "나이")
+    @ApiModelProperty(value = "나이", required = true)
     @NotNull
     private int old;
 
