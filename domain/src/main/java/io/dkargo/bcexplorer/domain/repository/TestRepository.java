@@ -1,6 +1,6 @@
-package io.dkargo.bcexplorer.api.domain.repository;
+package io.dkargo.bcexplorer.domain.repository;
 
-import io.dkargo.bcexplorer.api.domain.entity.Test;
+import io.dkargo.bcexplorer.domain.entity.Test;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;

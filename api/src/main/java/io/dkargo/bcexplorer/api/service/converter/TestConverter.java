@@ -1,6 +1,6 @@
 package io.dkargo.bcexplorer.api.service.converter;
 
-import io.dkargo.bcexplorer.api.domain.entity.Test;
+import io.dkargo.bcexplorer.domain.entity.Test;
 import io.dkargo.bcexplorer.dto.api.request.ReqTestDTO;
 import io.dkargo.bcexplorer.dto.api.response.ResTestDTO;
 import lombok.extern.slf4j.Slf4j;

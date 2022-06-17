@@ -1,13 +1,11 @@
 package io.dkargo.bcexplorer.api.service;
 
 import io.dkargo.bcexplorer.dto.api.request.ReqCreateTestDTO;
-import io.dkargo.bcexplorer.dto.api.response.ResCreateTestDTO;
-import io.dkargo.bcexplorer.dto.api.response.ResGetTestListDTO;
-import io.dkargo.bcexplorer.dto.api.response.ResTestDTO;
+import io.dkargo.bcexplorer.dto.api.request.ReqDeleteTestDTO;
+import io.dkargo.bcexplorer.dto.api.request.ReqUpdateTestDTO;
+import io.dkargo.bcexplorer.dto.api.response.*;
 
 public interface TestService {
-
-    ResTestDTO test(String testValue);
 
     /**
      * test collection 에 있는 데이터 모두 조회
@@ -22,9 +20,23 @@ public interface TestService {
     ResGetTestListDTO getTestListByFilter(String name);
 
     /**
-     * test collection 에 Document 생성
+     * test collection 에 document 생성
      * @param reqCreateTestDTO
      * @return
      */
     ResCreateTestDTO createTest(ReqCreateTestDTO reqCreateTestDTO);
+
+    /**
+     * test collection 의 특정 document 수정
+     * @param reqUpdateTestDTO
+     * @return
+     */
+    ResUpdateTestDTO updateTest(ReqUpdateTestDTO reqUpdateTestDTO);
+
+    /**
+     * test collection 의 특정 document 삭제
+     * @param reqDeleteTestDTO
+     * @return
+     */
+    ResDeleteTestDTO deleteTest(ReqDeleteTestDTO reqDeleteTestDTO);
 }

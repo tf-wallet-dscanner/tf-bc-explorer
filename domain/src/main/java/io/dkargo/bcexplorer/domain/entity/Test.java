@@ -1,4 +1,4 @@
-package io.dkargo.bcexplorer.api.domain.entity;
+package io.dkargo.bcexplorer.domain.entity;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;

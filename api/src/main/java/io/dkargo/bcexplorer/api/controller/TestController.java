@@ -2,9 +2,9 @@ package io.dkargo.bcexplorer.api.controller;
 
 import io.dkargo.bcexplorer.api.service.TestService;
 import io.dkargo.bcexplorer.dto.api.request.ReqCreateTestDTO;
-import io.dkargo.bcexplorer.dto.api.response.ResCreateTestDTO;
-import io.dkargo.bcexplorer.dto.api.response.ResGetTestListDTO;
-import io.dkargo.bcexplorer.dto.api.response.ResTestDTO;
+import io.dkargo.bcexplorer.dto.api.request.ReqDeleteTestDTO;
+import io.dkargo.bcexplorer.dto.api.request.ReqUpdateTestDTO;
+import io.dkargo.bcexplorer.dto.api.response.*;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,23 +17,6 @@ import org.springframework.web.bind.annotation.*;
 public class TestController {
 
     private final TestService testService;
-
-//    @ApiOperation(
-//            value = "test",
-//            notes = "test"
-//    )
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "testValue", value = "test value", required = true, defaultValue = "test", dataType = "string", paramType = "query")
-//    })
-//    @ApiResponses(value = {
-//            @ApiResponse(code = 200, message = "test", response = ResTestDTO.class)
-//    })
-//    @GetMapping()
-//    @ResponseStatus(HttpStatus.OK)
-//    public ResTestDTO test(@RequestParam(value = "testValue", required = true) String testValue) {
-//
-//        return testService.test(testValue);
-//    }
 
     @ApiOperation(
             value = "getTestListByAll",
@@ -70,7 +53,7 @@ public class TestController {
 
     @ApiOperation(
             value = "createTest",
-            notes = "test collection 에 Document 생성"
+            notes = "test collection 에 document 생성"
     )
     @ApiImplicitParams({
     })
@@ -84,9 +67,36 @@ public class TestController {
         return testService.createTest(reqCreateTestDTO);
     }
 
-    /** TODO
-     *  1. List 필터 조회
-     *  3. 삭제
-     *  4. 수정
-     */
+    @ApiOperation(
+            value = "updateTest",
+            notes = "test collection 의 특정 document 수정"
+    )
+    @ApiImplicitParams({
+    })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "updateTest", response = ResUpdateTestDTO.class)
+    })
+    @PatchMapping("")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResUpdateTestDTO updateTest(@Validated @RequestBody ReqUpdateTestDTO reqUpdateTestDTO) {
+
+        return testService.updateTest(reqUpdateTestDTO);
+    }
+
+    @ApiOperation(
+            value = "deleteTest",
+            notes = "test collection 의 특정 document 삭제"
+    )
+    @ApiImplicitParams({
+    })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "deleteTest", response = ResDeleteTestDTO.class)
+    })
+    @DeleteMapping("")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResDeleteTestDTO deleteTest(@Validated @RequestBody ReqDeleteTestDTO reqDeleteTestDTO) {
+
+        return testService.deleteTest(reqDeleteTestDTO);
+    }
+
 }
