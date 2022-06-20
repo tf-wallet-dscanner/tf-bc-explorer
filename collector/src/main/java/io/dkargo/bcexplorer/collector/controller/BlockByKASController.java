@@ -1,6 +1,7 @@
 package io.dkargo.bcexplorer.collector.controller;
 
 import io.dkargo.bcexplorer.collector.service.BlockByKASService;
+import io.dkargo.bcexplorer.dto.collector.response.ResGetLatestBlockNumberDTO;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,13 +21,13 @@ public class BlockByKASController {
     @ApiImplicitParams({
     })
     @ApiResponses(value = {
-            //        @ApiResponse(code = 200, message = "getTestListByFilter", response = ResGetTestListDTO.class)
+            @ApiResponse(code = 200, message = "getLatestBlockNumber", response = ResGetLatestBlockNumberDTO.class)
     })
     @GetMapping("/blocks")
     @ResponseStatus(HttpStatus.OK)
-    public void getLatestBlockNumber() {
+    public ResGetLatestBlockNumberDTO getLatestBlockNumber() {
 
-        blockByKASService.getLatestBlockNumber();
+        return blockByKASService.getLatestBlockNumber();
     }
 
     @ApiOperation(
@@ -56,7 +57,7 @@ public class BlockByKASController {
     @ApiResponses(value = {
             //        @ApiResponse(code = 200, message = "getTestListByFilter", response = ResGetTestListDTO.class)
     })
-    @GetMapping("/receipts/{blockHash}")
+    @GetMapping("/blocks/receipts/{blockHash}")
     @ResponseStatus(HttpStatus.OK)
     public void getBlockReceiptByBlockHash(@PathVariable("blockHash") String blockHash) {
 

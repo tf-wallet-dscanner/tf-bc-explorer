@@ -9,6 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import xyz.groundx.caver_ext_kas.CaverExtKAS;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -28,6 +32,20 @@ public class TransactionByKASServiceImpl implements TransactionByKASService {
         }
 
         return objectToString;
+    }
+
+    public static Long hexToLong(long hexadecimal) {
+
+        return Long.parseLong(Long.toHexString(hexadecimal), 16);
+    }
+
+    public static String timestampToString(Long timestamp) {
+
+        Date date = new Date(timestamp * 1000L);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
+
+        return simpleDateFormat.format(date);
     }
 
     @Override

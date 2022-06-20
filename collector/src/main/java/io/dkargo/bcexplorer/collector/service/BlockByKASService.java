@@ -1,8 +1,10 @@
 package io.dkargo.bcexplorer.collector.service;
 
+import io.dkargo.bcexplorer.dto.collector.response.ResGetLatestBlockNumberDTO;
+
 public interface BlockByKASService {
 
-    void getLatestBlockNumber();
+    ResGetLatestBlockNumberDTO getLatestBlockNumber();
 
     void getBlockByBlockNumber(Long blockNumber);
 
