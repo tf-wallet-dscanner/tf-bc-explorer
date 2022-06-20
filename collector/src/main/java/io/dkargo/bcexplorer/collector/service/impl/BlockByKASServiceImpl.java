@@ -37,7 +37,6 @@ public class BlockByKASServiceImpl implements BlockByKASService {
 
         try {
             Quantity quantity = caverExtKAS.rpc.klay.getBlockNumber().send();
-            log.info("quantity!!! : {}", quantity);
             log.info("quantity : {}", objectToString(quantity));
         } catch (Exception e) {
             e.printStackTrace();
