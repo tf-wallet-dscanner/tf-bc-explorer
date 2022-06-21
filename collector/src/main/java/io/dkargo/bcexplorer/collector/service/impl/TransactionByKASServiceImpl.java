@@ -3,6 +3,7 @@ package io.dkargo.bcexplorer.collector.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.klaytn.caver.methods.response.Transaction;
+import com.klaytn.caver.methods.response.TransactionReceipt;
 import io.dkargo.bcexplorer.collector.service.TransactionByKASService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,11 +50,22 @@ public class TransactionByKASServiceImpl implements TransactionByKASService {
     }
 
     @Override
-    public void getTransactionByHash(String hash) {
+    public void getTransactionByHash(String transactionHash) {
 
         try {
-            Transaction transaction = caverExtKAS.rpc.klay.getTransactionByHash(hash).send();
+            Transaction transaction = caverExtKAS.rpc.klay.getTransactionByHash(transactionHash).send();
             log.info("transaction : {}", objectToString(transaction));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void getTransactionReceiptByHash(String transactionHash) {
+
+        try {
+            TransactionReceipt transactionReceipt = caverExtKAS.rpc.klay.getTransactionReceipt(transactionHash).send();
+            log.info("transactionReceipt : {}", objectToString(transactionReceipt));
         } catch (Exception e) {
             e.printStackTrace();
         }

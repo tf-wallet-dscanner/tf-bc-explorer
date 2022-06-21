@@ -17,8 +17,8 @@ public class DashboardByKASController {
     private final DashboardByKASService dashboardByKASService;
 
     @ApiOperation(
-            value = "getRecentDashboardInfo",
-            notes = "최근 대시보드 정보 조회"
+            value = "최근 대시보드 정보 조회",
+            notes = "getRecentDashboardInfo"
     )
     @ApiImplicitParams({
     })

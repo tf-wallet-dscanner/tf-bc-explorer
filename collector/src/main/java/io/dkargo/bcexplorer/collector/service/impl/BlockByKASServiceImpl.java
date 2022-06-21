@@ -4,8 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.klaytn.caver.methods.response.Block;
 import com.klaytn.caver.methods.response.BlockTransactionReceipts;
+import com.klaytn.caver.methods.response.BlockWithConsensusInfo;
 import com.klaytn.caver.methods.response.Quantity;
 import io.dkargo.bcexplorer.collector.service.BlockByKASService;
+import io.dkargo.bcexplorer.dto.collector.response.ResGetBlockDTO;
+import io.dkargo.bcexplorer.dto.collector.response.ResGetBlockTransactionCountDTO;
 import io.dkargo.bcexplorer.dto.collector.response.ResGetLatestBlockNumberDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,9 +40,9 @@ public class BlockByKASServiceImpl implements BlockByKASService {
         return objectToString;
     }
 
-    public static int hexToLong(String hexadecimal) {
+    public static Long hexToLong(String hexadecimal) {
 
-        return Integer.decode(hexadecimal);
+        return Long.decode(hexadecimal);
     }
 
     public static String timestampToString(Long timestamp) {
@@ -54,14 +57,13 @@ public class BlockByKASServiceImpl implements BlockByKASService {
     @Override
     public ResGetLatestBlockNumberDTO getLatestBlockNumber() {
 
-        long blockNumber = 0;
+        long blockNumber = 0L;
 
         try {
             Quantity quantity = caverExtKAS.rpc.klay.getBlockNumber().send();
             log.info("quantity : {}", objectToString(quantity));
 
             blockNumber = hexToLong(quantity.getResult());
-            log.info("fdsafdsafd :{}", blockNumber);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -70,10 +72,24 @@ public class BlockByKASServiceImpl implements BlockByKASService {
     }
 
     @Override
-    public void getBlockByBlockNumber(Long blockNumber) {
+    public ResGetBlockDTO getBlockByNumber(Long blockNumber) {
 
         try {
             Block block = caverExtKAS.rpc.klay.getBlockByNumber(blockNumber).send();
+            log.info("block : {}", objectToString(block));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new ResGetBlockDTO(blockNumber);
+    }
+
+    @Override
+    public void getBlockByHash(String blockHash) {
+
+        try {
+            Block block = caverExtKAS.rpc.klay.getBlockByHash(blockHash).send();
             log.info("block : {}", objectToString(block));
         } catch (Exception e) {
             e.printStackTrace();
@@ -81,7 +97,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
     }
 
     @Override
-    public void getBlockReceiptByBlockHash(String blockHash) {
+    public void getBlockReceiptByHash(String blockHash) {
 
         try {
             BlockTransactionReceipts blockTransactionReceipts = caverExtKAS.rpc.klay.getBlockReceipts(blockHash).send();
@@ -89,5 +105,61 @@ public class BlockByKASServiceImpl implements BlockByKASService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void getBlockWithConsensusInfoByNumber(Long blockNumber) {
+
+        try {
+            BlockWithConsensusInfo blockWithConsensusInfo = caverExtKAS.rpc.klay.getBlockWithConsensusInfoByNumber(blockNumber).send();
+            log.info("blockWithConsensusInfo : {}", objectToString(blockWithConsensusInfo));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void getBlockWithConsensusInfoByHash(String blockHash) {
+
+        try {
+            BlockWithConsensusInfo blockWithConsensusInfo = caverExtKAS.rpc.klay.getBlockWithConsensusInfoByHash(blockHash).send();
+            log.info("blockWithConsensusInfo : {}", objectToString(blockWithConsensusInfo));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public ResGetBlockTransactionCountDTO getBlockTransactionCountByNumber(Long blockNumber) {
+
+        long transactionCount = 0L;
+
+        try {
+            Quantity quantity = caverExtKAS.rpc.klay.getBlockTransactionCountByNumber(blockNumber).send();
+            log.info("quantity : {}", objectToString(quantity));
+
+            transactionCount = hexToLong(quantity.getResult());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new ResGetBlockTransactionCountDTO(transactionCount);
+    }
+
+    @Override
+    public ResGetBlockTransactionCountDTO getBlockTransactionCountByHash(String blockHash) {
+
+        long transactionCount = 0L;
+
+        try {
+            Quantity quantity = caverExtKAS.rpc.klay.getBlockTransactionCountByHash(blockHash).send();
+            log.info("quantity : {}", objectToString(quantity));
+
+            transactionCount = hexToLong(quantity.getResult());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new ResGetBlockTransactionCountDTO(transactionCount);
     }
 }

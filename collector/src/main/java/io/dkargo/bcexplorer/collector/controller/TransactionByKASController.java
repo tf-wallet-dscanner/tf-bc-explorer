@@ -17,19 +17,36 @@ public class TransactionByKASController {
     private final TransactionByKASService transactionByKASService;
 
     @ApiOperation(
-            value = "getTransactionByHash",
-            notes = "트랜잭션의 해쉬를 통해 트랜잭션 정보 조회"
+            value = "트랜잭션의 해쉬를 통해 트랜잭션 정보 조회",
+            notes = "getTransactionByHash"
     )
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "hash", value = "트랜잭션 해쉬", required = true, dataType = "String", paramType = "path")
+            @ApiImplicitParam(name = "transactionHash", value = "트랜잭션 해쉬", required = true, dataType = "String", paramType = "path")
     })
     @ApiResponses(value = {
             //        @ApiResponse(code = 200, message = "getTestListByFilter", response = ResGetTestListDTO.class)
     })
-    @GetMapping("/transactions/{hash}")
+    @GetMapping("/transactions/hash/{transactionHash}")
     @ResponseStatus(HttpStatus.OK)
-    public void getTransactionByHash(@PathVariable("hash") String hash) {
+    public void getTransactionByHash(@PathVariable("transactionHash") String transactionHash) {
 
-        transactionByKASService.getTransactionByHash(hash);
+        transactionByKASService.getTransactionByHash(transactionHash);
+    }
+
+    @ApiOperation(
+            value = "트랜잭션의 해쉬를 통해 트랜잭션 receipt 정보 조회",
+            notes = "getTransactionReceiptByHash"
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "transactionHash", value = "트랜잭션 해쉬", required = true, dataType = "String", paramType = "path")
+    })
+    @ApiResponses(value = {
+            //        @ApiResponse(code = 200, message = "getTestListByFilter", response = ResGetTestListDTO.class)
+    })
+    @GetMapping("/transactions/receipt/hash/{transactionHash}")
+    @ResponseStatus(HttpStatus.OK)
+    public void getTransactionReceiptByHash(@PathVariable("transactionHash") String transactionHash) {
+
+        transactionByKASService.getTransactionReceiptByHash(transactionHash);
     }
 }
