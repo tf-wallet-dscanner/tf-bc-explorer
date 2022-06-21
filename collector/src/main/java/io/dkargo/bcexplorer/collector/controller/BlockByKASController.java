@@ -1,12 +1,12 @@
 package io.dkargo.bcexplorer.collector.controller;
 
 import io.dkargo.bcexplorer.collector.service.BlockByKASService;
-import io.dkargo.bcexplorer.dto.collector.response.ResGetBlockDTO;
-import io.dkargo.bcexplorer.dto.collector.response.ResGetBlockTransactionCountDTO;
-import io.dkargo.bcexplorer.dto.collector.response.ResGetLatestBlockNumberDTO;
+import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqCreateBlockDTO;
+import io.dkargo.bcexplorer.dto.collector.kas.block.response.*;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -91,13 +91,13 @@ public class BlockByKASController {
             @ApiImplicitParam(name = "blockNumber", value = "블록 번호", required = true, dataType = "Long", paramType = "path")
     })
     @ApiResponses(value = {
-            //        @ApiResponse(code = 200, message = "getTestListByFilter", response = ResGetTestListDTO.class)
+            @ApiResponse(code = 200, message = "getBlockWithConsensusInfoByNumber", response = ResGetBlockWithConsensusInfoDTO.class)
     })
     @GetMapping("/blocks/consensus-with/number/{blockNumber}")
     @ResponseStatus(HttpStatus.OK)
-    public void getBlockWithConsensusInfoByNumber(@PathVariable("blockNumber") Long blockNumber) {
+    public ResGetBlockWithConsensusInfoDTO getBlockWithConsensusInfoByNumber(@PathVariable("blockNumber") Long blockNumber) {
 
-        blockByKASService.getBlockWithConsensusInfoByNumber(blockNumber);
+        return blockByKASService.getBlockWithConsensusInfoByNumber(blockNumber);
     }
 
     @ApiOperation(
@@ -112,9 +112,9 @@ public class BlockByKASController {
     })
     @GetMapping("/blocks/consensus-with/hash/{blockHash}")
     @ResponseStatus(HttpStatus.OK)
-    public void getBlockWithConsensusInfoByHash(@PathVariable("blockHash") String blockHash) {
+    public ResGetBlockWithConsensusInfoDTO getBlockWithConsensusInfoByHash(@PathVariable("blockHash") String blockHash) {
 
-        blockByKASService.getBlockWithConsensusInfoByHash(blockHash);
+        return blockByKASService.getBlockWithConsensusInfoByHash(blockHash);
     }
 
     @ApiOperation(
@@ -149,5 +149,21 @@ public class BlockByKASController {
     public ResGetBlockTransactionCountDTO getBlockTransactionCountByHash(@PathVariable("blockHash") String blockHash) {
 
         return blockByKASService.getBlockTransactionCountByHash(blockHash);
+    }
+
+    @ApiOperation(
+            value = "블록 정보 생성",
+            notes = "createBlock"
+    )
+    @ApiImplicitParams({
+    })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "createBlockByNumber", response = ResCreateBlockDTO.class)
+    })
+    @PostMapping("/blocks")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResCreateBlockDTO createBlockByNumber(@Validated @RequestBody ReqCreateBlockDTO reqCreateBlockDTO) {
+
+        return blockByKASService.createBlockByNumber(reqCreateBlockDTO);
     }
 }

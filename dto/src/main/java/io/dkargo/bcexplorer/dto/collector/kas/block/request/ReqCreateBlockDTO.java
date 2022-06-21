@@ -1,4 +1,4 @@
-package io.dkargo.bcexplorer.dto.collector.response;
+package io.dkargo.bcexplorer.dto.collector.kas.block.request;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -9,9 +9,9 @@ import javax.validation.constraints.NotNull;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class ResGetBlockTransactionCountDTO {
+public class ReqCreateBlockDTO {
 
-    @ApiModelProperty(value = "트랜잭션 개수")
+    @ApiModelProperty(value = "블록 번호", required = true)
     @NotNull
-    private long transactionCount;
+    private Long blockNumber;
 }

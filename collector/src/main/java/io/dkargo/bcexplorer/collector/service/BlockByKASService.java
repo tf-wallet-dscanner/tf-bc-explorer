@@ -1,8 +1,7 @@
 package io.dkargo.bcexplorer.collector.service;
 
-import io.dkargo.bcexplorer.dto.collector.response.ResGetBlockDTO;
-import io.dkargo.bcexplorer.dto.collector.response.ResGetBlockTransactionCountDTO;
-import io.dkargo.bcexplorer.dto.collector.response.ResGetLatestBlockNumberDTO;
+import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqCreateBlockDTO;
+import io.dkargo.bcexplorer.dto.collector.kas.block.response.*;
 
 public interface BlockByKASService {
 
@@ -14,13 +13,15 @@ public interface BlockByKASService {
 
     void getBlockReceiptByHash(String blockHash);
 
-    void getBlockWithConsensusInfoByNumber(Long blockNumber);
+    ResGetBlockWithConsensusInfoDTO getBlockWithConsensusInfoByNumber(Long blockNumber);
 
-    void getBlockWithConsensusInfoByHash(String blockHash);
+    ResGetBlockWithConsensusInfoDTO getBlockWithConsensusInfoByHash(String blockHash);
 
     ResGetBlockTransactionCountDTO getBlockTransactionCountByNumber(Long blockNumber);
 
     ResGetBlockTransactionCountDTO getBlockTransactionCountByHash(String blockHash);
+
+    ResCreateBlockDTO createBlockByNumber(ReqCreateBlockDTO reqCreateBlockDTO);
 
 
 }

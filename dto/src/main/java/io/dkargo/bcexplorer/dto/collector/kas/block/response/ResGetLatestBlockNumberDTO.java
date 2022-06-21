@@ -1,4 +1,4 @@
-package io.dkargo.bcexplorer.dto.collector.response;
+package io.dkargo.bcexplorer.dto.collector.kas.block.response;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -13,5 +13,5 @@ public class ResGetLatestBlockNumberDTO {
 
     @ApiModelProperty(value = "블록 번호")
     @NotNull
-    private long blockNumber;
+    private Long blockNumber;
 }
