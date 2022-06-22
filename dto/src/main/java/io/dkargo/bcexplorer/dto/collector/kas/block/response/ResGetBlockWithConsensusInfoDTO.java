@@ -1,9 +1,9 @@
 package io.dkargo.bcexplorer.dto.collector.kas.block.response;
 
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.models.auth.In;
 import lombok.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -49,6 +49,7 @@ public class ResGetBlockWithConsensusInfoDTO {
         private String gasUsed;
 
         @ApiModelProperty(value = "hash")
+        @NotNull
         private String hash;
 
         @ApiModelProperty(value = "miner")
@@ -58,6 +59,7 @@ public class ResGetBlockWithConsensusInfoDTO {
         private String nonce;
 
         @ApiModelProperty(value = "number")
+        @NotNull
         private String number;
 
         @ApiModelProperty(value = "parentBlockHash")

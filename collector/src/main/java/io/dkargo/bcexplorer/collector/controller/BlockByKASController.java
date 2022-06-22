@@ -1,7 +1,8 @@
 package io.dkargo.bcexplorer.collector.controller;
 
 import io.dkargo.bcexplorer.collector.service.BlockByKASService;
-import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqCreateBlockDTO;
+import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqCreateBlockByHashDTO;
+import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqCreateBlockByNumberDTO;
 import io.dkargo.bcexplorer.dto.collector.kas.block.response.*;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
@@ -152,18 +153,34 @@ public class BlockByKASController {
     }
 
     @ApiOperation(
-            value = "블록 정보 생성",
-            notes = "createBlock"
+            value = "블록 번호를 통해 블록 정보와 트랜잭션 정보 생성",
+            notes = "createBlockWithTransactionByNumber"
     )
     @ApiImplicitParams({
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "createBlockByNumber", response = ResCreateBlockDTO.class)
+            @ApiResponse(code = 200, message = "createBlockWithTransactionByNumber", response = ResCreateBlockDTO.class)
     })
-    @PostMapping("/blocks")
+    @PostMapping("/blocks/number")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResCreateBlockDTO createBlockByNumber(@Validated @RequestBody ReqCreateBlockDTO reqCreateBlockDTO) {
+    public ResCreateBlockDTO createBlockWithTransactionByNumber(@Validated @RequestBody ReqCreateBlockByNumberDTO reqCreateBlockByNumberDTO) {
 
-        return blockByKASService.createBlockByNumber(reqCreateBlockDTO);
+        return blockByKASService.createBlockWithTransactionByNumber(reqCreateBlockByNumberDTO);
+    }
+
+    @ApiOperation(
+            value = "블록 해쉬를 통해 블록 정보와 트랜잭션 정보 생성",
+            notes = "createBlockWithTransactionByHash"
+    )
+    @ApiImplicitParams({
+    })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "createBlockWithTransactionByHash", response = ResCreateBlockDTO.class)
+    })
+    @PostMapping("/blocks/hash")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResCreateBlockDTO createBlockWithTransactionByHash(@Validated @RequestBody ReqCreateBlockByHashDTO reqCreateBlockByHashDTO) {
+
+        return blockByKASService.createBlockWithTransactionByHash(reqCreateBlockByHashDTO);
     }
 }
