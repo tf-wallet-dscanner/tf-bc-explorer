@@ -52,7 +52,7 @@ public class BlockByKASController {
 
     @ApiOperation(
             value = "블록 해쉬를 통해 블록 정보 조회",
-            notes = "getBlockReceiptByBlockHash"
+            notes = "getBlockByHash"
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "blockHash", value = "블록 해쉬", required = true, dataType = "String", paramType = "path")

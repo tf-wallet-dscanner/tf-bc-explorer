@@ -3,8 +3,10 @@ package io.dkargo.bcexplorer.collector.service.impl;
 import com.klaytn.caver.methods.response.*;
 import com.klaytn.caver.wallet.keyring.SignatureData;
 import io.dkargo.bcexplorer.collector.service.BlockByKASService;
+import io.dkargo.bcexplorer.collector.service.TransactionByKASService;
 import io.dkargo.bcexplorer.collector.service.converter.BlockByKASConverter;
 import io.dkargo.bcexplorer.collector.service.converter.BlockErrorByKASConverter;
+import io.dkargo.bcexplorer.collector.service.converter.CommonConverter;
 import io.dkargo.bcexplorer.core.error.DkargoException;
 import io.dkargo.bcexplorer.core.error.ErrorCodeEnum;
 import io.dkargo.bcexplorer.domain.entity.BlockError;
@@ -15,9 +17,9 @@ import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqBlockErrorDTO;
 import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqCreateBlockByHashDTO;
 import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqCreateBlockByNumberDTO;
 import io.dkargo.bcexplorer.dto.collector.kas.block.response.*;
+import io.dkargo.bcexplorer.dto.collector.kas.transaction.response.ResGetTransactionReceiptByHashDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.mongodb.core.aggregation.LookupOperation;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.groundx.caver_ext_kas.CaverExtKAS;
@@ -32,9 +34,12 @@ public class BlockByKASServiceImpl implements BlockByKASService {
 
     private final CaverExtKAS caverExtKAS;
 
+    private final TransactionByKASService transactionByKASService;
+
     private final BlockRepository blockRepository;
     private final BlockErrorRepository blockErrorRepository;
 
+    // block with consensus 정보 조회 포멧
     public static ResGetBlockWithConsensusInfoDTO getBlockWithConsensusInfo(BlockWithConsensusInfo blockWithConsensusInfo) {
 
         ResGetBlockWithConsensusInfoDTO.Result result = null;
@@ -146,15 +151,11 @@ public class BlockByKASServiceImpl implements BlockByKASService {
     @Override
     public ResGetLatestBlockNumberDTO getLatestBlockNumber() {
 
-//        LookupOperation lookupOperation = LookupOperation.newLookup()
-//                .from("number")
-//                .localField("number")
-
         long blockNumber = 0L;
 
         try {
             Quantity quantity = caverExtKAS.rpc.klay.getBlockNumber().send();
-            log.info("quantity : {}", BlockByKASConverter.objectToString(quantity));
+            log.info("quantity : {}", CommonConverter.objectToString(quantity));
 
             // blockNumber = hexToLong(quantity.getResult());
             blockNumber = quantity.getValue().longValue();
@@ -170,7 +171,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
 
         try {
             Block block = caverExtKAS.rpc.klay.getBlockByNumber(bockNumber).send();
-            log.info("block : {}", BlockByKASConverter.objectToString(block));
+            log.info("block : {}", CommonConverter.objectToString(block));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -184,7 +185,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
 
         try {
             Block block = caverExtKAS.rpc.klay.getBlockByHash(blockHash).send();
-            log.info("block : {}", BlockByKASConverter.objectToString(block));
+            log.info("block : {}", CommonConverter.objectToString(block));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -195,7 +196,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
 
         try {
             BlockTransactionReceipts blockTransactionReceipts = caverExtKAS.rpc.klay.getBlockReceipts(blockHash).send();
-            log.info("blockTransactionReceipts : {}", BlockByKASConverter.objectToString(blockTransactionReceipts));
+            log.info("blockTransactionReceipts : {}", CommonConverter.objectToString(blockTransactionReceipts));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -208,7 +209,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
 
         try {
             BlockWithConsensusInfo blockWithConsensusInfo = caverExtKAS.rpc.klay.getBlockWithConsensusInfoByNumber(blockNumber).send();
-            log.info("blockWithConsensusInfo : {}", BlockByKASConverter.objectToString(blockWithConsensusInfo));
+            log.info("blockWithConsensusInfo : {}", CommonConverter.objectToString(blockWithConsensusInfo));
 
             resGetBlockWithConsensusInfoDTO = getBlockWithConsensusInfo(blockWithConsensusInfo);
         } catch (Exception e) {
@@ -225,7 +226,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
 
         try {
             BlockWithConsensusInfo blockWithConsensusInfo = caverExtKAS.rpc.klay.getBlockWithConsensusInfoByHash(blockHash).send();
-            log.info("blockWithConsensusInfo : {}", BlockByKASConverter.objectToString(blockWithConsensusInfo));
+            log.info("blockWithConsensusInfo : {}", CommonConverter.objectToString(blockWithConsensusInfo));
 
             resGetBlockWithConsensusInfoDTO = getBlockWithConsensusInfo(blockWithConsensusInfo);
         } catch (Exception e) {
@@ -242,7 +243,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
 
         try {
             Quantity quantity = caverExtKAS.rpc.klay.getBlockTransactionCountByNumber(blockNumber).send();
-            log.info("quantity : {}", BlockByKASConverter.objectToString(quantity));
+            log.info("quantity : {}", CommonConverter.objectToString(quantity));
 
             // transactionCount = hexToLong(quantity.getResult());
             transactionCount = quantity.getValue().longValue();
@@ -260,7 +261,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
 
         try {
             Quantity quantity = caverExtKAS.rpc.klay.getBlockTransactionCountByHash(blockHash).send();
-            log.info("quantity : {}", BlockByKASConverter.objectToString(quantity));
+            log.info("quantity : {}", CommonConverter.objectToString(quantity));
 
             // transactionCount = hexToLong(quantity.getResult());
             transactionCount = quantity.getValue().longValue();
@@ -289,9 +290,34 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                     .data(resGetBlockWithConsensusInfoDTO.getError().getData())
                     .rawResponse(resGetBlockWithConsensusInfoDTO.getRawResponse())
                     .build();
-            BlockError blockError = blockErrorRepository.save(BlockErrorByKASConverter.of(reqBlockErrorDTO));
+            blockErrorRepository.save(BlockErrorByKASConverter.of(reqBlockErrorDTO));
 
             throw new DkargoException(ErrorCodeEnum.BAD_REQUEST);
+        }
+
+        // 트랜잭션 개수 만큼 트랜잭션 정보 조회
+        List<ResGetTransactionReceiptByHashDTO> resGetTransactionReceiptByHashDTOS = new ArrayList<>();
+        for(ResGetBlockWithConsensusInfoDTO.Result.Transactions transactions : resGetBlockWithConsensusInfoDTO.getResult().getTransactions()) {
+
+            // 트랜잭션 정보 조회
+            ResGetTransactionReceiptByHashDTO resGetTransactionReceiptByHashDTO = transactionByKASService.getTransactionReceiptByHash(transactions.getSenderTxHash());
+
+            if(resGetTransactionReceiptByHashDTO.getError() != null) {
+
+                /**
+                 * TODO : transactionErrorRepository 저장 후 에러 처리
+                 */
+            }
+
+            resGetTransactionReceiptByHashDTOS.add(
+                    ResGetTransactionReceiptByHashDTO.builder()
+                            .id(resGetTransactionReceiptByHashDTO.getId())
+                            .jsonrpc(resGetTransactionReceiptByHashDTO.getJsonrpc())
+                            .result(resGetTransactionReceiptByHashDTO.getResult())
+                            .error(resGetTransactionReceiptByHashDTO.getError())
+                            .rawResponse(resGetTransactionReceiptByHashDTO.getRawResponse())
+                            .build()
+            );
         }
 
         // 블록 생성
@@ -317,6 +343,8 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                 .timestamp(resGetBlockWithConsensusInfoDTO.getResult().getTimestamp())
                 .timestampFoS(resGetBlockWithConsensusInfoDTO.getResult().getTimestampFoS())
                 .transactionsRoot(resGetBlockWithConsensusInfoDTO.getResult().getTransactionsRoot())
+                .transactionCount((long) resGetBlockWithConsensusInfoDTO.getResult().getTransactions().size())
+                .transactions(resGetTransactionReceiptByHashDTOS)
                 .build();
         io.dkargo.bcexplorer.domain.entity.Block block = blockRepository.save(BlockByKASConverter.of(reqBlockDTO));
 
@@ -324,7 +352,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
          * TODO : 트랜잭션 생성 로직 추가
          */
 
-        return new ResCreateBlockDTO(BlockByKASConverter.hexToLong(block.getNumber()), resGetBlockWithConsensusInfoDTO.getResult().getHash());
+        return new ResCreateBlockDTO(CommonConverter.hexToLong(block.getNumber()), resGetBlockWithConsensusInfoDTO.getResult().getHash());
     }
 
     @Override

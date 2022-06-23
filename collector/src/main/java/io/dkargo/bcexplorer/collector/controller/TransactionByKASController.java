@@ -1,10 +1,8 @@
 package io.dkargo.bcexplorer.collector.controller;
 
 import io.dkargo.bcexplorer.collector.service.TransactionByKASService;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponses;
+import io.dkargo.bcexplorer.dto.collector.kas.transaction.response.ResGetTransactionReceiptByHashDTO;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -41,12 +39,12 @@ public class TransactionByKASController {
             @ApiImplicitParam(name = "transactionHash", value = "트랜잭션 해쉬", required = true, dataType = "String", paramType = "path")
     })
     @ApiResponses(value = {
-            //        @ApiResponse(code = 200, message = "getTestListByFilter", response = ResGetTestListDTO.class)
+                    @ApiResponse(code = 200, message = "getTransactionReceiptByHash", response = ResGetTransactionReceiptByHashDTO.class)
     })
     @GetMapping("/transactions/receipt/hash/{transactionHash}")
     @ResponseStatus(HttpStatus.OK)
-    public void getTransactionReceiptByHash(@PathVariable("transactionHash") String transactionHash) {
+    public ResGetTransactionReceiptByHashDTO getTransactionReceiptByHash(@PathVariable("transactionHash") String transactionHash) {
 
-        transactionByKASService.getTransactionReceiptByHash(transactionHash);
+        return transactionByKASService.getTransactionReceiptByHash(transactionHash);
     }
 }

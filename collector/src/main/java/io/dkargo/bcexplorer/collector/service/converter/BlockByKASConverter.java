@@ -1,88 +1,27 @@
 package io.dkargo.bcexplorer.collector.service.converter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import io.dkargo.bcexplorer.domain.entity.Block;
 import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqBlockDTO;
 import io.dkargo.bcexplorer.dto.collector.kas.block.response.ResBlockDTO;
 import io.dkargo.bcexplorer.dto.collector.kas.block.response.ResGetBlockWithConsensusInfoDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 
 @Slf4j
 public class BlockByKASConverter {
 
-    // 16 진수 -> 10 진수
-    public static Long hexToLong(String hexadecimal) {
-
-        return Long.decode(hexadecimal);
-    }
-
-    // timestamp -> data format
-    public static String timestampToString(Long timestamp) {
-
-        Date date = new Date(timestamp * 1000L);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
-
-        return simpleDateFormat.format(date);
-    }
-
-    // object -> string
-    public static String objectToString(Object object) {
-
-        String objectToString = null;
-
-        try {
-            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-            objectToString = ow.writeValueAsString(object);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return objectToString;
-    }
-
-    // string -> object
-    public static JSONObject stringToObject(String string) {
-
-        JSONParser jsonParser = new JSONParser();
-        JSONObject jsonObj = new JSONObject();
-
-        try {
-            Object obj = jsonParser.parse(string);
-            jsonObj = (JSONObject) obj;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return jsonObj;
-    }
-
-    // currentDate
-    public static String currentDateTime() {
-
-        Date today = new Date();
-        Locale currentLocale = new Locale("KOREAN", "KOREA");
-        String pattern = "yyyy-MM-dd HH:mm:ss";
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, currentLocale);
-
-        return simpleDateFormat.format(today);
-    }
-
     // req -> block
     public static Block of(ReqBlockDTO reqBlockDTO) {
+
+        log.info("cute hoony : {}", reqBlockDTO.getTransactions().size());
+        log.info("hoony jjang : {}", reqBlockDTO.getTransactions());
+        log.info("good hoony : {}", CommonConverter.objectToJsonString(reqBlockDTO.getTransactions()));
+        log.info("baboo hoony : {}", CommonConverter.objectToString(reqBlockDTO.getTransactions()));
 
         return Block.builder()
                 .blockId(reqBlockDTO.getId())
                 .jsonrpc(reqBlockDTO.getJsonrpc())
-                .error(objectToString(reqBlockDTO.getError())) // string 으로 변환 후 build
+                .error(CommonConverter.objectToString(reqBlockDTO.getError())) // string 으로 변환 후 build
                 .rawResponse(reqBlockDTO.getRawResponse())
                 .blockScore(reqBlockDTO.getBlockScore())
                 .totalBlockScore(reqBlockDTO.getTotalBlockScore())
@@ -101,14 +40,16 @@ public class BlockByKASConverter {
                 .timestamp(reqBlockDTO.getTimestamp())
                 .timestampFoS(reqBlockDTO.getTimestampFoS())
                 .transactionsRoot(reqBlockDTO.getTransactionsRoot())
-                .createAt(currentDateTime())
+                .transactionCount(reqBlockDTO.getTransactionCount())
+                .transactions(CommonConverter.objectToString(reqBlockDTO.getTransactions()))
+                .createAt(CommonConverter.currentDateTime())
                 .build();
     }
 
     // block -> res
     public static ResBlockDTO of(Block block) {
 
-        JSONObject jsonObj = stringToObject(block.getError());
+        JSONObject jsonObj = CommonConverter.stringToObject(block.getError());
         ResGetBlockWithConsensusInfoDTO.Error error = ResGetBlockWithConsensusInfoDTO.Error.builder()
                 .code((Integer) jsonObj.get("code"))
                 .message((String) jsonObj.get("message"))
@@ -138,6 +79,8 @@ public class BlockByKASConverter {
                 .timestamp(block.getTimestamp())
                 .timestampFoS(block.getTimestampFoS())
                 .transactionsRoot(block.getTransactionsRoot())
+                .transactionCount(block.getTransactionCount())
+                .createAt(block.getCreateAt())
                 .build();
     }
 }

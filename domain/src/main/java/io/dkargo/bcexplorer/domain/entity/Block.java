@@ -59,5 +59,9 @@ public class Block {
 
     private String transactionsRoot;
 
+    private Long transactionCount;
+
+    private String transactions;
+
     private String createAt;
 }

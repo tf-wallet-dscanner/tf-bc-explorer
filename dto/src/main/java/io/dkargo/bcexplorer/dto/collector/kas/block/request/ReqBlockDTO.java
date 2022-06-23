@@ -1,6 +1,7 @@
 package io.dkargo.bcexplorer.dto.collector.kas.block.request;
 
 import io.dkargo.bcexplorer.dto.collector.kas.block.response.ResGetBlockWithConsensusInfoDTO;
+import io.dkargo.bcexplorer.dto.collector.kas.transaction.response.ResGetTransactionReceiptByHashDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
@@ -77,4 +78,10 @@ public class ReqBlockDTO {
 
     @ApiModelProperty(value = "transactionsRoot")
     private String transactionsRoot;
+
+    @ApiModelProperty(value = "transactionCount")
+    private Long transactionCount;
+
+    @ApiModelProperty(value = "transactions")
+    private List<ResGetTransactionReceiptByHashDTO> transactions;
 }

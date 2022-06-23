@@ -80,4 +80,10 @@ public class ResBlockDTO {
 
     @ApiModelProperty(value = "transactionsRoot")
     private String transactionsRoot;
+
+    @ApiModelProperty(value = "transactionCount")
+    private Long transactionCount;
+
+    @ApiModelProperty(value = "createAt")
+    private String createAt;
 }
