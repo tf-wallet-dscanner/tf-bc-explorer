@@ -15,21 +15,34 @@ public class ResBlockErrorDTO {
     @NotNull
     private String id;
 
-    @ApiModelProperty(value = "blockId")
-    private Long blockId;
+    @ApiModelProperty(value = "errorId")
+    private Long errorId;
 
     @ApiModelProperty(value = "jsonrpc")
     private String jsonrpc;
 
-    @ApiModelProperty(value = "code")
-    private Integer code;
+    @ApiModelProperty(value = "error")
+    private Error error;
 
-    @ApiModelProperty(value = "message")
-    private String message;
-
-    @ApiModelProperty(value = "data")
-    private String data;
+    @ApiModelProperty(value = "kasRequestType")
+    private String kasRequestType;
 
     @ApiModelProperty(value = "rawResponse")
     private String rawResponse;
+
+    @ApiModelProperty(value = "createAt")
+    private String createAt;
+
+    @Data
+    @Builder
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @AllArgsConstructor
+    public static class Error {
+
+        private Integer code;
+
+        private String message;
+
+        private String data;
+    }
 }

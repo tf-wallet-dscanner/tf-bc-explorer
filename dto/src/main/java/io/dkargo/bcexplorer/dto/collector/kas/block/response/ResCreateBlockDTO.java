@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
 @Builder
@@ -15,7 +16,10 @@ public class ResCreateBlockDTO {
     @NotNull
     private Long blockNumber;
 
-    @ApiModelProperty(value = "블록 해쉬", required = true)
+    @ApiModelProperty(value = "블록 해시", required = true)
     @NotNull
     private String blockHash;
+
+    @ApiModelProperty(value = "트랜잭션 해시 리스트")
+    private List<String> transactionHashList;
 }

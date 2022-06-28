@@ -15,19 +15,29 @@ public class BlockError {
     @Id
     private String id;
 
-    private Long blockId;
+    private Long errorId;
 
     private String jsonrpc;
 
-    private Integer code;
+    private Error error;
 
-    private String message;
-
-    private String data;
+    // KAS 메소드 명
+    private String kasRequestType;
 
     private String rawResponse;
 
-    private String block;
-
     private String createAt;
+
+    @Data
+    @Builder
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @AllArgsConstructor
+    public static class Error {
+
+        private Integer code;
+
+        private String message;
+
+        private String data;
+    }
 }

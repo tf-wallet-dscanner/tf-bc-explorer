@@ -35,13 +35,13 @@ public class BlockByKASController {
 
     @ApiOperation(
             value = "블록 번호를 통해 블록 정보 조회",
-            notes = "getBlockByBlockNumber"
+            notes = "getBlockByNumber"
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "blockNumber", value = "블록 번호", required = true, dataType = "Long", paramType = "path")
     })
     @ApiResponses(value = {
-    //        @ApiResponse(code = 200, message = "getTestListByFilter", response = ResGetTestListDTO.class)
+            @ApiResponse(code = 200, message = "getBlockByNumber", response = ResGetBlockDTO.class)
     })
     @GetMapping("/blocks/number/{blockNumber}")
     @ResponseStatus(HttpStatus.OK)
@@ -58,13 +58,13 @@ public class BlockByKASController {
             @ApiImplicitParam(name = "blockHash", value = "블록 해쉬", required = true, dataType = "String", paramType = "path")
     })
     @ApiResponses(value = {
-            //        @ApiResponse(code = 200, message = "getTestListByFilter", response = ResGetTestListDTO.class)
+            @ApiResponse(code = 200, message = "getBlockByHash", response = ResGetBlockDTO.class)
     })
     @GetMapping("/blocks/hash/{blockHash}")
     @ResponseStatus(HttpStatus.OK)
-    public void getBlockByHash(@PathVariable("blockHash") String blockHash) {
+    public ResGetBlockDTO getBlockByHash(@PathVariable("blockHash") String blockHash) {
 
-        blockByKASService.getBlockByHash(blockHash);
+        return blockByKASService.getBlockByHash(blockHash);
     }
 
     @ApiOperation(
@@ -75,13 +75,13 @@ public class BlockByKASController {
             @ApiImplicitParam(name = "blockHash", value = "블록 해쉬", required = true, dataType = "String", paramType = "path")
     })
     @ApiResponses(value = {
-            //        @ApiResponse(code = 200, message = "getTestListByFilter", response = ResGetTestListDTO.class)
+            @ApiResponse(code = 200, message = "getTestListByFilter", response = ResGetBlockReceiptDTO.class)
     })
     @GetMapping("/blocks/receipt/hash/{blockHash}")
     @ResponseStatus(HttpStatus.OK)
-    public void getBlockReceiptByHash(@PathVariable("blockHash") String blockHash) {
+    public ResGetBlockReceiptDTO getBlockReceiptByHash(@PathVariable("blockHash") String blockHash) {
 
-        blockByKASService.getBlockReceiptByHash(blockHash);
+        return blockByKASService.getBlockReceiptByHash(blockHash);
     }
 
     @ApiOperation(
@@ -128,7 +128,7 @@ public class BlockByKASController {
     @ApiResponses(value = {
             //        @ApiResponse(code = 200, message = "getTestListByFilter", response = ResGetTestListDTO.class)
     })
-    @GetMapping("/blocks/transaction/number/{blockNumber}")
+    @GetMapping("/blocks/transaction-count/number/{blockNumber}")
     @ResponseStatus(HttpStatus.OK)
     public ResGetBlockTransactionCountDTO getBlockTransactionCountByNumber(@PathVariable("blockNumber") Long blockNumber) {
 
@@ -145,7 +145,7 @@ public class BlockByKASController {
     @ApiResponses(value = {
             //        @ApiResponse(code = 200, message = "getTestListByFilter", response = ResGetTestListDTO.class)
     })
-    @GetMapping("/blocks/transaction/hash/{blockHash}")
+    @GetMapping("/blocks/transaction-count/hash/{blockHash}")
     @ResponseStatus(HttpStatus.OK)
     public ResGetBlockTransactionCountDTO getBlockTransactionCountByHash(@PathVariable("blockHash") String blockHash) {
 

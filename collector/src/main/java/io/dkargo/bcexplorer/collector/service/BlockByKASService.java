@@ -10,9 +10,9 @@ public interface BlockByKASService {
 
     ResGetBlockDTO getBlockByNumber(Long blockNumber);
 
-    void getBlockByHash(String blockHash);
+    ResGetBlockDTO getBlockByHash(String blockHash);
 
-    void getBlockReceiptByHash(String blockHash);
+    ResGetBlockReceiptDTO getBlockReceiptByHash(String blockHash);
 
     ResGetBlockWithConsensusInfoDTO getBlockWithConsensusInfoByNumber(Long blockNumber);
 

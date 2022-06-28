@@ -12,7 +12,7 @@ import java.util.Locale;
 @Slf4j
 public class BlockErrorByKASConverter {
 
-    // currentDate
+    // current date
     public static String currentDateTime() {
 
         Date today = new Date();
@@ -26,12 +26,17 @@ public class BlockErrorByKASConverter {
     //req -> blockError
     public static BlockError of(ReqBlockErrorDTO reqBlockErrorDTO) {
 
+        BlockError.Error error = BlockError.Error.builder()
+                .code(reqBlockErrorDTO.getError().getCode())
+                .message(reqBlockErrorDTO.getError().getMessage())
+                .data(reqBlockErrorDTO.getError().getData())
+                .build();
+
         return BlockError.builder()
-                .blockId(reqBlockErrorDTO.getId())
+                .errorId(reqBlockErrorDTO.getId())
                 .jsonrpc(reqBlockErrorDTO.getJsonrpc())
-                .code(reqBlockErrorDTO.getCode())
-                .message(reqBlockErrorDTO.getMessage())
-                .data(reqBlockErrorDTO.getData())
+                .error(error)
+                .kasRequestType(reqBlockErrorDTO.getKasRequestType().getValue())
                 .rawResponse(reqBlockErrorDTO.getRawResponse())
                 .createAt(currentDateTime())
                 .build();
@@ -40,14 +45,20 @@ public class BlockErrorByKASConverter {
     //blockError -> res
     public static ResBlockErrorDTO of(BlockError blockError) {
 
+        ResBlockErrorDTO.Error error = ResBlockErrorDTO.Error.builder()
+                .code(blockError.getError().getCode())
+                .data(blockError.getError().getData())
+                .message(blockError.getError().getMessage())
+                .build();
+
         return ResBlockErrorDTO.builder()
                 .id(blockError.getId())
-                .blockId(blockError.getBlockId())
+                .errorId(blockError.getErrorId())
                 .jsonrpc(blockError.getJsonrpc())
-                .code(blockError.getCode())
-                .message(blockError.getMessage())
-                .data(blockError.getData())
+                .error(error)
+                .kasRequestType(blockError.getKasRequestType())
                 .rawResponse(blockError.getRawResponse())
+                .createAt(blockError.getCreateAt())
                 .build();
     }
 }

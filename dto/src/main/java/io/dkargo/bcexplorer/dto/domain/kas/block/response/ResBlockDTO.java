@@ -1,26 +1,28 @@
-package io.dkargo.bcexplorer.domain.entity;
+package io.dkargo.bcexplorer.dto.domain.kas.block.response;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@Document(collection = "blocks")
+@Data
 @Builder
-@Setter
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Block {
+public class ResBlockDTO {
 
-    @Id
+    @ApiModelProperty(value = "id")
+    @NotNull
     private String id;
 
+    @ApiModelProperty(value = "jsonrpc")
     private String jsonrpc;
 
+    @ApiModelProperty(value = "result")
     private Result result;
 
+    @ApiModelProperty(value = "createAt")
     private String createAt;
 
     @Data

@@ -3,15 +3,14 @@ package io.dkargo.bcexplorer.collector.service.converter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.gson.Gson;
+import io.dkargo.bcexplorer.dto.collector.kas.transaction.response.ResGetTransactionReceiptByHashDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.util.ajax.JSON;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 
 @Slf4j
 public class CommonConverter {
@@ -47,6 +46,29 @@ public class CommonConverter {
         return objectToString;
     }
 
+    // list object -> list string
+    public static List<String> listObjectToListString(List<ResGetTransactionReceiptByHashDTO> resGetTransactionReceiptByHashDTOS) {
+
+        List<String> listObjectToListString = new ArrayList<>();
+
+        for(ResGetTransactionReceiptByHashDTO resGetTransactionReceiptByHashDTO : resGetTransactionReceiptByHashDTOS) {
+
+//            // result
+//            objectToString(resGetTransactionReceiptByHashDTO.getResult());
+//
+//            // result -> feePayerSignatures
+//            objectToString(resGetTransactionReceiptByHashDTO.getResult().getFeePayerSignatures());
+//            // error
+//            objectToString(resGetTransactionReceiptByHashDTO.getError());
+
+            listObjectToListString.add(objectToString(resGetTransactionReceiptByHashDTO));
+        }
+
+        log.info("jjjjjj : {} ", listObjectToListString);
+
+        return listObjectToListString;
+    }
+
     // string -> object
     public static JSONObject stringToObject(String string) {
 
@@ -61,13 +83,6 @@ public class CommonConverter {
         }
 
         return jsonObj;
-    }
-
-    public static String objectToJsonString(Object object) {
-
-        Gson gson = new Gson();
-
-        return gson.newBuilder().setPrettyPrinting().create().toJson(object);
     }
 
     // currentDate

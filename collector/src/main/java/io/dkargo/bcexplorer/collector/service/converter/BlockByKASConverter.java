@@ -1,11 +1,9 @@
 package io.dkargo.bcexplorer.collector.service.converter;
 
 import io.dkargo.bcexplorer.domain.entity.Block;
-import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqBlockDTO;
-import io.dkargo.bcexplorer.dto.collector.kas.block.response.ResBlockDTO;
-import io.dkargo.bcexplorer.dto.collector.kas.block.response.ResGetBlockWithConsensusInfoDTO;
+import io.dkargo.bcexplorer.dto.domain.kas.block.request.ReqBlockDTO;
+import io.dkargo.bcexplorer.dto.domain.kas.block.response.ResBlockDTO;
 import lombok.extern.slf4j.Slf4j;
-import org.json.simple.JSONObject;
 
 @Slf4j
 public class BlockByKASConverter {
@@ -13,35 +11,33 @@ public class BlockByKASConverter {
     // req -> block
     public static Block of(ReqBlockDTO reqBlockDTO) {
 
-        log.info("cute hoony : {}", reqBlockDTO.getTransactions().size());
-        log.info("hoony jjang : {}", reqBlockDTO.getTransactions());
-        log.info("good hoony : {}", CommonConverter.objectToJsonString(reqBlockDTO.getTransactions()));
-        log.info("baboo hoony : {}", CommonConverter.objectToString(reqBlockDTO.getTransactions()));
+        Block.Result result = Block.Result.builder()
+                .number(reqBlockDTO.getResultByGetBlock().getNumber())
+                .hash(reqBlockDTO.getResultByGetBlock().getHash())
+                .parentHash(reqBlockDTO.getResultByGetBlock().getParentHash())
+                .logsBloom(reqBlockDTO.getResultByGetBlock().getLogsBloom())
+                .transactionsRoot(reqBlockDTO.getResultByGetBlock().getTransactionsRoot())
+                .stateRoot(reqBlockDTO.getResultByGetBlock().getStateRoot())
+                .receiptsRoot(reqBlockDTO.getResultByGetBlock().getReceiptsRoot())
+                .reward(reqBlockDTO.getResultByGetBlock().getReward())
+                .blockScore(reqBlockDTO.getResultByGetBlock().getBlockScore())
+                .totalBlockScore(reqBlockDTO.getResultByGetBlock().getTotalBlockScore())
+                .extraData(reqBlockDTO.getResultByGetBlock().getExtraData())
+                .size(reqBlockDTO.getResultByGetBlock().getSize())
+                .gasUsed(reqBlockDTO.getResultByGetBlock().getGasUsed())
+                .gasLimit(reqBlockDTO.getResultByGetBlockWithConsensusInfo().getGasLimit())
+                .timestamp(reqBlockDTO.getResultByGetBlock().getTimestamp())
+                .timestampFoS(reqBlockDTO.getResultByGetBlock().getTimestampFoS())
+                .governanceData(reqBlockDTO.getResultByGetBlock().getGovernanceData())
+                .voteData(reqBlockDTO.getResultByGetBlock().getVoteData())
+                .proposer(reqBlockDTO.getResultByGetBlockWithConsensusInfo().getProposer())
+                .committee(reqBlockDTO.getResultByGetBlockWithConsensusInfo().getCommittee())
+                .transactionCount(reqBlockDTO.getResultByGetBlock().getTransactionCount())
+                .build();
 
         return Block.builder()
-                .blockId(reqBlockDTO.getId())
                 .jsonrpc(reqBlockDTO.getJsonrpc())
-                .error(CommonConverter.objectToString(reqBlockDTO.getError())) // string 으로 변환 후 build
-                .rawResponse(reqBlockDTO.getRawResponse())
-                .blockScore(reqBlockDTO.getBlockScore())
-                .totalBlockScore(reqBlockDTO.getTotalBlockScore())
-                .committee(reqBlockDTO.getCommittee())
-                .gasLimit(reqBlockDTO.getGasLimit())
-                .gasUsed(reqBlockDTO.getGasUsed())
-                .hash(reqBlockDTO.getHash())
-                .miner(reqBlockDTO.getMiner())
-                .nonce(reqBlockDTO.getNonce())
-                .number(reqBlockDTO.getNumber())
-                .parentBlockHash(reqBlockDTO.getParentBlockHash())
-                .proposer(reqBlockDTO.getProposer())
-                .receiptsRoot(reqBlockDTO.getReceiptsRoot())
-                .size(reqBlockDTO.getSize())
-                .stateRoot(reqBlockDTO.getStateRoot())
-                .timestamp(reqBlockDTO.getTimestamp())
-                .timestampFoS(reqBlockDTO.getTimestampFoS())
-                .transactionsRoot(reqBlockDTO.getTransactionsRoot())
-                .transactionCount(reqBlockDTO.getTransactionCount())
-                .transactions(CommonConverter.objectToString(reqBlockDTO.getTransactions()))
+                .result(result)
                 .createAt(CommonConverter.currentDateTime())
                 .build();
     }
@@ -49,37 +45,34 @@ public class BlockByKASConverter {
     // block -> res
     public static ResBlockDTO of(Block block) {
 
-        JSONObject jsonObj = CommonConverter.stringToObject(block.getError());
-        ResGetBlockWithConsensusInfoDTO.Error error = ResGetBlockWithConsensusInfoDTO.Error.builder()
-                .code((Integer) jsonObj.get("code"))
-                .message((String) jsonObj.get("message"))
-                .data((String) jsonObj.get("data"))
+        ResBlockDTO.Result result = ResBlockDTO.Result.builder()
+                .number(block.getResult().getNumber())
+                .hash(block.getResult().getHash())
+                .parentHash(block.getResult().getParentHash())
+                .logsBloom(block.getResult().getLogsBloom())
+                .transactionsRoot(block.getResult().getTransactionsRoot())
+                .stateRoot(block.getResult().getStateRoot())
+                .receiptsRoot(block.getResult().getReceiptsRoot())
+                .reward(block.getResult().getReward())
+                .blockScore(block.getResult().getBlockScore())
+                .totalBlockScore(block.getResult().getTotalBlockScore())
+                .extraData(block.getResult().getExtraData())
+                .size(block.getResult().getSize())
+                .gasUsed(block.getResult().getGasUsed())
+                .gasLimit(block.getResult().getGasLimit())
+                .timestamp(block.getResult().getTimestamp())
+                .timestampFoS(block.getResult().getTimestampFoS())
+                .governanceData(block.getResult().getGovernanceData())
+                .voteData(block.getResult().getVoteData())
+                .proposer(block.getResult().getProposer())
+                .committee(block.getResult().getCommittee())
+                .transactionCount(block.getResult().getTransactionCount())
                 .build();
 
         return ResBlockDTO.builder()
                 .id(block.getId())
-                .blockId(block.getBlockId())
                 .jsonrpc(block.getJsonrpc())
-                .error(error) // string을 객체형태로 변환 후 build
-                .rawResponse(block.getRawResponse())
-                .blockScore(block.getBlockScore())
-                .totalBlockScore(block.getTotalBlockScore())
-                .committee(block.getCommittee())
-                .gasLimit(block.getGasLimit())
-                .gasUsed(block.getGasUsed())
-                .hash(block.getHash())
-                .miner(block.getMiner())
-                .nonce(block.getNonce())
-                .number(block.getNumber())
-                .parentBlockHash(block.getParentBlockHash())
-                .proposer(block.getProposer())
-                .receiptsRoot(block.getReceiptsRoot())
-                .size(block.getSize())
-                .stateRoot(block.getStateRoot())
-                .timestamp(block.getTimestamp())
-                .timestampFoS(block.getTimestampFoS())
-                .transactionsRoot(block.getTransactionsRoot())
-                .transactionCount(block.getTransactionCount())
+                .result(result)
                 .createAt(block.getCreateAt())
                 .build();
     }

@@ -1,4 +1,4 @@
-package io.dkargo.bcexplorer.dto.collector.kas.transaction.response;
+package io.dkargo.bcexplorer.dto.collector.kas.block.response;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -10,7 +10,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class ResGetTransactionReceiptByHashDTO {
+public class ResGetBlockReceiptDTO {
 
     @ApiModelProperty(value = "id")
     private Long id;
@@ -18,8 +18,8 @@ public class ResGetTransactionReceiptByHashDTO {
     @ApiModelProperty(value = "jsonrpc")
     private String jsonrpc;
 
-    @ApiModelProperty(value = "result")
-    private Result result;
+    @ApiModelProperty(value = "results")
+    private List<Result> results;
 
     @ApiModelProperty(value = "error")
     private Error error;
@@ -99,6 +99,9 @@ public class ResGetTransactionReceiptByHashDTO {
 
         @ApiModelProperty(value = "transactionIndex")
         private String transactionIndex;
+
+        @ApiModelProperty(value = "transactionHash")
+        private String transactionHash;
 
         @ApiModelProperty(value = "txError")
         private String txError;

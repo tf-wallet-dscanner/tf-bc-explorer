@@ -84,7 +84,7 @@ public class ResGetBlockWithConsensusInfoDTO {
         private String timestampFoS;
 
         @ApiModelProperty(value = "transactions")
-        private List<Transactions> transactions;
+        private List<Transaction> transactions;
 
         @ApiModelProperty(value = "transactionsRoot")
         private String transactionsRoot;
@@ -94,7 +94,7 @@ public class ResGetBlockWithConsensusInfoDTO {
         @Builder
         @NoArgsConstructor(access = AccessLevel.PROTECTED)
         @AllArgsConstructor
-        public static class Transactions {
+        public static class Transaction {
 
             @ApiModelProperty(value = "blockHash")
             private String blockHash;
@@ -109,7 +109,7 @@ public class ResGetBlockWithConsensusInfoDTO {
             private String feePayer;
 
             @ApiModelProperty(value = "feePayerSignatures")
-            private List<FeePayerSignatures> feePayerSignatures;
+            private List<FeePayerSignature> feePayerSignatures;
 
             @ApiModelProperty(value = "feeRatio")
             private String feeRatio;
@@ -143,7 +143,7 @@ public class ResGetBlockWithConsensusInfoDTO {
             private String senderTxHash;
 
             @ApiModelProperty(value = "signatures")
-            private List<Signatures> signatures;
+            private List<Signature> signatures;
 
             @ApiModelProperty(value = "to")
             private String to;
@@ -165,7 +165,7 @@ public class ResGetBlockWithConsensusInfoDTO {
             @Builder
             @NoArgsConstructor(access = AccessLevel.PROTECTED)
             @AllArgsConstructor
-            public static class FeePayerSignatures {
+            public static class FeePayerSignature {
 
                 @ApiModelProperty(value = "v")
                 private String v;
@@ -181,7 +181,7 @@ public class ResGetBlockWithConsensusInfoDTO {
             @Builder
             @NoArgsConstructor(access = AccessLevel.PROTECTED)
             @AllArgsConstructor
-            public static class Signatures {
+            public static class Signature {
 
                 @ApiModelProperty(value = "v")
                 private String v;

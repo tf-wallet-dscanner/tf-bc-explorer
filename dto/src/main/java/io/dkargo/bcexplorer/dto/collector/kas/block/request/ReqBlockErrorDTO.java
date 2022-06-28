@@ -1,5 +1,6 @@
 package io.dkargo.bcexplorer.dto.collector.kas.block.request;
 
+import io.dkargo.bcexplorer.core.type.KASRequestType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
@@ -15,15 +16,25 @@ public class ReqBlockErrorDTO {
     @ApiModelProperty(value = "jsonrpc")
     private String jsonrpc;
 
-    @ApiModelProperty(value = "code")
-    private Integer code;
+    @ApiModelProperty(value = "error")
+    private Error error;
 
-    @ApiModelProperty(value = "message")
-    private String message;
-
-    @ApiModelProperty(value = "data")
-    private String data;
+    @ApiModelProperty(value = "kasRequestType")
+    private KASRequestType kasRequestType;
 
     @ApiModelProperty(value = "rawResponse")
     private String rawResponse;
+
+    @Data
+    @Builder
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @AllArgsConstructor
+    public static class Error {
+
+        private Integer code;
+
+        private String message;
+
+        private String data;
+    }
 }

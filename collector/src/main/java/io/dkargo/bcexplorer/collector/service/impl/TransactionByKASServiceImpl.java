@@ -1,7 +1,6 @@
 package io.dkargo.bcexplorer.collector.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
+import com.klaytn.caver.methods.response.KlayLogs;
 import com.klaytn.caver.methods.response.Transaction;
 import com.klaytn.caver.methods.response.TransactionReceipt;
 import com.klaytn.caver.wallet.keyring.SignatureData;
@@ -13,11 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import xyz.groundx.caver_ext_kas.CaverExtKAS;
 
-import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TimeZone;
 
 @Slf4j
 @Service
@@ -33,12 +29,12 @@ public class TransactionByKASServiceImpl implements TransactionByKASService {
         if(transactionReceipt.getResult() != null) {
 
             // result -> feePayerSignatures 생성
-            List<ResGetTransactionReceiptByHashDTO.Result.FeePayerSignatures> feePayerSignatures = new ArrayList<>();
-            if (transactionReceipt.getResult().getFeePayerSignatures() != null) {
+            List<ResGetTransactionReceiptByHashDTO.Result.FeePayerSignature> feePayerSignatures = new ArrayList<>();
+            if(transactionReceipt.getResult().getFeePayerSignatures() != null) {
                 for(SignatureData signatureData : transactionReceipt.getResult().getFeePayerSignatures()) {
 
                     feePayerSignatures.add(
-                            ResGetTransactionReceiptByHashDTO.Result.FeePayerSignatures.builder()
+                            ResGetTransactionReceiptByHashDTO.Result.FeePayerSignature.builder()
                                     .v(signatureData.getV())
                                     .r(signatureData.getR())
                                     .s(signatureData.getS())
@@ -47,12 +43,36 @@ public class TransactionByKASServiceImpl implements TransactionByKASService {
                 }
             }
 
+            // result -> logs 생성
+            List<ResGetTransactionReceiptByHashDTO.Result.Log> logs = new ArrayList<>();
+            if(transactionReceipt.getResult().getLogs() != null) {
+                for(KlayLogs.Log log : transactionReceipt.getResult().getLogs()) {
+
+
+                    logs.add(
+                            ResGetTransactionReceiptByHashDTO.Result.Log.builder()
+                                    .logIndex(log.getLogIndex())
+                                    .transactionIndex(log.getTransactionIndex())
+                                    .transactionHash(log.getTransactionHash())
+                                    .blockHash(log.getBlockHash())
+                                    .blockNumber(log.getBlockNumber())
+                                    .address(log.getAddress())
+                                    .data(log.getData())
+                                    .topics(log.getTopics())
+                                    .logIndexRaw(log.getLogIndexRaw())
+                                    .transactionIndexRaw(log.getTransactionIndexRaw())
+                                    .blockNumberRaw(log.getBlockNumberRaw())
+                                    .build()
+                    );
+                }
+            }
+
             // result -> signatures 생성
-            List<ResGetTransactionReceiptByHashDTO.Result.Signatures> signatures = new ArrayList<>();
+            List<ResGetTransactionReceiptByHashDTO.Result.Signature> signatures = new ArrayList<>();
             for(SignatureData signatureData : transactionReceipt.getResult().getSignatures()) {
 
                 signatures.add(
-                        ResGetTransactionReceiptByHashDTO.Result.Signatures.builder()
+                        ResGetTransactionReceiptByHashDTO.Result.Signature.builder()
                                 .v(signatureData.getV())
                                 .r(signatureData.getR())
                                 .s(signatureData.getS())
@@ -75,6 +95,7 @@ public class TransactionByKASServiceImpl implements TransactionByKASService {
                     .gasUsed(transactionReceipt.getResult().getGasUsed())
                     .key(transactionReceipt.getResult().getKey())
                     .input(transactionReceipt.getResult().getInput())
+                    .logs(logs)
                     .logsBloom(transactionReceipt.getResult().getLogsBloom())
                     .nonce(transactionReceipt.getResult().getNonce())
                     .senderTxHash(transactionReceipt.getResult().getSenderTxHash())
