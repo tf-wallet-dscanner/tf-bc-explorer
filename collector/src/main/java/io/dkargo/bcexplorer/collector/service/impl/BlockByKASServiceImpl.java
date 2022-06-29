@@ -632,7 +632,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
             throw new DkargoException(ErrorCodeEnum.BAD_REQUEST);
         }
 
-        // 해당 블록 번호의 트랜잭션 리스트 조회
+        // 해당 블록의 트랜잭션 리스트 조회
         ResGetBlockReceiptDTO resGetBlockReceiptDTO = getBlockReceiptByHash(resGetBlockDTO.getResult().getHash());
 
         List<String> transactionHashList = new ArrayList<>();
