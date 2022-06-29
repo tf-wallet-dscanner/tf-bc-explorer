@@ -3,7 +3,6 @@ package io.dkargo.bcexplorer.collector.service.impl;
 import com.klaytn.caver.methods.response.*;
 import com.klaytn.caver.wallet.keyring.SignatureData;
 import io.dkargo.bcexplorer.collector.service.BlockByKASService;
-import io.dkargo.bcexplorer.collector.service.TransactionByKASService;
 import io.dkargo.bcexplorer.collector.service.converter.BlockByKASConverter;
 import io.dkargo.bcexplorer.collector.service.converter.BlockErrorByKASConverter;
 import io.dkargo.bcexplorer.collector.service.converter.CommonConverter;
@@ -22,10 +21,11 @@ import io.dkargo.bcexplorer.dto.collector.kas.block.response.*;
 import io.dkargo.bcexplorer.dto.domain.kas.transaction.request.ReqTransactionDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import xyz.groundx.caver_ext_kas.CaverExtKAS;
 
+import java.lang.Boolean;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +39,12 @@ public class BlockByKASServiceImpl implements BlockByKASService {
     private final BlockRepository blockRepository;
     private final BlockErrorRepository blockErrorRepository;
     private final TransactionRepository transactionRepository;
+
+    @Value("${block-info.select-block}")
+    private Boolean selectBlock;
+
+    @Value("${block-info.select-block-number}")
+    private Long selectBlockNumber;
 
     public static ResGetBlockDTO getBlock(Block block) {
 
@@ -474,7 +480,6 @@ public class BlockByKASServiceImpl implements BlockByKASService {
     }
 
     @Override
-    @Transactional
     public ResCreateBlockDTO createBlockWithTransactionByNumber(ReqCreateBlockByNumberDTO reqCreateBlockByNumberDTO) {
 
         // 블록 + 트랜잭션 해시 정보 조회
@@ -572,6 +577,8 @@ public class BlockByKASServiceImpl implements BlockByKASService {
         ReqTransactionDTO reqTransactionDTO = ReqTransactionDTO.builder()
                 .jsonrpc(resGetBlockReceiptDTO.getJsonrpc())
                 .results(resGetBlockReceiptDTO.getResults())
+                .blockNumber(resGetBlockDTO.getResult().getNumber())
+                .blockHash(resGetBlockDTO.getResult().getHash())
                 .build();
         io.dkargo.bcexplorer.domain.entity.Transaction transaction = transactionRepository.save(TransactionByKASConverter.of(reqTransactionDTO));
 
@@ -579,7 +586,6 @@ public class BlockByKASServiceImpl implements BlockByKASService {
     }
 
     @Override
-    @Transactional
     public ResCreateBlockDTO createBlockWithTransactionByHash(ReqCreateBlockByHashDTO reqCreateBlockByHashDTO) {
 
         // 블록 + 트랜잭션 해시 정보 조회
@@ -680,5 +686,61 @@ public class BlockByKASServiceImpl implements BlockByKASService {
         io.dkargo.bcexplorer.domain.entity.Transaction transaction = transactionRepository.save(TransactionByKASConverter.of(reqTransactionDTO));
 
         return new ResCreateBlockDTO(CommonConverter.hexToLong(block.getResult().getNumber()), block.getResult().getHash(), transactionHashList);
+    }
+
+    @Override
+    public ResCreateBlockDTO createBlockWithTransactionByScheduler() {
+
+        // 블록 정보 중 블록 번호가 가장 큰(최신) 블록 정보 조회
+        io.dkargo.bcexplorer.domain.entity.Block block = blockRepository.findTop1ByOrderByResult_NumberDesc();
+        log.info("latest blockNumber : {}", CommonConverter.hexToLong(block.getResult().getNumber()));
+
+        Long nextBlockNumber;
+        ReqCreateBlockByNumberDTO reqCreateBlockByNumberDTO;
+        ResCreateBlockDTO resCreateBlockDTO;
+
+        // DB에 이전 블록 정보가 있을 시 - 존재하는 정보의 다음 번호부터 생성
+        if(block != null) {
+
+            nextBlockNumber = CommonConverter.hexToLong(block.getResult().getNumber()) + 1;
+            log.info("nextBlockNumber(createBlockNumber) : {}", nextBlockNumber);
+
+            reqCreateBlockByNumberDTO = ReqCreateBlockByNumberDTO.builder()
+                    .blockNumber(nextBlockNumber)
+                    .build();
+
+            resCreateBlockDTO = createBlockWithTransactionByNumber(reqCreateBlockByNumberDTO);
+        }
+        // DB에 이번 블록 정보가 없을 시
+        else {
+
+            // 지정한 특정 블록부터 수행 할 시 - 지정한 번호부터 생성
+            if(selectBlock) {
+
+                nextBlockNumber = selectBlockNumber;
+                log.info("nextBlockNumber : {}", nextBlockNumber);
+
+                reqCreateBlockByNumberDTO = ReqCreateBlockByNumberDTO.builder()
+                        .blockNumber(nextBlockNumber)
+                        .build();
+
+                resCreateBlockDTO = createBlockWithTransactionByNumber(reqCreateBlockByNumberDTO);
+            }
+            // 지정한 특정 블록부터 수행하지 않을 시 - 현재 최신 블록부터 조회
+            else {
+
+                ResGetLatestBlockNumberDTO resGetLatestBlockNumberDTO = getLatestBlockNumber();
+                nextBlockNumber = resGetLatestBlockNumberDTO.getBlockNumber();
+                log.info("nextBlockNumber :{}", nextBlockNumber);
+
+                reqCreateBlockByNumberDTO =ReqCreateBlockByNumberDTO.builder()
+                        .blockNumber(nextBlockNumber)
+                        .build();
+
+                resCreateBlockDTO = createBlockWithTransactionByNumber(reqCreateBlockByNumberDTO);
+            }
+        }
+
+        return resCreateBlockDTO;
     }
 }

@@ -86,8 +86,8 @@ public class TransactionByKASConverter {
                             .build());
         }
 
-        String blockNumber = reqTransactionDTO.getResults().get(0).getBlockNumber();
-        String blockHash = reqTransactionDTO.getResults().get(0).getBlockHash();
+        String blockNumber = reqTransactionDTO.getBlockNumber();
+        String blockHash = reqTransactionDTO.getBlockHash();
 
         Transaction.Result result = Transaction.Result.builder()
                 .blockNumber(blockNumber)

@@ -26,5 +26,7 @@ public interface BlockByKASService {
 
     ResCreateBlockDTO createBlockWithTransactionByHash(ReqCreateBlockByHashDTO reqCreateBlockByHashDTO);
 
+    ResCreateBlockDTO createBlockWithTransactionByScheduler();
+
 
 }

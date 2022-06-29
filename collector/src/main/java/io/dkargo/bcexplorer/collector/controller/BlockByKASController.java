@@ -183,4 +183,20 @@ public class BlockByKASController {
 
         return blockByKASService.createBlockWithTransactionByHash(reqCreateBlockByHashDTO);
     }
+
+    @ApiOperation(
+            value = "블록 정보와 트랜잭션 정보 생성 [scheduler 용]",
+            notes = "createBlockWithTransactionByScheduler"
+    )
+    @ApiImplicitParams({
+    })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "createBlockWithTransactionByScheduler", response = ResCreateBlockDTO.class)
+    })
+    @PostMapping("/blocks/numberssss")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResCreateBlockDTO createBlockWithTransactionByScheduler() {
+
+        return blockByKASService.createBlockWithTransactionByScheduler();
+    }
 }

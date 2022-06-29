@@ -17,4 +17,10 @@ public class ReqTransactionDTO {
 
     @ApiModelProperty(value = "results")
     private List<ResGetBlockReceiptDTO.Result> results;
+
+    @ApiModelProperty(value = "blockNumber")
+    private String blockNumber;
+
+    @ApiModelProperty(value = "blockHash")
+    private String blockHash;
 }
