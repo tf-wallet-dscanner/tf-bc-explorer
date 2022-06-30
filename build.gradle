@@ -223,3 +223,38 @@ project(':collector') {
         enabled = true
     }
 }
+
+/**
+ * [collector-client]
+ */
+project(':collector-client') {
+    dependencies {
+        implementation project(':core')
+        implementation project(':dto')
+        implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.0'
+    }
+    bootJar {
+        enabled = true
+    }
+    jar {
+        enabled = true
+    }
+}
+
+/**
+ * [scheduler]
+ */
+project(':scheduler') {
+    dependencies {
+        implementation project(':core')
+        implementation project(':dto')
+        implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.0'
+        implementation project(':collector-client')
+    }
+    bootJar {
+        enabled = true
+    }
+    jar {
+        enabled = true
+    }
+}

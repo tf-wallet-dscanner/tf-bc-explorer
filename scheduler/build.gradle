@@ -1,0 +1,23 @@
+plugins {
+    id 'java'
+}
+
+group 'io.dkargo'
+version 'unspecified'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: '2.4.5'
+
+    implementation group:'com.munzi', name:'munzi-scheduler', version:"0.0.5"
+}
+
+test {
+    useJUnitPlatform()
+}

@@ -193,7 +193,7 @@ public class BlockByKASController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "createBlockWithTransactionByScheduler", response = ResCreateBlockDTO.class)
     })
-    @PostMapping("/blocks/numberssss")
+    @PostMapping("/blocks/by-scheduler")
     @ResponseStatus(HttpStatus.CREATED)
     public ResCreateBlockDTO createBlockWithTransactionByScheduler() {
 

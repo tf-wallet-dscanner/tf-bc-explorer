@@ -13,8 +13,10 @@
         </processorPath>
         <module name="tf-bc-explorer.domain.main" />
         <module name="tf-bc-explorer.core.main" />
+        <module name="tf-bc-explorer.collector-client.main" />
         <module name="tf-bc-explorer.api.main" />
         <module name="tf-bc-explorer.collector.main" />
+        <module name="tf-bc-explorer.scheduler.main" />
         <module name="tf-bc-explorer.dto.main" />
       </profile>
     </annotationProcessing>

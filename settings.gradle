@@ -4,4 +4,6 @@ include 'core'
 include 'dto'
 include 'collector'
 include 'domain'
+include 'scheduler'
+include 'collector-client'
 
