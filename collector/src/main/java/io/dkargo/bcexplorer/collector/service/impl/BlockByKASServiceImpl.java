@@ -59,6 +59,8 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                 /**
                  * TODO 1.result -> transactions 생성 (..., feePayerSignatures, signatures)
                  * TODO 2.transactions 에 add
+                 *
+                 * 해당 TODO를 할 필요 없음. Block 정보에는 transaction에 대한 정보를 넣지 않는다.
                  */
             }
 
@@ -691,7 +693,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
     @Override
     public ResCreateBlockDTO createBlockWithTransactionByScheduler() {
 
-        // 블록 정보 중 블록 번호가 가장 큰(최신) 블록 정보 조회
+        // DB 저장된 블록 정보 중 블록 번호가 가장 큰(최신) 블록 정보 조회
         io.dkargo.bcexplorer.domain.entity.Block block = blockRepository.findTop1ByOrderByResult_NumberDesc();
         log.info("latest blockNumber : {}", CommonConverter.hexToLong(block.getResult().getNumber()));
 
