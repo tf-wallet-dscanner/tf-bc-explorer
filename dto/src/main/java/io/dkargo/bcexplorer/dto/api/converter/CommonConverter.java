@@ -1,4 +1,4 @@
-package io.dkargo.bcexplorer.collector.service.converter;
+package io.dkargo.bcexplorer.dto.api.converter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -7,7 +7,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 @Slf4j
 public class CommonConverter {
@@ -68,5 +72,14 @@ public class CommonConverter {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, currentLocale);
 
         return simpleDateFormat.format(today);
+    }
+
+    // string -> localDateTime
+    public static LocalDateTime stringToLocalDateTime(String date) {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime localDateTime = LocalDateTime.parse(date, formatter);
+
+        return localDateTime;
     }
 }

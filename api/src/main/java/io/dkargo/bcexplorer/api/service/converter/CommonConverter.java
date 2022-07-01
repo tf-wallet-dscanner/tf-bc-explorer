@@ -1,7 +1,8 @@
-package io.dkargo.bcexplorer.collector.service.converter;
+package io.dkargo.bcexplorer.api.service.converter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import io.dkargo.bcexplorer.dto.collector.kas.transaction.response.ResGetTransactionReceiptByHashDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -11,6 +12,11 @@ import java.util.*;
 
 @Slf4j
 public class CommonConverter {
+
+    public static String longToHex(Long value) {
+
+        return "0x" + Long.toHexString(value);
+    }
 
     // 16 진수 -> 10 진수
     public static Long hexToLong(String hexadecimal) {
@@ -41,6 +47,19 @@ public class CommonConverter {
         }
 
         return objectToString;
+    }
+
+    // list object -> list string
+    public static List<String> listObjectToListString(List<ResGetTransactionReceiptByHashDTO> resGetTransactionReceiptByHashDTOS) {
+
+        List<String> listObjectToListString = new ArrayList<>();
+
+        for(ResGetTransactionReceiptByHashDTO resGetTransactionReceiptByHashDTO : resGetTransactionReceiptByHashDTOS) {
+
+            listObjectToListString.add(objectToString(resGetTransactionReceiptByHashDTO));
+        }
+
+        return listObjectToListString;
     }
 
     // string -> object

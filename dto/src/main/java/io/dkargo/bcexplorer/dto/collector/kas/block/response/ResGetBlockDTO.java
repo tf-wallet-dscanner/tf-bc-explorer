@@ -90,7 +90,6 @@ public class ResGetBlockDTO {
         @ApiModelProperty(value = "transactionCount")
         private Integer transactionCount;
 
-
         @Data
         @Builder
         @NoArgsConstructor(access = AccessLevel.PROTECTED)
