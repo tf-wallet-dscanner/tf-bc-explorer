@@ -63,8 +63,14 @@ public class ResGetTransactionReceiptByHashDTO {
         @ApiModelProperty(value = "gasPrice")
         private String gasPrice;
 
+        @ApiModelProperty(value = "gasPriceByFormat")
+        private String gasPriceByFormat;
+
         @ApiModelProperty(value = "gasUsed")
         private String gasUsed;
+
+        @ApiModelProperty(value = "txFee")
+        private String txFee;
 
         // X
         // @ApiModelProperty(value = "humanReadable")
@@ -111,6 +117,12 @@ public class ResGetTransactionReceiptByHashDTO {
 
         @ApiModelProperty(value = "value")
         private String value;
+
+        @ApiModelProperty(value = "amount")
+        private String amount;
+
+        @ApiModelProperty(value = "methodSig")
+        private String methodSig;
 
         @Data
         @Builder

@@ -2,6 +2,7 @@ package io.dkargo.bcexplorer.api.controller;
 
 import io.dkargo.bcexplorer.api.service.BlockByKASService;
 import io.dkargo.bcexplorer.dto.api.kas.block.response.ResGetBlockDTO;
+import io.dkargo.bcexplorer.dto.api.kas.block.response.ResGetBlockListDTO;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,5 +30,21 @@ public class BlockByKASController {
     public ResGetBlockDTO getBlockByNumber(@PathVariable("blockNumber") Long blockNumber) {
 
         return blockByKASService.getBlockByNumber(blockNumber);
+    }
+
+    @ApiOperation(
+            value = "다건 블록 조회",
+            notes = "getBlockList"
+    )
+    @ApiImplicitParams({
+    })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "getBlockList", response = ResGetBlockListDTO.class)
+    })
+    @GetMapping("/blocks")
+    @ResponseStatus(HttpStatus.OK)
+    public ResGetBlockListDTO getBlockList() {
+
+        return blockByKASService.getBlockList();
     }
 }

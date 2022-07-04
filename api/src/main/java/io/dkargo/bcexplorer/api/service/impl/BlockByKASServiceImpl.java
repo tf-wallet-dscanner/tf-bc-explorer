@@ -6,6 +6,7 @@ import io.dkargo.bcexplorer.api.service.converter.CommonConverter;
 import io.dkargo.bcexplorer.domain.entity.Block;
 import io.dkargo.bcexplorer.domain.repository.BlockRepository;
 import io.dkargo.bcexplorer.dto.api.kas.block.response.ResGetBlockDTO;
+import io.dkargo.bcexplorer.dto.api.kas.block.response.ResGetBlockListDTO;
 import io.dkargo.bcexplorer.dto.domain.kas.block.response.ResBlockDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,14 @@ public class BlockByKASServiceImpl implements BlockByKASService {
         ResBlockDTO resBlockDTO = BlockByKASConverter.of(block);
 
         return new ResGetBlockDTO(resBlockDTO);
+    }
+
+    @Override
+    public ResGetBlockListDTO getBlockList() {
+
+        ResGetBlockListDTO resGetBlockListDTO = ResGetBlockListDTO.builder().id("gg").build();
+
+        return resGetBlockListDTO;
     }
 
 }

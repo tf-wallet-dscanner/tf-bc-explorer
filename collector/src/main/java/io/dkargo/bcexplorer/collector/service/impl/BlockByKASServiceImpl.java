@@ -13,6 +13,7 @@ import io.dkargo.bcexplorer.core.type.KASRequestType;
 import io.dkargo.bcexplorer.domain.repository.BlockErrorRepository;
 import io.dkargo.bcexplorer.domain.repository.BlockRepository;
 import io.dkargo.bcexplorer.domain.repository.TransactionRepository;
+import io.dkargo.bcexplorer.dto.api.kas.block.response.ResGetBlockListDTO;
 import io.dkargo.bcexplorer.dto.domain.kas.block.request.ReqBlockDTO;
 import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqBlockErrorDTO;
 import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqCreateBlockByHashDTO;
@@ -23,9 +24,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import sun.misc.FloatingDecimal;
 import xyz.groundx.caver_ext_kas.CaverExtKAS;
 
 import java.lang.Boolean;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -286,6 +290,26 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                     }
                 }
 
+                // gasPrice / txFee / amount 값 생성
+                Float gasPriceToFloat = CommonConverter.hexToKlayUnit(transactionReceiptData.getGasPrice()); // gasPrice(hex) 값을 Klay 단위에 맞게 변경
+                log.info("floatToFormatString(1) : {}", CommonConverter.floatToFormatString(gasPriceToFloat));
+
+                Float txFee = gasPriceToFloat * CommonConverter.hexToLong(transactionReceiptData.getGasUsed()); // gasPrice * gasUsed
+                log.info("floatToFormatString(2) : {}", CommonConverter.floatToFormatString(txFee));
+
+                BigDecimal amount = CommonConverter.hexToBigDecimal(transactionReceiptData.getValue());
+                log.info("bigDecimalToString(3) : {}", CommonConverter.bigDecimalToFormatString(amount));
+
+
+
+                // methodSig 값 생성 (input 값이 "0x" 일 수도 있음)
+                String methodSig;
+                if(!transactionReceiptData.getInput().equals("0x")){
+                    methodSig = transactionReceiptData.getInput().substring(0,10); // input 의 첫번째 자릿수 부터 10번째 자릿수 까지 문자열
+                } else {
+                    methodSig = transactionReceiptData.getInput();
+                }
+
                 // results 생성
                 results.add(
                   ResGetBlockReceiptDTO.Result.builder()
@@ -299,7 +323,9 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                           .from(transactionReceiptData.getFrom())
                           .gas(transactionReceiptData.getGas())
                           .gasPrice(transactionReceiptData.getGasPrice())
+                          .gasPriceByFormat(CommonConverter.floatToFormatString(gasPriceToFloat))
                           .gasUsed(transactionReceiptData.getGasUsed())
+                          .txFee(CommonConverter.floatToFormatString(txFee))
                           .key(transactionReceiptData.getKey())
                           .input(transactionReceiptData.getInput())
                           .logs(logs)
@@ -315,6 +341,8 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                           .type(transactionReceiptData.getType())
                           .typeInt(transactionReceiptData.getTypeInt())
                           .value(transactionReceiptData.getValue())
+                          .amount(CommonConverter.bigDecimalToFormatString(amount))
+                          .methodSig(methodSig)
                           .build()
                 );
             }
@@ -541,7 +569,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
         List<String> transactionHashList = new ArrayList<>();
         for(ResGetBlockReceiptDTO.Result result : resGetBlockReceiptDTO.getResults()) {
 
-            transactionHashList.add(result.getTransactionHash());
+                transactionHashList.add(result.getTransactionHash());
         }
 
         // 에러 체크
@@ -643,6 +671,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
         // 해당 블록의 트랜잭션 리스트 조회
         ResGetBlockReceiptDTO resGetBlockReceiptDTO = getBlockReceiptByHash(resGetBlockDTO.getResult().getHash());
 
+        // res 해시 리스트 생성
         List<String> transactionHashList = new ArrayList<>();
         for(ResGetBlockReceiptDTO.Result result : resGetBlockReceiptDTO.getResults()) {
 

@@ -10,10 +10,6 @@ public class BlockByKASConverter {
     // block -> res
     public static ResBlockDTO of(Block block) {
 
-        log.info("dfsafdsaf : {}", block);
-
-        log.info("asfdasfdsafdasfds :{}", block.getResult().getNumber());
-
         ResBlockDTO.Result result = ResBlockDTO.Result.builder()
                 .number(block.getResult().getNumber())
                 .hash(block.getResult().getHash())

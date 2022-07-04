@@ -61,7 +61,11 @@ public class Transaction {
 
             private String gasPrice;
 
+            private String gasPriceToFormat;
+
             private String gasUsed;
+
+            private String txFee;
 
             private String key;
 
@@ -92,6 +96,10 @@ public class Transaction {
             private String typeInt;
 
             private String value;
+
+            private String amount;
+
+            private String methodSig;
 
             @Data
             @Builder

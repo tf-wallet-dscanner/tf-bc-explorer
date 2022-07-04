@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import xyz.groundx.caver_ext_kas.CaverExtKAS;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,6 +81,26 @@ public class TransactionByKASServiceImpl implements TransactionByKASService {
                 );
             }
 
+            // gasPrice / txFee / amount 값 생성
+            Float gasPriceToFloat = CommonConverter.hexToKlayUnit(transactionReceipt.getResult().getGasPrice()); // gasPrice(hex) 값을 Klay 단위에 맞게 변경
+            log.info("floatToFormatString(1) : {}", CommonConverter.floatToFormatString(gasPriceToFloat));
+
+            Float txFee = gasPriceToFloat * CommonConverter.hexToLong(transactionReceipt.getResult().getGasUsed()); // gasPrice * gasUsed
+            log.info("floatToFormatString(2) : {}", CommonConverter.floatToFormatString(txFee));
+
+            BigDecimal amount = CommonConverter.hexToBigDecimal(transactionReceipt.getResult().getValue());
+            log.info("bigDecimalToString(3) : {}", CommonConverter.bigDecimalToFormatString(amount));
+
+
+
+            // methodSig 값 생성 (input 값이 "0x" 일 수도 있음)
+            String methodSig;
+            if(!transactionReceipt.getResult().getInput().equals("0x")){
+                methodSig = transactionReceipt.getResult().getInput().substring(0,10); // input 의 첫번째 자릿수 부터 10번째 자릿수 까지 문자열
+            } else {
+                methodSig = transactionReceipt.getResult().getInput();
+            }
+
             // result 생성
             result = ResGetTransactionReceiptByHashDTO.Result.builder()
                     .blockHash(transactionReceipt.getResult().getBlockHash())
@@ -92,7 +113,9 @@ public class TransactionByKASServiceImpl implements TransactionByKASService {
                     .from(transactionReceipt.getResult().getFrom())
                     .gas(transactionReceipt.getResult().getGas())
                     .gasPrice(transactionReceipt.getResult().getGasPrice())
+                    .gasPriceByFormat(CommonConverter.floatToFormatString(gasPriceToFloat))
                     .gasUsed(transactionReceipt.getResult().getGasUsed())
+                    .txFee(CommonConverter.floatToFormatString(txFee))
                     .key(transactionReceipt.getResult().getKey())
                     .input(transactionReceipt.getResult().getInput())
                     .logs(logs)
@@ -107,6 +130,8 @@ public class TransactionByKASServiceImpl implements TransactionByKASService {
                     .type(transactionReceipt.getResult().getType())
                     .typeInt(transactionReceipt.getResult().getTypeInt())
                     .value(transactionReceipt.getResult().getValue())
+                    .amount(CommonConverter.bigDecimalToFormatString(amount))
+                    .methodSig(methodSig)
                     .build();
 
         }

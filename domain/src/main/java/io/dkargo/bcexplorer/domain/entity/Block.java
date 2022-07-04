@@ -45,6 +45,8 @@ public class Block {
 
         private String reward;
 
+        private Double rewardToDouble;
+
         private String blockScore;
 
         private String totalBlockScore;
