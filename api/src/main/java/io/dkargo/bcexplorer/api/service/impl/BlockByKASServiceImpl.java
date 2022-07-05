@@ -2,7 +2,7 @@ package io.dkargo.bcexplorer.api.service.impl;
 
 import io.dkargo.bcexplorer.api.service.BlockByKASService;
 import io.dkargo.bcexplorer.api.service.converter.BlockByKASConverter;
-import io.dkargo.bcexplorer.api.service.converter.CommonConverter;
+import io.dkargo.bcexplorer.core.converter.CommonConverter;
 import io.dkargo.bcexplorer.domain.entity.Block;
 import io.dkargo.bcexplorer.domain.repository.BlockRepository;
 import io.dkargo.bcexplorer.dto.api.kas.block.response.ResGetBlockDTO;

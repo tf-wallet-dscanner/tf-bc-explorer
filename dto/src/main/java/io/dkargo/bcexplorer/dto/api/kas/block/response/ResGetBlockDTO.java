@@ -1,6 +1,6 @@
 package io.dkargo.bcexplorer.dto.api.kas.block.response;
 
-import io.dkargo.bcexplorer.dto.api.converter.CommonConverter;
+import io.dkargo.bcexplorer.core.converter.CommonConverter;
 import io.dkargo.bcexplorer.dto.domain.kas.block.response.ResBlockDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -51,6 +51,12 @@ public class ResGetBlockDTO {
         @ApiModelProperty(value = "Block Reward")
         private String blockReward;
 
+        @ApiModelProperty(value = "Minted")
+        private String minted;
+
+        @ApiModelProperty(value = "TX Fee")
+        private String txFee;
+
         @ApiModelProperty(value = "Block Size (bytes)")
         private Long blockSize;
     }
@@ -74,6 +80,9 @@ public class ResGetBlockDTO {
 
     public ResGetBlockDTO(ResBlockDTO resBlockDTO) {
 
+        Double txFee = Double.parseDouble(resBlockDTO.getResult().getBlockReward()) - 9.6d;
+
+
         Overview overview = Overview.builder()
                 .timestamp(CommonConverter.hexToLong(resBlockDTO.getResult().getTimestamp()))
                 .createAt(CommonConverter.stringToLocalDateTime(resBlockDTO.getCreateAt()))
@@ -81,6 +90,8 @@ public class ResGetBlockDTO {
                 .parentHash(resBlockDTO.getResult().getParentHash())
                 .totalTXs(resBlockDTO.getResult().getTransactionCount())
                 .blockReward(resBlockDTO.getResult().getBlockReward())
+                .minted("9.6")
+                .txFee(CommonConverter.doubleToFormatString(txFee))
                 .blockSize(CommonConverter.hexToLong(resBlockDTO.getResult().getSize()))
                 .build();
 

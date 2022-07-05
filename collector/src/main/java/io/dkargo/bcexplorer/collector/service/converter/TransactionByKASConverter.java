@@ -1,5 +1,6 @@
 package io.dkargo.bcexplorer.collector.service.converter;
 
+import io.dkargo.bcexplorer.core.converter.CommonConverter;
 import io.dkargo.bcexplorer.domain.entity.Transaction;
 import io.dkargo.bcexplorer.dto.collector.kas.block.response.ResGetBlockReceiptDTO;
 import io.dkargo.bcexplorer.dto.domain.kas.transaction.request.ReqTransactionDTO;

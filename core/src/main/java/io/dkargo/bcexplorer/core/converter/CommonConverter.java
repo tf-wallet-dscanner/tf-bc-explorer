@@ -1,4 +1,4 @@
-package io.dkargo.bcexplorer.collector.service.converter;
+package io.dkargo.bcexplorer.core.converter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -10,10 +10,18 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Slf4j
 public class CommonConverter {
+
+    // 10 진수 (Long) -> 16 진수
+    public static String longToHex(Long value) {
+
+        return "0x" + Long.toHexString(value);
+    }
 
     // 16 진수 -> 10 진수 (Long)
     public static Long hexToLong(String hexadecimal) {
@@ -21,7 +29,7 @@ public class CommonConverter {
         return Long.decode(hexadecimal);
     }
 
-    // 16 진수 -> 10 진수 (BigInteger) - amount 표현
+    // 16 진수 -> 10 진수 (BigInteger) --- amount에 사용 ---
     public static BigDecimal hexToBigDecimal(String hexadecimal) {
 
         BigInteger decimal = new BigInteger(hexadecimal.substring(2), 16);
@@ -34,7 +42,7 @@ public class CommonConverter {
         return bigDecimal1.multiply(bigDecimal2);
     }
 
-    // hex -> klay unit
+    // 16 진수 -> 10 진수 (Float - Klay Unit)
     public static Float hexToKlayUnit(String hexadecimal) {
 
         Long value = Long.decode(hexadecimal);
@@ -42,17 +50,7 @@ public class CommonConverter {
         return (float) (value * 0.000000000000000001);
     }
 
-    // timestamp -> data format
-    public static String timestampToString(Long timestamp) {
-
-        Date date = new Date(timestamp * 1000L);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
-
-        return simpleDateFormat.format(date);
-    }
-
-    // object -> string
+    // Object -> String
     public static String objectToString(Object object) {
 
         String objectToString = null;
@@ -67,7 +65,7 @@ public class CommonConverter {
         return objectToString;
     }
 
-    // string -> object
+    // String -> Object
     public static JSONObject stringToObject(String string) {
 
         JSONParser jsonParser = new JSONParser();
@@ -83,7 +81,26 @@ public class CommonConverter {
         return jsonObj;
     }
 
-    // currentDate
+    // String -> LocalDateTime
+    public static LocalDateTime stringToLocalDateTime(String date) {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime localDateTime = LocalDateTime.parse(date, formatter);
+
+        return localDateTime;
+    }
+
+    // Timestamp -> String (Data Format - Asia/Seoul)
+    public static String timestampToString(Long timestamp) {
+
+        Date date = new Date(timestamp * 1000L);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
+
+        return simpleDateFormat.format(date);
+    }
+
+    // CurrentDate (String)
     public static String currentDateTime() {
 
         Date today = new Date();
@@ -94,7 +111,7 @@ public class CommonConverter {
         return simpleDateFormat.format(today);
     }
 
-    // float -> string format
+    // Float -> String (Format - #.########)
     public static String floatToFormatString(Float value) {
 
         DecimalFormat df = new DecimalFormat("#.########");
@@ -102,7 +119,7 @@ public class CommonConverter {
         return df.format(value);
     }
 
-    // double -> string format
+    // Double -> String (Format - #.########)
     public static String doubleToFormatString(Double value) {
 
         DecimalFormat df = new DecimalFormat("#.########");
@@ -110,7 +127,7 @@ public class CommonConverter {
         return df.format(value);
     }
 
-    // big decimal -> string format
+    // Big Decimal -> String (Format - #.########)
     public static String bigDecimalToFormatString(BigDecimal value) {
 
         DecimalFormat df = new DecimalFormat("#.########");

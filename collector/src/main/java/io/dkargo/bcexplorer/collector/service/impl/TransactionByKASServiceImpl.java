@@ -5,7 +5,7 @@ import com.klaytn.caver.methods.response.Transaction;
 import com.klaytn.caver.methods.response.TransactionReceipt;
 import com.klaytn.caver.wallet.keyring.SignatureData;
 import io.dkargo.bcexplorer.collector.service.TransactionByKASService;
-import io.dkargo.bcexplorer.collector.service.converter.CommonConverter;
+import io.dkargo.bcexplorer.core.converter.CommonConverter;
 import io.dkargo.bcexplorer.dto.collector.kas.transaction.response.ResGetTransactionReceiptByHashDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
