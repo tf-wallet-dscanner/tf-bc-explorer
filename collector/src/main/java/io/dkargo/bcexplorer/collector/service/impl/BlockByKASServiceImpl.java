@@ -291,23 +291,41 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                 }
 
                 // gasPrice / txFee / amount 값 생성
-                Float gasPriceToFloat = CommonConverter.hexToKlayUnit(transactionReceiptData.getGasPrice()); // gasPrice(hex) 값을 Klay 단위에 맞게 변경
-                log.info("floatToFormatString(1) : {}", CommonConverter.floatToFormatString(gasPriceToFloat));
+                Float gasPriceToFloat = null;
+                String gasPriceToString = null;
+                if(transactionReceiptData.getGasPrice() != null) {
+                    gasPriceToFloat = CommonConverter.hexToKlayUnit(transactionReceiptData.getGasPrice()); // gasPrice(hex) 값을 Klay 단위에 맞게 변경
+                    gasPriceToString = CommonConverter.floatToFormatString(gasPriceToFloat);
+                    log.info("gasPriceToString : {}", CommonConverter.floatToFormatString(gasPriceToFloat));
+                }
 
-                Float txFee = gasPriceToFloat * CommonConverter.hexToLong(transactionReceiptData.getGasUsed()); // gasPrice * gasUsed
-                log.info("floatToFormatString(2) : {}", CommonConverter.floatToFormatString(txFee));
+                Float txFee = null;
+                String txFeeToString = null;
+                if(gasPriceToFloat != null && transactionReceiptData.getGasUsed() != null) {
+                    txFee = gasPriceToFloat * CommonConverter.hexToLong(transactionReceiptData.getGasUsed()); // gasPrice * gasUsed
+                    txFeeToString = CommonConverter.floatToFormatString(txFee);
+                    log.info("txFeeToString : {}", CommonConverter.floatToFormatString(txFee));
+                }
 
-                BigDecimal amount = CommonConverter.hexToBigDecimal(transactionReceiptData.getValue());
-                log.info("bigDecimalToString(3) : {}", CommonConverter.bigDecimalToFormatString(amount));
-
+                BigDecimal amount = null;
+                String amountToString = null;
+                if(transactionReceiptData.getValue() != null) {
+                    amount = CommonConverter.hexToBigDecimal(transactionReceiptData.getValue());
+                    amountToString = CommonConverter.bigDecimalToFormatString(amount);
+                    log.info("amountToString : {}", CommonConverter.bigDecimalToFormatString(amount));
+                }
 
 
                 // methodSig 값 생성 (input 값이 "0x" 일 수도 있음)
-                String methodSig;
-                if(!transactionReceiptData.getInput().equals("0x")){
-                    methodSig = transactionReceiptData.getInput().substring(0,10); // input 의 첫번째 자릿수 부터 10번째 자릿수 까지 문자열
-                } else {
-                    methodSig = transactionReceiptData.getInput();
+                String methodSig = null;
+                if(transactionReceiptData.getInput() != null) {
+                    if(transactionReceiptData.getInput().length() >= 10){
+                        methodSig = transactionReceiptData.getInput().substring(0,10); // input 의 첫번째 자릿수 부터 10번째 자릿수 까지 문자열
+                        log.info("methodSig : {}", transactionReceiptData.getInput().substring(0,10));
+                    } else {
+                        methodSig = transactionReceiptData.getInput();
+                        log.info("methodSig : {}", transactionReceiptData.getInput());
+                    }
                 }
 
                 // results 생성
@@ -323,9 +341,9 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                           .from(transactionReceiptData.getFrom())
                           .gas(transactionReceiptData.getGas())
                           .gasPrice(transactionReceiptData.getGasPrice())
-                          .gasPriceByFormat(CommonConverter.floatToFormatString(gasPriceToFloat))
+                          .gasPriceByFormat(gasPriceToString)
                           .gasUsed(transactionReceiptData.getGasUsed())
-                          .txFee(CommonConverter.floatToFormatString(txFee))
+                          .txFee(txFeeToString)
                           .key(transactionReceiptData.getKey())
                           .input(transactionReceiptData.getInput())
                           .logs(logs)
@@ -341,7 +359,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                           .type(transactionReceiptData.getType())
                           .typeInt(transactionReceiptData.getTypeInt())
                           .value(transactionReceiptData.getValue())
-                          .amount(CommonConverter.bigDecimalToFormatString(amount))
+                          .amount(amountToString)
                           .methodSig(methodSig)
                           .build()
                 );

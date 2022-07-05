@@ -82,23 +82,40 @@ public class TransactionByKASServiceImpl implements TransactionByKASService {
             }
 
             // gasPrice / txFee / amount 값 생성
-            Float gasPriceToFloat = CommonConverter.hexToKlayUnit(transactionReceipt.getResult().getGasPrice()); // gasPrice(hex) 값을 Klay 단위에 맞게 변경
-            log.info("floatToFormatString(1) : {}", CommonConverter.floatToFormatString(gasPriceToFloat));
+            Float gasPriceToFloat = null;
+            String gasPriceToString = null;
+            if(transactionReceipt.getResult().getGasPrice() != null) {
+                gasPriceToFloat = CommonConverter.hexToKlayUnit(transactionReceipt.getResult().getGasPrice()); // gasPrice(hex) 값을 Klay 단위에 맞게 변경
+                gasPriceToString = CommonConverter.floatToFormatString(gasPriceToFloat);
+                log.info("gasPriceToString : {}", CommonConverter.floatToFormatString(gasPriceToFloat));
+            }
 
-            Float txFee = gasPriceToFloat * CommonConverter.hexToLong(transactionReceipt.getResult().getGasUsed()); // gasPrice * gasUsed
-            log.info("floatToFormatString(2) : {}", CommonConverter.floatToFormatString(txFee));
+            Float txFee = null;
+            String txFeeToString = null;
+            if(gasPriceToFloat != null && transactionReceipt.getResult().getGasUsed() != null) {
+                txFee = gasPriceToFloat * CommonConverter.hexToLong(transactionReceipt.getResult().getGasUsed()); // gasPrice * gasUsed
+                txFeeToString = CommonConverter.floatToFormatString(txFee);
+                log.info("txFeeToString : {}", CommonConverter.floatToFormatString(txFee));
+            }
 
-            BigDecimal amount = CommonConverter.hexToBigDecimal(transactionReceipt.getResult().getValue());
-            log.info("bigDecimalToString(3) : {}", CommonConverter.bigDecimalToFormatString(amount));
-
-
+            BigDecimal amount = null;
+            String amountToString = null;
+            if(transactionReceipt.getResult().getValue() != null) {
+                amount = CommonConverter.hexToBigDecimal(transactionReceipt.getResult().getValue());
+                amountToString = CommonConverter.bigDecimalToFormatString(amount);
+                log.info("amountToString : {}", CommonConverter.bigDecimalToFormatString(amount));
+            }
 
             // methodSig 값 생성 (input 값이 "0x" 일 수도 있음)
-            String methodSig;
-            if(!transactionReceipt.getResult().getInput().equals("0x")){
-                methodSig = transactionReceipt.getResult().getInput().substring(0,10); // input 의 첫번째 자릿수 부터 10번째 자릿수 까지 문자열
-            } else {
-                methodSig = transactionReceipt.getResult().getInput();
+            String methodSig = null;
+            if(transactionReceipt.getResult().getInput() != null) {
+                if(transactionReceipt.getResult().getInput().length() >= 10){
+                    methodSig = transactionReceipt.getResult().getInput().substring(0,10); // input 의 첫번째 자릿수 부터 10번째 자릿수 까지 문자열
+                    log.info("methodSig : {}", transactionReceipt.getResult().getInput().substring(0,10));
+                } else {
+                    methodSig = transactionReceipt.getResult().getInput();
+                    log.info("methodSig : {}", transactionReceipt.getResult().getInput());
+                }
             }
 
             // result 생성
@@ -113,9 +130,9 @@ public class TransactionByKASServiceImpl implements TransactionByKASService {
                     .from(transactionReceipt.getResult().getFrom())
                     .gas(transactionReceipt.getResult().getGas())
                     .gasPrice(transactionReceipt.getResult().getGasPrice())
-                    .gasPriceByFormat(CommonConverter.floatToFormatString(gasPriceToFloat))
+                    .gasPriceByFormat(gasPriceToString)
                     .gasUsed(transactionReceipt.getResult().getGasUsed())
-                    .txFee(CommonConverter.floatToFormatString(txFee))
+                    .txFee(txFeeToString)
                     .key(transactionReceipt.getResult().getKey())
                     .input(transactionReceipt.getResult().getInput())
                     .logs(logs)
@@ -130,7 +147,7 @@ public class TransactionByKASServiceImpl implements TransactionByKASService {
                     .type(transactionReceipt.getResult().getType())
                     .typeInt(transactionReceipt.getResult().getTypeInt())
                     .value(transactionReceipt.getResult().getValue())
-                    .amount(CommonConverter.bigDecimalToFormatString(amount))
+                    .amount(amountToString)
                     .methodSig(methodSig)
                     .build();
 
