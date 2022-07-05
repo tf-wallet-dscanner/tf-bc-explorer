@@ -49,7 +49,7 @@ public class ResGetBlockDTO {
         private Integer totalTXs;
 
         @ApiModelProperty(value = "Block Reward")
-        private Float blockReward;
+        private String blockReward;
 
         @ApiModelProperty(value = "Block Size (bytes)")
         private Long blockSize;
@@ -80,7 +80,7 @@ public class ResGetBlockDTO {
                 .hash(resBlockDTO.getResult().getHash())
                 .parentHash(resBlockDTO.getResult().getParentHash())
                 .totalTXs(resBlockDTO.getResult().getTransactionCount())
-                .blockReward(9.6f)
+                .blockReward(resBlockDTO.getResult().getBlockReward())
                 .blockSize(CommonConverter.hexToLong(resBlockDTO.getResult().getSize()))
                 .build();
 

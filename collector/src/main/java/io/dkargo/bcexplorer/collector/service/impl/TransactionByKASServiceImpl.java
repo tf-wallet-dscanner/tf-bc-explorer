@@ -83,7 +83,7 @@ public class TransactionByKASServiceImpl implements TransactionByKASService {
 
             // gasPrice / txFee / amount 값 생성
             Float gasPriceToFloat = null;
-            String gasPriceToString = null;
+            String gasPriceToString = "0";
             if(transactionReceipt.getResult().getGasPrice() != null) {
                 gasPriceToFloat = CommonConverter.hexToKlayUnit(transactionReceipt.getResult().getGasPrice()); // gasPrice(hex) 값을 Klay 단위에 맞게 변경
                 gasPriceToString = CommonConverter.floatToFormatString(gasPriceToFloat);
@@ -91,7 +91,7 @@ public class TransactionByKASServiceImpl implements TransactionByKASService {
             }
 
             Float txFee = null;
-            String txFeeToString = null;
+            String txFeeToString = "0";
             if(gasPriceToFloat != null && transactionReceipt.getResult().getGasUsed() != null) {
                 txFee = gasPriceToFloat * CommonConverter.hexToLong(transactionReceipt.getResult().getGasUsed()); // gasPrice * gasUsed
                 txFeeToString = CommonConverter.floatToFormatString(txFee);
@@ -99,7 +99,7 @@ public class TransactionByKASServiceImpl implements TransactionByKASService {
             }
 
             BigDecimal amount = null;
-            String amountToString = null;
+            String amountToString = "0";
             if(transactionReceipt.getResult().getValue() != null) {
                 amount = CommonConverter.hexToBigDecimal(transactionReceipt.getResult().getValue());
                 amountToString = CommonConverter.bigDecimalToFormatString(amount);

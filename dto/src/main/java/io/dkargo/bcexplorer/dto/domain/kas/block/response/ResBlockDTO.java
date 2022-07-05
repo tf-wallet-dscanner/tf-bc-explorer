@@ -47,6 +47,8 @@ public class ResBlockDTO {
 
         private String reward;
 
+        private String blockReward;
+
         private String blockScore;
 
         private String totalBlockScore;

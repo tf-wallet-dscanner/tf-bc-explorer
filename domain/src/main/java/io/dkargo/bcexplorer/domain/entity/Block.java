@@ -45,6 +45,8 @@ public class Block {
 
         private String reward;
 
+        private String blockReward;
+
         private Double rewardToDouble;
 
         private String blockScore;

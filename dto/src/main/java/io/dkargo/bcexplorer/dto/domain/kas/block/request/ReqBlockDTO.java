@@ -19,4 +19,8 @@ public class ReqBlockDTO {
 
     @ApiModelProperty(value = "resultByGetBlockWithConsensusInfo")
     private ResGetBlockWithConsensusInfoDTO.Result resultByGetBlockWithConsensusInfo;
+
+    //transaction 에서 계산 된 값.
+    @ApiModelProperty(value = "totalTxFee")
+    private Double totalTxFee;
 }

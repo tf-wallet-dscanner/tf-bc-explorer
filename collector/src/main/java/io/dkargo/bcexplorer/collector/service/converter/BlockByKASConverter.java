@@ -11,6 +11,8 @@ public class BlockByKASConverter {
     // req -> block
     public static Block of(ReqBlockDTO reqBlockDTO) {
 
+        Double blockReward = 9.6d + reqBlockDTO.getTotalTxFee();
+
         Block.Result result = Block.Result.builder()
                 .number(reqBlockDTO.getResultByGetBlock().getNumber())
                 .hash(reqBlockDTO.getResultByGetBlock().getHash())
@@ -20,6 +22,7 @@ public class BlockByKASConverter {
                 .stateRoot(reqBlockDTO.getResultByGetBlock().getStateRoot())
                 .receiptsRoot(reqBlockDTO.getResultByGetBlock().getReceiptsRoot())
                 .reward(reqBlockDTO.getResultByGetBlock().getReward())
+                .blockReward(CommonConverter.doubleToFormatString(blockReward))
                 .blockScore(reqBlockDTO.getResultByGetBlock().getBlockScore())
                 .totalBlockScore(reqBlockDTO.getResultByGetBlock().getTotalBlockScore())
                 .extraData(reqBlockDTO.getResultByGetBlock().getExtraData())
@@ -54,6 +57,7 @@ public class BlockByKASConverter {
                 .stateRoot(block.getResult().getStateRoot())
                 .receiptsRoot(block.getResult().getReceiptsRoot())
                 .reward(block.getResult().getReward())
+                .blockReward(block.getResult().getBlockReward())
                 .blockScore(block.getResult().getBlockScore())
                 .totalBlockScore(block.getResult().getTotalBlockScore())
                 .extraData(block.getResult().getExtraData())

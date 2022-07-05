@@ -102,6 +102,14 @@ public class CommonConverter {
         return df.format(value);
     }
 
+    // double -> string format
+    public static String doubleToFormatString(Double value) {
+
+        DecimalFormat df = new DecimalFormat("#.########");
+
+        return df.format(value);
+    }
+
     // big decimal -> string format
     public static String bigDecimalToFormatString(BigDecimal value) {
 

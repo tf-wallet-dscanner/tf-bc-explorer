@@ -24,12 +24,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import sun.misc.FloatingDecimal;
 import xyz.groundx.caver_ext_kas.CaverExtKAS;
 
 import java.lang.Boolean;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -292,7 +290,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
 
                 // gasPrice / txFee / amount 값 생성
                 Float gasPriceToFloat = null;
-                String gasPriceToString = null;
+                String gasPriceToString = "0";
                 if(transactionReceiptData.getGasPrice() != null) {
                     gasPriceToFloat = CommonConverter.hexToKlayUnit(transactionReceiptData.getGasPrice()); // gasPrice(hex) 값을 Klay 단위에 맞게 변경
                     gasPriceToString = CommonConverter.floatToFormatString(gasPriceToFloat);
@@ -300,7 +298,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                 }
 
                 Float txFee = null;
-                String txFeeToString = null;
+                String txFeeToString = "0";
                 if(gasPriceToFloat != null && transactionReceiptData.getGasUsed() != null) {
                     txFee = gasPriceToFloat * CommonConverter.hexToLong(transactionReceiptData.getGasUsed()); // gasPrice * gasUsed
                     txFeeToString = CommonConverter.floatToFormatString(txFee);
@@ -308,7 +306,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                 }
 
                 BigDecimal amount = null;
-                String amountToString = null;
+                String amountToString = "0";
                 if(transactionReceiptData.getValue() != null) {
                     amount = CommonConverter.hexToBigDecimal(transactionReceiptData.getValue());
                     amountToString = CommonConverter.bigDecimalToFormatString(amount);
@@ -583,11 +581,13 @@ public class BlockByKASServiceImpl implements BlockByKASService {
         // 해당 블록 번호의 트랜잭션 리스트 조회
         ResGetBlockReceiptDTO resGetBlockReceiptDTO = getBlockReceiptByHash(resGetBlockDTO.getResult().getHash());
 
-        // res 해시 리스트 생성
+        // totalTxFee(block 정보) 및 transaction 해시 리스트(response 정보) 생성
+        Double totalTxFee = 0d;
         List<String> transactionHashList = new ArrayList<>();
         for(ResGetBlockReceiptDTO.Result result : resGetBlockReceiptDTO.getResults()) {
 
-                transactionHashList.add(result.getTransactionHash());
+            totalTxFee += Double.parseDouble(result.getTxFee());
+            transactionHashList.add(result.getTransactionHash());
         }
 
         // 에러 체크
@@ -617,6 +617,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                 .jsonrpc(resGetBlockDTO.getJsonrpc())
                 .resultByGetBlock(resGetBlockDTO.getResult())
                 .resultByGetBlockWithConsensusInfo(resGetBlockWithConsensusInfoDTO.getResult())
+                .totalTxFee(totalTxFee)
                 .build();
         io.dkargo.bcexplorer.domain.entity.Block block = blockRepository.save(BlockByKASConverter.of(reqBlockDTO));
 
@@ -689,10 +690,12 @@ public class BlockByKASServiceImpl implements BlockByKASService {
         // 해당 블록의 트랜잭션 리스트 조회
         ResGetBlockReceiptDTO resGetBlockReceiptDTO = getBlockReceiptByHash(resGetBlockDTO.getResult().getHash());
 
-        // res 해시 리스트 생성
+        // totalTxFee(block 정보) 및 transaction 해시 리스트(response 정보) 생성
+        Double totalTxFee = 0d;
         List<String> transactionHashList = new ArrayList<>();
         for(ResGetBlockReceiptDTO.Result result : resGetBlockReceiptDTO.getResults()) {
 
+            totalTxFee += Double.parseDouble(result.getTxFee());
             transactionHashList.add(result.getTransactionHash());
         }
 

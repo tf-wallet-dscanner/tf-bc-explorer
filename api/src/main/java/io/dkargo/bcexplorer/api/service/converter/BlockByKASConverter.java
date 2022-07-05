@@ -19,6 +19,7 @@ public class BlockByKASConverter {
                 .stateRoot(block.getResult().getStateRoot())
                 .receiptsRoot(block.getResult().getReceiptsRoot())
                 .reward(block.getResult().getReward())
+                .blockReward(block.getResult().getBlockReward())
                 .blockScore(block.getResult().getBlockScore())
                 .totalBlockScore(block.getResult().getTotalBlockScore())
                 .extraData(block.getResult().getExtraData())
