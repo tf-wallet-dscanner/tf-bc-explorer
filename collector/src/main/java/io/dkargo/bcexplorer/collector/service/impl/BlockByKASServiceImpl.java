@@ -294,6 +294,9 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                     gasPriceToFloat = CommonConverter.hexToKlayUnit(transactionReceiptData.getGasPrice()); // gasPrice(hex) 값을 Klay 단위에 맞게 변경
                     gasPriceToString = CommonConverter.floatToFormatString(gasPriceToFloat);
                     log.info("gasPriceToString : {}", CommonConverter.floatToFormatString(gasPriceToFloat));
+                } else { // 위에와 계산식은 같지만 TX TYPE이 Ethereum Dynamic Fee 경우 화면에서는 gasPrice 값이 0.00000025로 고정되어 있지만 RPC 조회 시 나타나지 않음 때문에
+                    gasPriceToFloat = 0.00000025f;
+                    gasPriceToString = CommonConverter.floatToFormatString(gasPriceToFloat);
                 }
 
                 Float txFee = null;
