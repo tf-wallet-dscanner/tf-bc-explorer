@@ -163,7 +163,9 @@ public class TransactionByKASConverter {
                     .from(transactionInResult.getFrom())
                     .gas(transactionInResult.getGas())
                     .gasPrice(transactionInResult.getGasPrice())
+                    .gasPriceToFormat(transactionInResult.getGasPriceToFormat())
                     .gasUsed(transactionInResult.getGasUsed())
+                    .txFee(transactionInResult.getTxFee())
                     .key(transactionInResult.getKey())
                     .input(transactionInResult.getInput())
                     .logs(logs)
@@ -179,6 +181,8 @@ public class TransactionByKASConverter {
                     .type(transactionInResult.getType())
                     .typeInt(transactionInResult.getTypeInt())
                     .value(transactionInResult.getValue())
+                    .amount(transactionInResult.getAmount())
+                    .methodSig(transactionInResult.getMethodSig())
                     .build()
             );
         }

@@ -1,10 +1,13 @@
 package io.dkargo.bcexplorer.api.service.impl;
 
 import io.dkargo.bcexplorer.api.service.TransactionByKASService;
+import io.dkargo.bcexplorer.api.service.converter.TransactionByKASConverter;
+import io.dkargo.bcexplorer.domain.entity.Transaction;
 import io.dkargo.bcexplorer.domain.repository.TransactionRepository;
 import io.dkargo.bcexplorer.dto.api.kas.transaction.response.ResGetTransactionDTO;
 import io.dkargo.bcexplorer.dto.api.kas.transaction.response.ResGetTransactionListByBlockNumberDTO;
 import io.dkargo.bcexplorer.dto.api.kas.transaction.response.ResGetTransactionListDTO;
+import io.dkargo.bcexplorer.dto.domain.kas.transaction.response.ResTransactionDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,9 +22,11 @@ public class TransactionByKASServiceImpl implements TransactionByKASService {
     @Override
     public ResGetTransactionDTO getTransactionByHash(String transactionHash) {
 
-        ResGetTransactionDTO resGetTransactionDTO = ResGetTransactionDTO.builder().id("gg").build();
+        Transaction transaction = transactionRepository.findByResult_Transactions_TransactionHash(transactionHash);
 
-        return resGetTransactionDTO;
+        ResTransactionDTO resTransactionDTO = TransactionByKASConverter.of(transaction);
+
+        return new ResGetTransactionDTO(resTransactionDTO, transactionHash);
     }
 
     @Override

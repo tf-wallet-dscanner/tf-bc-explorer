@@ -8,6 +8,6 @@ import java.util.List;
 public interface TransactionRepository extends MongoRepository<Transaction, Long> {
 
     // result/transaction[]/transactionHash 값을 가지고 해당 transaction 조회
-    List<Transaction> findByResult_Transactions_TransactionHash(String transactionHash);
+    Transaction findByResult_Transactions_TransactionHash(String transactionHash);
 
 }
