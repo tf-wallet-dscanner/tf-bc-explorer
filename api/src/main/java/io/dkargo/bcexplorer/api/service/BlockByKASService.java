@@ -7,5 +7,5 @@ public interface BlockByKASService {
 
     ResGetBlockDTO getBlockByNumber(Long blockNumber);
 
-    ResGetBlockListDTO getBlockList();
+    ResGetBlockListDTO getBlockList(Integer page, Integer size);
 }

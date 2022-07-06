@@ -4,11 +4,13 @@ import io.dkargo.bcexplorer.core.converter.CommonConverter;
 import io.dkargo.bcexplorer.dto.domain.kas.block.response.ResBlockDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Data
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

@@ -10,7 +10,14 @@ import io.dkargo.bcexplorer.dto.api.kas.block.response.ResGetBlockListDTO;
 import io.dkargo.bcexplorer.dto.domain.kas.block.response.ResBlockDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -30,11 +37,22 @@ public class BlockByKASServiceImpl implements BlockByKASService {
     }
 
     @Override
-    public ResGetBlockListDTO getBlockList() {
+    public ResGetBlockListDTO getBlockList(Integer page, Integer size) {
 
-        ResGetBlockListDTO resGetBlockListDTO = ResGetBlockListDTO.builder().id("gg").build();
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "id");
 
-        return resGetBlockListDTO;
+        Page<Block> blockPage =  blockRepository.findAllBy(pageable);
+
+        List<Block> blocks = blockPage.getContent();
+
+        List<ResGetBlockDTO> resGetBlockDTOS = new ArrayList<>();
+        for (Block block : blocks) {
+
+            ResGetBlockDTO resGetBlockDTO = new ResGetBlockDTO(BlockByKASConverter.of(block));
+            resGetBlockDTOS.add(resGetBlockDTO);
+        }
+
+        return new ResGetBlockListDTO(blockPage.getNumber(), blockPage.getSize(), blockPage.getTotalPages(), blockPage.getTotalElements(), resGetBlockDTOS);
     }
 
 }

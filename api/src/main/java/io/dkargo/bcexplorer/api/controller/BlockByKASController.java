@@ -37,14 +37,17 @@ public class BlockByKASController {
             notes = "getBlockList"
     )
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", value = "페이지 번호", required = true, defaultValue = "0", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "size", value = "페이지 사이즈", required = true, defaultValue = "20", dataType = "string", paramType = "query")
     })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "getBlockList", response = ResGetBlockListDTO.class)
     })
     @GetMapping("/blocks")
     @ResponseStatus(HttpStatus.OK)
-    public ResGetBlockListDTO getBlockList() {
+    public ResGetBlockListDTO getBlockList(@RequestParam(value = "page", required = true, defaultValue = "0") Integer page,
+                                           @RequestParam(value = "size", required = true, defaultValue = "20") Integer size) {
 
-        return blockByKASService.getBlockList();
+        return blockByKASService.getBlockList(page, size);
     }
 }

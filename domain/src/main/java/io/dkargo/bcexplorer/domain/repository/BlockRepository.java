@@ -1,9 +1,11 @@
 package io.dkargo.bcexplorer.domain.repository;
 
 import io.dkargo.bcexplorer.domain.entity.Block;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface BlockRepository extends MongoRepository<Block, Long> {
+public interface BlockRepository extends MongoRepository<Block, Long>{
 
     // [collector]
 
@@ -15,5 +17,8 @@ public interface BlockRepository extends MongoRepository<Block, Long> {
     // [api]
 
     Block findByResult_Number(String blockNumber);
+
+    Page<Block> findAllBy(Pageable pageable);
+
 
 }
