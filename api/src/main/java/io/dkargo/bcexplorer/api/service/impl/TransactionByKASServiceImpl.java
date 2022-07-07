@@ -2,6 +2,7 @@ package io.dkargo.bcexplorer.api.service.impl;
 
 import io.dkargo.bcexplorer.api.service.TransactionByKASService;
 import io.dkargo.bcexplorer.api.service.converter.TransactionByKASConverter;
+import io.dkargo.bcexplorer.core.converter.CommonConverter;
 import io.dkargo.bcexplorer.domain.entity.Transaction;
 import io.dkargo.bcexplorer.domain.repository.TransactionRepository;
 import io.dkargo.bcexplorer.dto.api.kas.transaction.response.ResGetTransactionDTO;
@@ -10,7 +11,14 @@ import io.dkargo.bcexplorer.dto.api.kas.transaction.response.ResGetTransactionLi
 import io.dkargo.bcexplorer.dto.domain.kas.transaction.response.ResTransactionDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -30,22 +38,40 @@ public class TransactionByKASServiceImpl implements TransactionByKASService {
     }
 
     @Override
-    public ResGetTransactionListDTO getTransactionList() {
+    public ResGetTransactionListDTO getTransactionList(Integer page, Integer size) {
 
-        ResGetTransactionListDTO resGetTransactionListDTO = ResGetTransactionListDTO.builder().id("gg").build();
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "id");
 
-        return resGetTransactionListDTO;
+        Page<Transaction> transactionPage = transactionRepository.findAllBy(pageable);
+
+        List<Transaction> transactions = transactionPage.getContent();
+
+        List<ResGetTransactionDTO> resGetTransactionDTOS = new ArrayList<>();
+        for(Transaction transaction : transactions) {
+
+            ResGetTransactionDTO resGetTransactionDTO = new ResGetTransactionDTO(TransactionByKASConverter.of(transaction));
+            resGetTransactionDTOS.add(resGetTransactionDTO);
+        }
+
+        return new ResGetTransactionListDTO(transactionPage.getNumber(), transactionPage.getSize(), transactionPage.getTotalPages(), transactionPage.getTotalElements(), resGetTransactionDTOS);
     }
 
     @Override
     public ResGetTransactionListByBlockNumberDTO getTransactionListByBlockNumber(Long blockNumber, Integer page, Integer size) {
 
-//        Pageable pageable = PageRequest.of(page, Sort)
-//
-//        Transaction transaction = transactionRepository.findByResult_BlockNumber(CommonConverter.longToHex(blockNumber));
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "id");
 
-        ResGetTransactionListByBlockNumberDTO resGetTransactionListByBlockNumberDTO = ResGetTransactionListByBlockNumberDTO.builder().id("gg").build();
+        Page<Transaction> transactionPage = transactionRepository.findByResult_BlockNumber(CommonConverter.longToHex(blockNumber), pageable);
 
-        return resGetTransactionListByBlockNumberDTO;
+        List<Transaction>  transactions = transactionPage.getContent();
+
+        List<ResGetTransactionDTO> resGetTransactionDTOS = new ArrayList<>();
+        for(Transaction transaction : transactions) {
+
+            ResGetTransactionDTO resGetTransactionDTO = new ResGetTransactionDTO(TransactionByKASConverter.of(transaction));
+            resGetTransactionDTOS.add(resGetTransactionDTO);
+        }
+
+        return new ResGetTransactionListByBlockNumberDTO(transactionPage.getNumber(), transactionPage.getSize(), transactionPage.getTotalPages(), transactionPage.getTotalElements(), resGetTransactionDTOS);
     }
 }

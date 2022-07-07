@@ -73,63 +73,30 @@ public class ResGetTransactionDTO {
 
     public ResGetTransactionDTO(ResTransactionDTO resTransactionDTO) {
 
-        ResTransactionDTO.Result result = ResTransactionDTO.Result.builder()
-                .blockHash(resTransactionDTO.getResult().getBlockHash())
-                .blockNumber(resTransactionDTO.getResult().getBlockNumber())
-                .codeFormat(resTransactionDTO.getResult().getCodeFormat())
-                .contractAddress(resTransactionDTO.getResult().getContractAddress())
-                .feePayer(resTransactionDTO.getResult().getFeePayer())
-                .feePayerSignatures(resTransactionDTO.getResult().getFeePayerSignatures())
-                .feeRatio(resTransactionDTO.getResult().getFeeRatio())
-                .from(resTransactionDTO.getResult().getFrom())
-                .gas(resTransactionDTO.getResult().getGas())
-                .gasPrice(resTransactionDTO.getResult().getGasPrice())
-                .gasPriceToFormat(resTransactionDTO.getResult().getGasPriceToFormat())
-                .gasUsed(resTransactionDTO.getResult().getGasUsed())
-                .txFee(resTransactionDTO.getResult().getTxFee())
-                .key(resTransactionDTO.getResult().getKey())
-                .input(resTransactionDTO.getResult().getInput())
-                .logs(resTransactionDTO.getResult().getLogs())
-                .logsBloom(resTransactionDTO.getResult().getLogsBloom())
-                .nonce(resTransactionDTO.getResult().getNonce())
-                .senderTxHash(resTransactionDTO.getResult().getSenderTxHash())
-                .signatures(resTransactionDTO.getResult().getSignatures())
-                .status(resTransactionDTO.getResult().getStatus())
-                .to(resTransactionDTO.getResult().getTo())
-                .transactionIndex(resTransactionDTO.getResult().getTransactionIndex())
-                .transactionHash(resTransactionDTO.getResult().getTransactionHash())
-                .txError(resTransactionDTO.getResult().getTxError())
-                .type(resTransactionDTO.getResult().getType())
-                .typeInt(resTransactionDTO.getResult().getTypeInt())
-                .value(resTransactionDTO.getResult().getValue())
-                .amount(resTransactionDTO.getResult().getAmount())
-                .methodSig(resTransactionDTO.getResult().getMethodSig())
-                .build();
-
         String feePayer = null;
-        if(result.getFeePayer() != null) {
-            feePayer = result.getFeePayer().substring(0, 14);
+        if(resTransactionDTO.getResult().getFeePayer() != null) {
+            feePayer = resTransactionDTO.getResult().getFeePayer().substring(0, 14);
         }
 
         Overview overview = Overview.builder()
-                .txType(result.getType().substring(6).replaceAll("(.)([A-Z])", "$1 $2")) // 띄어 쓰기
-                .blockNumber(CommonConverter.hexToLong(result.getBlockNumber()))
-                .from(result.getFrom())
-                .to(result.getTo())
+                .txType(resTransactionDTO.getResult().getType().substring(6).replaceAll("(.)([A-Z])", "$1 $2")) // 띄어 쓰기
+                .blockNumber(CommonConverter.hexToLong(resTransactionDTO.getResult().getBlockNumber()))
+                .from(resTransactionDTO.getResult().getFrom())
+                .to(resTransactionDTO.getResult().getTo())
                 .feePayer(feePayer)
                 .createAt(CommonConverter.stringToLocalDateTime(resTransactionDTO.getCreateAt()))
-                .nonce(CommonConverter.hexToLong(result.getNonce()))
-                .amount(result.getAmount())
-                .gasPrice(result.getGasPriceToFormat())
-                .gasUsed(CommonConverter.hexToLong(result.getGasUsed()))
-                .gasLimit(CommonConverter.hexToLong(result.getGas()))
-                .txFee(result.getTxFee())
-                .methodSig(result.getMethodSig())
+                .nonce(CommonConverter.hexToLong(resTransactionDTO.getResult().getNonce()))
+                .amount(resTransactionDTO.getResult().getAmount())
+                .gasPrice(resTransactionDTO.getResult().getGasPriceToFormat())
+                .gasUsed(CommonConverter.hexToLong(resTransactionDTO.getResult().getGasUsed()))
+                .gasLimit(CommonConverter.hexToLong(resTransactionDTO.getResult().getGas()))
+                .txFee(resTransactionDTO.getResult().getTxFee())
+                .methodSig(resTransactionDTO.getResult().getMethodSig())
                 .build();
 
         this.id = resTransactionDTO.getId();
-        this.transactionHash = result.getTransactionHash();
+        this.transactionHash = resTransactionDTO.getResult().getTransactionHash();
         this.overview = overview;
-        this.txError = result.getTxError();
+        this.txError = resTransactionDTO.getResult().getTxError();
     }
 }

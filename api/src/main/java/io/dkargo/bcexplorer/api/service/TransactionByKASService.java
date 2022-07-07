@@ -8,7 +8,7 @@ public interface TransactionByKASService {
 
     ResGetTransactionDTO getTransactionByHash(String transactionHash);
 
-    ResGetTransactionListDTO getTransactionList();
+    ResGetTransactionListDTO getTransactionList(Integer page, Integer size);
 
     ResGetTransactionListByBlockNumberDTO getTransactionListByBlockNumber(Long blockNumber, Integer page, Integer size);
 }

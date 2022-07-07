@@ -38,15 +38,18 @@ public class TransactionByKASController {
             notes = "getTransactionList"
     )
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", value = "페이지 번호", required = true, defaultValue = "0", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "size", value = "페이지 사이즈", required = true, defaultValue = "20", dataType = "string", paramType = "query")
     })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "getTransactionList", response = ResGetTransactionListDTO.class)
     })
     @GetMapping("/transactions")
     @ResponseStatus(HttpStatus.OK)
-    public ResGetTransactionListDTO getTransactionList() {
+    public ResGetTransactionListDTO getTransactionList(@RequestParam(value = "page", required = true, defaultValue = "0") Integer page,
+                                                       @RequestParam(value = "size", required = true, defaultValue = "20") Integer size) {
 
-        return transactionByKASService.getTransactionList();
+        return transactionByKASService.getTransactionList(page, size);
     }
 
     @ApiOperation(

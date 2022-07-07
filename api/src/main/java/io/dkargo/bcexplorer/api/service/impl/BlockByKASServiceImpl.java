@@ -46,7 +46,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
         List<Block> blocks = blockPage.getContent();
 
         List<ResGetBlockDTO> resGetBlockDTOS = new ArrayList<>();
-        for (Block block : blocks) {
+        for(Block block : blocks) {
 
             ResGetBlockDTO resGetBlockDTO = new ResGetBlockDTO(BlockByKASConverter.of(block));
             resGetBlockDTOS.add(resGetBlockDTO);
