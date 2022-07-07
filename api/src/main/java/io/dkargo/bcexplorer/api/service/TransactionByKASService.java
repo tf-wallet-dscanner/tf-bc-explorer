@@ -10,5 +10,5 @@ public interface TransactionByKASService {
 
     ResGetTransactionListDTO getTransactionList();
 
-    ResGetTransactionListByBlockNumberDTO getTransactionListByBlockNumber(Long blockNumber);
+    ResGetTransactionListByBlockNumberDTO getTransactionListByBlockNumber(Long blockNumber, Integer page, Integer size);
 }

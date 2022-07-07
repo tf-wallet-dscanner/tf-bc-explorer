@@ -22,11 +22,11 @@ public class TransactionByKASServiceImpl implements TransactionByKASService {
     @Override
     public ResGetTransactionDTO getTransactionByHash(String transactionHash) {
 
-        Transaction transaction = transactionRepository.findByResult_Transactions_TransactionHash(transactionHash);
+        Transaction transaction = transactionRepository.findByResult_TransactionHash(transactionHash);
 
         ResTransactionDTO resTransactionDTO = TransactionByKASConverter.of(transaction);
 
-        return new ResGetTransactionDTO(resTransactionDTO, transactionHash);
+        return new ResGetTransactionDTO(resTransactionDTO);
     }
 
     @Override
@@ -38,7 +38,11 @@ public class TransactionByKASServiceImpl implements TransactionByKASService {
     }
 
     @Override
-    public ResGetTransactionListByBlockNumberDTO getTransactionListByBlockNumber(Long blockNumber) {
+    public ResGetTransactionListByBlockNumberDTO getTransactionListByBlockNumber(Long blockNumber, Integer page, Integer size) {
+
+//        Pageable pageable = PageRequest.of(page, Sort)
+//
+//        Transaction transaction = transactionRepository.findByResult_BlockNumber(CommonConverter.longToHex(blockNumber));
 
         ResGetTransactionListByBlockNumberDTO resGetTransactionListByBlockNumberDTO = ResGetTransactionListByBlockNumberDTO.builder().id("gg").build();
 

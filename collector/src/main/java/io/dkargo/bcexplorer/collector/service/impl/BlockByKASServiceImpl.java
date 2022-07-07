@@ -623,15 +623,18 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                 .build();
         io.dkargo.bcexplorer.domain.entity.Block block = blockRepository.save(BlockByKASConverter.of(reqBlockDTO));
 
-
         // 트랜잭션 정보 저장
-        ReqTransactionDTO reqTransactionDTO = ReqTransactionDTO.builder()
-                .jsonrpc(resGetBlockReceiptDTO.getJsonrpc())
-                .results(resGetBlockReceiptDTO.getResults())
-                .blockNumber(resGetBlockDTO.getResult().getNumber())
-                .blockHash(resGetBlockDTO.getResult().getHash())
-                .build();
-        io.dkargo.bcexplorer.domain.entity.Transaction transaction = transactionRepository.save(TransactionByKASConverter.of(reqTransactionDTO));
+        List<io.dkargo.bcexplorer.domain.entity.Transaction> transactionss = new ArrayList<>();
+        for(ResGetBlockReceiptDTO.Result result : resGetBlockReceiptDTO.getResults()) {
+
+            ReqTransactionDTO reqTransactionDTO = ReqTransactionDTO.builder()
+                    .jsonrpc(resGetBlockReceiptDTO.getJsonrpc())
+                    .result(result)
+                    .build();
+            transactionss.add(TransactionByKASConverter.of(reqTransactionDTO));
+        }
+
+        List<io.dkargo.bcexplorer.domain.entity.Transaction> transactions = transactionRepository.saveAll(transactionss);
 
         return new ResCreateBlockDTO(CommonConverter.hexToLong(block.getResult().getNumber()), block.getResult().getHash(), transactionHashList);
     }
@@ -733,11 +736,17 @@ public class BlockByKASServiceImpl implements BlockByKASService {
 
 
         // 트랜잭션 정보 저장
-        ReqTransactionDTO reqTransactionDTO = ReqTransactionDTO.builder()
-                .jsonrpc(resGetBlockReceiptDTO.getJsonrpc())
-                .results(resGetBlockReceiptDTO.getResults())
-                .build();
-        io.dkargo.bcexplorer.domain.entity.Transaction transaction = transactionRepository.save(TransactionByKASConverter.of(reqTransactionDTO));
+        List<io.dkargo.bcexplorer.domain.entity.Transaction> transactionss = new ArrayList<>();
+        for(ResGetBlockReceiptDTO.Result result : resGetBlockReceiptDTO.getResults()) {
+
+            ReqTransactionDTO reqTransactionDTO = ReqTransactionDTO.builder()
+                    .jsonrpc(resGetBlockReceiptDTO.getJsonrpc())
+                    .result(result)
+                    .build();
+            transactionss.add(TransactionByKASConverter.of(reqTransactionDTO));
+        }
+
+        List<io.dkargo.bcexplorer.domain.entity.Transaction> transactions = transactionRepository.saveAll(transactionss);
 
         return new ResCreateBlockDTO(CommonConverter.hexToLong(block.getResult().getNumber()), block.getResult().getHash(), transactionHashList);
     }

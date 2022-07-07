@@ -16,7 +16,7 @@ public class ReqTransactionDTO {
     private String jsonrpc;
 
     @ApiModelProperty(value = "results")
-    private List<ResGetBlockReceiptDTO.Result> results;
+    private ResGetBlockReceiptDTO.Result result;
 
     @ApiModelProperty(value = "blockNumber")
     private String blockNumber;

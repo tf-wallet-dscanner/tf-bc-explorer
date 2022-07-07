@@ -4,6 +4,7 @@ import io.dkargo.bcexplorer.api.service.TestService;
 import io.dkargo.bcexplorer.api.service.converter.TestConverter;
 import io.dkargo.bcexplorer.core.error.DkargoException;
 import io.dkargo.bcexplorer.core.error.ErrorCodeEnum;
+import io.dkargo.bcexplorer.domain.entity.Block;
 import io.dkargo.bcexplorer.domain.entity.Test;
 import io.dkargo.bcexplorer.domain.repository.TestRepository;
 import io.dkargo.bcexplorer.dto.api.request.ReqCreateTestDTO;

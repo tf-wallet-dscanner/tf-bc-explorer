@@ -54,15 +54,19 @@ public class TransactionByKASController {
             notes = "getTransactionListByBlockNumber"
     )
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "blockNumber", value = "블록 번호", required = true, dataType = "Long", paramType = "path")
+            @ApiImplicitParam(name = "blockNumber", value = "블록 번호", required = true, dataType = "Long", paramType = "path"),
+            @ApiImplicitParam(name = "page", value = "페이지 번호", required = true, defaultValue = "0", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "size", value = "페이지 사이즈", required = true, defaultValue = "20", dataType = "string", paramType = "query")
     })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "getTransactionListByBlockNumber", response = ResGetTransactionListByBlockNumberDTO.class)
     })
     @GetMapping("/transactions/block-number/{blockNumber}")
     @ResponseStatus(HttpStatus.OK)
-    public ResGetTransactionListByBlockNumberDTO getTransactionListByBlockNumber(@PathVariable("blockNumber") Long blockNumber) {
+    public ResGetTransactionListByBlockNumberDTO getTransactionListByBlockNumber(@PathVariable("blockNumber") Long blockNumber,
+                                                                                 @RequestParam(value = "page", required = true, defaultValue = "0") Integer page,
+                                                                                 @RequestParam(value = "size", required = true, defaultValue = "20") Integer size) {
 
-        return transactionByKASService.getTransactionListByBlockNumber(blockNumber);
+        return transactionByKASService.getTransactionListByBlockNumber(blockNumber, page, size);
     }
 }
