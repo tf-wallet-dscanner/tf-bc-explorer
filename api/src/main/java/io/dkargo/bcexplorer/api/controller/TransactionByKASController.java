@@ -4,6 +4,7 @@ import io.dkargo.bcexplorer.api.service.TransactionByKASService;
 import io.dkargo.bcexplorer.dto.api.kas.transaction.response.ResGetTransactionDTO;
 import io.dkargo.bcexplorer.dto.api.kas.transaction.response.ResGetTransactionListByBlockNumberDTO;
 import io.dkargo.bcexplorer.dto.api.kas.transaction.response.ResGetTransactionListDTO;
+import io.dkargo.bcexplorer.dto.api.kas.transaction.response.ResGetTransactionListInDashboardDTO;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -71,5 +72,24 @@ public class TransactionByKASController {
                                                                                  @RequestParam(value = "size", required = true, defaultValue = "20") Integer size) {
 
         return transactionByKASService.getTransactionListByBlockNumber(blockNumber, page, size);
+    }
+
+    @ApiOperation(
+            value = "[대시보드] 다건 트랜잭션 조회",
+            notes = "getTransactionListInDashboard"
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", value = "페이지 번호", required = true, defaultValue = "0", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "size", value = "페이지 사이즈", required = true, defaultValue = "20", dataType = "string", paramType = "query")
+    })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "getTransactionListInDashboard", response = ResGetTransactionListInDashboardDTO.class)
+    })
+    @GetMapping("/transactions/dashboard")
+    @ResponseStatus(HttpStatus.OK)
+    public ResGetTransactionListInDashboardDTO getTransactionListInDashboard(@RequestParam(value = "page", required = true, defaultValue = "0") Integer page,
+                                                                             @RequestParam(value = "size", required = true, defaultValue = "20") Integer size) {
+
+        return transactionByKASService.getTransactionListInDashboard(page, size);
     }
 }

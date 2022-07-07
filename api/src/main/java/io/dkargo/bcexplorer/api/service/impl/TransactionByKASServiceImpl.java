@@ -8,6 +8,7 @@ import io.dkargo.bcexplorer.domain.repository.TransactionRepository;
 import io.dkargo.bcexplorer.dto.api.kas.transaction.response.ResGetTransactionDTO;
 import io.dkargo.bcexplorer.dto.api.kas.transaction.response.ResGetTransactionListByBlockNumberDTO;
 import io.dkargo.bcexplorer.dto.api.kas.transaction.response.ResGetTransactionListDTO;
+import io.dkargo.bcexplorer.dto.api.kas.transaction.response.ResGetTransactionListInDashboardDTO;
 import io.dkargo.bcexplorer.dto.domain.kas.transaction.response.ResTransactionDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -73,5 +74,24 @@ public class TransactionByKASServiceImpl implements TransactionByKASService {
         }
 
         return new ResGetTransactionListByBlockNumberDTO(transactionPage.getNumber(), transactionPage.getSize(), transactionPage.getTotalPages(), transactionPage.getTotalElements(), resGetTransactionDTOS);
+    }
+
+    @Override
+    public ResGetTransactionListInDashboardDTO getTransactionListInDashboard(Integer page, Integer size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "id");
+
+        Page<Transaction> transactionPage = transactionRepository.findAllBy(pageable);
+
+        List<Transaction> transactions = transactionPage.getContent();
+
+        List<ResGetTransactionDTO> resGetTransactionDTOS = new ArrayList<>();
+        for(Transaction transaction : transactions) {
+
+            ResGetTransactionDTO resGetTransactionDTO = new ResGetTransactionDTO(TransactionByKASConverter.of(transaction));
+            resGetTransactionDTOS.add(resGetTransactionDTO);
+        }
+
+        return new ResGetTransactionListInDashboardDTO(transactionPage.getNumber(), transactionPage.getSize(), transactionPage.getTotalPages(), transactionPage.getTotalElements(), resGetTransactionDTOS);
     }
 }

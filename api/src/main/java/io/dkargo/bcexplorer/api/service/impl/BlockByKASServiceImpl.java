@@ -7,6 +7,8 @@ import io.dkargo.bcexplorer.domain.entity.Block;
 import io.dkargo.bcexplorer.domain.repository.BlockRepository;
 import io.dkargo.bcexplorer.dto.api.kas.block.response.ResGetBlockDTO;
 import io.dkargo.bcexplorer.dto.api.kas.block.response.ResGetBlockListDTO;
+import io.dkargo.bcexplorer.dto.api.kas.block.response.ResGetBlockListInDashboardDTO;
+import io.dkargo.bcexplorer.dto.api.kas.block.response.ResGetLatestBlockNumberDTO;
 import io.dkargo.bcexplorer.dto.domain.kas.block.response.ResBlockDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,4 +57,31 @@ public class BlockByKASServiceImpl implements BlockByKASService {
         return new ResGetBlockListDTO(blockPage.getNumber(), blockPage.getSize(), blockPage.getTotalPages(), blockPage.getTotalElements(), resGetBlockDTOS);
     }
 
+    @Override
+    public ResGetLatestBlockNumberDTO getLatestBlockNumber() {
+
+        Block block = blockRepository.findTop1ByOrderByResult_NumberDesc();
+        Long blockNumber = CommonConverter.hexToLong(block.getResult().getNumber());
+
+        return new ResGetLatestBlockNumberDTO(blockNumber);
+    }
+
+    @Override
+    public ResGetBlockListInDashboardDTO getBlockListInDashboard(Integer page, Integer size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "id");
+
+        Page<Block> blockPage =  blockRepository.findAllBy(pageable);
+
+        List<Block> blocks = blockPage.getContent();
+
+        List<ResGetBlockDTO> resGetBlockDTOS = new ArrayList<>();
+        for(Block block : blocks) {
+
+            ResGetBlockDTO resGetBlockDTO = new ResGetBlockDTO(BlockByKASConverter.of(block));
+            resGetBlockDTOS.add(resGetBlockDTO);
+        }
+
+        return new ResGetBlockListInDashboardDTO(blockPage.getNumber(), blockPage.getSize(), blockPage.getTotalPages(), blockPage.getTotalElements(), resGetBlockDTOS);
+    }
 }

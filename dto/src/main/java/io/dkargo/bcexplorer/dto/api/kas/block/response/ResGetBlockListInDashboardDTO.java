@@ -9,8 +9,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ResGetBlockListDTO {
-
+public class ResGetBlockListInDashboardDTO {
 
     @ApiModelProperty(value = "Page")
     private Integer page;
@@ -25,13 +24,13 @@ public class ResGetBlockListDTO {
     private Long totalElementCount;
 
     @ApiModelProperty(value = "List")
-    private List<GetBlock> list;
+    private List<GetBlockInDashboard> list;
 
     @Data
     @Builder
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     @AllArgsConstructor
-    public static class GetBlock {
+    public static class GetBlockInDashboard {
 
         @ApiModelProperty(value = "BLOCK #")
         private Long blockNumber;
@@ -47,33 +46,29 @@ public class ResGetBlockListDTO {
 
         @ApiModelProperty(value = "REQARD(KLAY)")
         private String reward;
-
-        @ApiModelProperty(value = "SIZE(BYTE)")
-        private Long size;
     }
 
-    public ResGetBlockListDTO(Integer number, Integer size, Integer totalPageCount, Long totalElementCount, List<ResGetBlockDTO> resGetBlockDTOS) {
+    public ResGetBlockListInDashboardDTO(Integer number, Integer size, Integer totalPageCount, Long totalElementCount, List<ResGetBlockDTO> resGetBlockDTOS) {
 
         this.page = number;
         this.size = size;
         this.totalPageCount = totalPageCount;
         this.totalElementCount = totalElementCount;
 
-        List<GetBlock> getBlockList = new ArrayList<>();
+        List<GetBlockInDashboard> getBlockInDashboardList = new ArrayList<>();
 
         for(ResGetBlockDTO resGetBlockDTO : resGetBlockDTOS) {
 
-            GetBlock getBlock = GetBlock.builder()
+            GetBlockInDashboard getBlockInDashboard = GetBlockInDashboard.builder()
                     .blockNumber(resGetBlockDTO.getBlockNumber())
                     .createAt(resGetBlockDTO.getOverview().getCreateAt())
                     .totalTXs(resGetBlockDTO.getOverview().getTotalTXs())
                     .blockProposer(resGetBlockDTO.getCommittee().getBlockProposer())
                     .reward(resGetBlockDTO.getOverview().getBlockReward())
-                    .size(resGetBlockDTO.getOverview().getBlockSize())
                     .build();
 
-            getBlockList.add(getBlock);
+            getBlockInDashboardList.add(getBlockInDashboard);
         }
-        this.list = getBlockList;
+        this.list = getBlockInDashboardList;
     }
 }
