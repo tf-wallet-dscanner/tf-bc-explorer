@@ -1,0 +1,10 @@
+node_modules
+dist
+coverage
+.eslintcache
+*.js
+*.mjs
+build
+.pnp.cjs
+.yarn
+vite.config.ts

@@ -65,6 +65,6 @@ out/
 /.nb-gradle/
 
 ### VS Code ###
-.vscode/
+#.vscode/
 
 src/main/generated

@@ -1,0 +1,34 @@
+import { setup } from 'twind';
+import * as colors from 'twind/colors';
+
+setup({
+  darkMode: 'class', // use a different dark mode strategy (default: 'media')
+  hash: true, // hash all generated class names (default: false)
+  theme: {
+    fontFamily: {
+      sans: ['Inter', 'sans-serif'],
+      serif: ['Georgia', 'serif'],
+    },
+    extend: {
+      colors: {
+        ...colors,
+        primary: '#1976d2',
+        secondary: '#9c27b0',
+        error: '#ef5350',
+        warning: '#ff9800',
+        info: '#03a9f4',
+        success: '#4caf50',
+      },
+      backgroundColor: {
+        error: '#fdeded',
+        warning: '#fff4e5',
+        info: '#e5f6fd',
+        success: '#edf7ed',
+        tooltip: '#3e3434',
+      },
+      borderColor: {
+        tooltip: '#3e3434',
+      },
+    },
+  }, // define custom theme values (default: tailwind theme)
+});
