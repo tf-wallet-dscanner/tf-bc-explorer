@@ -52,7 +52,6 @@ public class BlockByKASServiceImpl implements BlockByKASService {
         ResGetBlockDTO.Result result = null;
         if(block.getResult() != null) {
 
-
             // result -> transactions 생성
             List<ResGetBlockDTO.Result.Transaction> transactions = new ArrayList<>();
             if(block.getResult().getTransactions() != null) {

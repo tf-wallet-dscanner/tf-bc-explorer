@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface BlockRepository extends MongoRepository<Block, Long>{
+public interface BlockRepository extends MongoRepository<Block, String>{
 
     // [--------------- collector module ---------------]
 

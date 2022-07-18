@@ -2,10 +2,13 @@ package io.dkargo.bcexplorer.core.converter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
@@ -66,7 +69,7 @@ public class CommonConverter {
     }
 
     // String -> Object
-    public static JSONObject stringToObject(String string) {
+    public static Object stringToObject(String string, Class<?> object) {
 
         JSONParser jsonParser = new JSONParser();
         JSONObject jsonObj = new JSONObject();

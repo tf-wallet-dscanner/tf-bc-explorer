@@ -1,6 +1,7 @@
 package io.dkargo.bcexplorer.collector.controller;
 
 import io.dkargo.bcexplorer.collector.service.TestByKASService;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponses;
@@ -36,6 +37,7 @@ public class TestByKASController {
             notes = "getAccount"
     )
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "address", value = "주소", required = true, dataType = "String", paramType = "path")
     })
     @ApiResponses(value = {
     })
@@ -51,6 +53,7 @@ public class TestByKASController {
             notes = "getTransactionCount"
     )
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "address", value = "주소", required = true, dataType = "String", paramType = "path")
     })
     @ApiResponses(value = {
     })
@@ -66,6 +69,7 @@ public class TestByKASController {
             notes = "getBalance"
     )
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "address", value = "주소", required = true, dataType = "String", paramType = "path")
     })
     @ApiResponses(value = {
     })

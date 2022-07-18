@@ -22,7 +22,6 @@ public class TransactionByKASController {
             @ApiImplicitParam(name = "transactionHash", value = "트랜잭션 해쉬", required = true, dataType = "String", paramType = "path")
     })
     @ApiResponses(value = {
-            //        @ApiResponse(code = 200, message = "getTestListByFilter", response = ResGetTestListDTO.class)
     })
     @GetMapping("/transactions/hash/{transactionHash}")
     @ResponseStatus(HttpStatus.OK)
