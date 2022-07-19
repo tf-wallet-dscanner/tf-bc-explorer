@@ -1,26 +1,30 @@
-package io.dkargo.bcexplorer.domain.entity;
+package io.dkargo.bcexplorer.dto.domain.kas.account.response;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "scas")
+import javax.validation.constraints.NotNull;
+
+@Data
 @Builder
-@Setter
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Sca {
+public class ResScaDTO {
 
-    @Id
+    @ApiModelProperty(value = "id")
+    @NotNull
     private String id;
 
+    @ApiModelProperty(value = "jsonrpc")
     private String jsonrpc;
 
+    @ApiModelProperty(value = "result")
     private Result result;
 
+    @ApiModelProperty(value = "createAt")
     private String createAt;
 
+    @ApiModelProperty(value = "createAt")
     private String updateAt;
 
     @Data

@@ -735,17 +735,17 @@ public class BlockByKASServiceImpl implements BlockByKASService {
 
 
         // 트랜잭션 정보 저장
-        List<io.dkargo.bcexplorer.domain.entity.Transaction> transactionss = new ArrayList<>();
+        List<io.dkargo.bcexplorer.domain.entity.Transaction> transactionList = new ArrayList<>();
         for(ResGetBlockReceiptDTO.Result result : resGetBlockReceiptDTO.getResults()) {
 
             ReqTransactionDTO reqTransactionDTO = ReqTransactionDTO.builder()
                     .jsonrpc(resGetBlockReceiptDTO.getJsonrpc())
                     .result(result)
                     .build();
-            transactionss.add(TransactionByKASConverter.of(reqTransactionDTO));
+            transactionList.add(TransactionByKASConverter.of(reqTransactionDTO));
         }
 
-        List<io.dkargo.bcexplorer.domain.entity.Transaction> transactions = transactionRepository.saveAll(transactionss);
+        List<io.dkargo.bcexplorer.domain.entity.Transaction> transactions = transactionRepository.saveAll(transactionList);
 
         return new ResCreateBlockDTO(CommonConverter.hexToLong(block.getResult().getNumber()), block.getResult().getHash(), transactionHashList);
     }
