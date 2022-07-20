@@ -1,7 +1,7 @@
 package io.dkargo.bcexplorer.scheduler.worker.collector;
 
 import com.munzi.munzischeduler.SchedulerWorkerBase;
-import io.dkargo.bcexplorer.dto.collector.kas.block.response.ResCreateBlockDTO;
+import io.dkargo.bcexplorer.dto.collector.kas.block.response.ResCreateBlockChainInfoDTO;
 import io.dkargo.bcexplorer.scheduler.service.CollectorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +19,6 @@ public class CreateBlockWithTransactionWorker extends SchedulerWorkerBase {
     @Override
     public void processJob(Map data) {
 
-        ResCreateBlockDTO resCreateBlockDTO = collectorService.createBlockWithTransaction();
+        ResCreateBlockChainInfoDTO resCreateBlockDTO = collectorService.createBlockWithTransaction();
     }
 }

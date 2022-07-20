@@ -1,7 +1,7 @@
 package io.dkargo.bcexplorer.collector.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.dkargo.bcexplorer.dto.collector.kas.block.response.ResCreateBlockDTO;
+import io.dkargo.bcexplorer.dto.collector.kas.block.response.ResCreateBlockChainInfoDTO;
 import io.dkargo.dkargohttpclient.DkargoHttpClientResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,10 +35,10 @@ public class BcExplorerCollectorClient extends ABcExplorerCollectorClient<BcExpl
      * @throws DkargoHttpClientResponseException
      */
     @Override
-    public ResCreateBlockDTO createBlockWithTransaction() throws IOException, DkargoHttpClientResponseException {
+    public ResCreateBlockChainInfoDTO createBlockWithTransaction() throws IOException, DkargoHttpClientResponseException {
 
         String url = getFullUrl(BcExplorerCollectorUrl.CREATE_BLOCK_WITH_TRANSACTION);
 
-        return httpClient.post(url, ResCreateBlockDTO.class, "", headers);
+        return httpClient.post(url, ResCreateBlockChainInfoDTO.class, "", headers);
     }
 }

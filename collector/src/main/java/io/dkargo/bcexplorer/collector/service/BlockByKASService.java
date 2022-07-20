@@ -1,7 +1,7 @@
 package io.dkargo.bcexplorer.collector.service;
 
-import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqCreateBlockByHashDTO;
-import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqCreateBlockByNumberDTO;
+import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqCreateBlockChainInfoByHashDTO;
+import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqCreateBlockChainInfoByNumberDTO;
 import io.dkargo.bcexplorer.dto.collector.kas.block.response.*;
 
 public interface BlockByKASService {
@@ -22,11 +22,11 @@ public interface BlockByKASService {
 
     ResGetBlockTransactionCountDTO getBlockTransactionCountByHash(String blockHash);
 
-    ResCreateBlockDTO createBlockWithTransactionByNumber(ReqCreateBlockByNumberDTO reqCreateBlockByNumberDTO);
+    ResCreateBlockChainInfoDTO createBlockChainInfoByNumber(ReqCreateBlockChainInfoByNumberDTO reqCreateBlockChainInfoByNumberDTO);
 
-    ResCreateBlockDTO createBlockWithTransactionByHash(ReqCreateBlockByHashDTO reqCreateBlockByHashDTO);
+    ResCreateBlockChainInfoDTO createBlockChainInfoByHash(ReqCreateBlockChainInfoByHashDTO reqCreateBlockByHashDTO);
 
-    ResCreateBlockDTO createBlockWithTransactionByScheduler();
+    ResCreateBlockChainInfoDTO createBlockChainInfoByScheduler();
 
 
 }

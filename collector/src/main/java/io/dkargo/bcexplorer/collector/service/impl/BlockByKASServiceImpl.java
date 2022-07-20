@@ -17,8 +17,8 @@ import io.dkargo.bcexplorer.dto.collector.kas.account.response.ResGetAccountDTO;
 import io.dkargo.bcexplorer.dto.domain.kas.account.request.ReqEoaDTO;
 import io.dkargo.bcexplorer.dto.domain.kas.account.request.ReqScaDTO;
 import io.dkargo.bcexplorer.dto.domain.kas.block.request.ReqBlockDTO;
-import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqCreateBlockByHashDTO;
-import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqCreateBlockByNumberDTO;
+import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqCreateBlockChainInfoByHashDTO;
+import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqCreateBlockChainInfoByNumberDTO;
 import io.dkargo.bcexplorer.dto.collector.kas.block.response.*;
 import io.dkargo.bcexplorer.dto.domain.kas.transaction.request.ReqTransactionDTO;
 import lombok.RequiredArgsConstructor;
@@ -535,10 +535,10 @@ public class BlockByKASServiceImpl implements BlockByKASService {
     }
 
     @Override
-    public ResCreateBlockDTO createBlockWithTransactionByNumber(ReqCreateBlockByNumberDTO reqCreateBlockByNumberDTO) {
+    public ResCreateBlockChainInfoDTO createBlockChainInfoByNumber(ReqCreateBlockChainInfoByNumberDTO reqCreateBlockChainInfoByNumberDTO) {
 
         // 블록 + 트랜잭션 해시 정보 조회
-        ResGetBlockDTO resGetBlockDTO = getBlockByNumber(reqCreateBlockByNumberDTO.getBlockNumber());
+        ResGetBlockDTO resGetBlockDTO = getBlockByNumber(reqCreateBlockChainInfoByNumberDTO.getBlockNumber());
 
         // 에러 체크
         if(resGetBlockDTO.getError() != null) {
@@ -548,7 +548,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
         }
 
         // 블록 consensus 정보 조회 (proposer, committee)
-        ResGetBlockWithConsensusInfoDTO resGetBlockWithConsensusInfoDTO = getBlockWithConsensusInfoByNumber(reqCreateBlockByNumberDTO.getBlockNumber());
+        ResGetBlockWithConsensusInfoDTO resGetBlockWithConsensusInfoDTO = getBlockWithConsensusInfoByNumber(reqCreateBlockChainInfoByNumberDTO.getBlockNumber());
 
         // 에러 체크
         if(resGetBlockWithConsensusInfoDTO.getError() != null) {
@@ -715,11 +715,11 @@ public class BlockByKASServiceImpl implements BlockByKASService {
             scaRepository.saveAll(scas);
         }
 
-        return new ResCreateBlockDTO(CommonConverter.hexToLong(block.getResult().getNumber()), block.getResult().getHash(), transactionHashList);
+        return new ResCreateBlockChainInfoDTO(CommonConverter.hexToLong(block.getResult().getNumber()), block.getResult().getHash(), transactionHashList);
     }
 
     @Override
-    public ResCreateBlockDTO createBlockWithTransactionByHash(ReqCreateBlockByHashDTO reqCreateBlockByHashDTO) {
+    public ResCreateBlockChainInfoDTO createBlockChainInfoByHash(ReqCreateBlockChainInfoByHashDTO reqCreateBlockByHashDTO) {
 
         // 블록 + 트랜잭션 해시 정보 조회
         ResGetBlockDTO resGetBlockDTO = getBlockByHash(reqCreateBlockByHashDTO.getBlockHash());
@@ -900,19 +900,19 @@ public class BlockByKASServiceImpl implements BlockByKASService {
             scaRepository.saveAll(scas);
         }
 
-        return new ResCreateBlockDTO(CommonConverter.hexToLong(block.getResult().getNumber()), block.getResult().getHash(), transactionHashList);
+        return new ResCreateBlockChainInfoDTO(CommonConverter.hexToLong(block.getResult().getNumber()), block.getResult().getHash(), transactionHashList);
     }
 
     @Override
-    public ResCreateBlockDTO createBlockWithTransactionByScheduler() {
+    public ResCreateBlockChainInfoDTO createBlockChainInfoByScheduler() {
 
         // DB 저장된 블록 정보 중 블록 번호가 가장 큰(최신) 블록 정보 조회
         io.dkargo.bcexplorer.domain.entity.Block block = blockRepository.findTop1ByOrderByResult_NumberDesc();
         log.info("latest blockNumber : {}", CommonConverter.hexToLong(block.getResult().getNumber()));
 
         Long nextBlockNumber;
-        ReqCreateBlockByNumberDTO reqCreateBlockByNumberDTO;
-        ResCreateBlockDTO resCreateBlockDTO;
+        ReqCreateBlockChainInfoByNumberDTO reqCreateBlockChainInfoByNumberDTO;
+        ResCreateBlockChainInfoDTO resCreateBlockChainInfoDTO;
 
         // DB에 이전 블록 정보가 있을 시 - 존재하는 정보의 다음 번호부터 생성
         if(block != null) {
@@ -920,11 +920,11 @@ public class BlockByKASServiceImpl implements BlockByKASService {
             nextBlockNumber = CommonConverter.hexToLong(block.getResult().getNumber()) + 1;
             log.info("nextBlockNumber(createBlockNumber) : {}", nextBlockNumber);
 
-            reqCreateBlockByNumberDTO = ReqCreateBlockByNumberDTO.builder()
+            reqCreateBlockChainInfoByNumberDTO = ReqCreateBlockChainInfoByNumberDTO.builder()
                     .blockNumber(nextBlockNumber)
                     .build();
 
-            resCreateBlockDTO = createBlockWithTransactionByNumber(reqCreateBlockByNumberDTO);
+            resCreateBlockChainInfoDTO = createBlockChainInfoByNumber(reqCreateBlockChainInfoByNumberDTO);
         }
         // DB에 이번 블록 정보가 없을 시
         else {
@@ -935,11 +935,11 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                 nextBlockNumber = selectBlockNumber;
                 log.info("nextBlockNumber : {}", nextBlockNumber);
 
-                reqCreateBlockByNumberDTO = ReqCreateBlockByNumberDTO.builder()
+                reqCreateBlockChainInfoByNumberDTO = ReqCreateBlockChainInfoByNumberDTO.builder()
                         .blockNumber(nextBlockNumber)
                         .build();
 
-                resCreateBlockDTO = createBlockWithTransactionByNumber(reqCreateBlockByNumberDTO);
+                resCreateBlockChainInfoDTO = createBlockChainInfoByNumber(reqCreateBlockChainInfoByNumberDTO);
             }
             // 지정한 특정 블록부터 수행하지 않을 시 - 현재 최신 블록부터 조회
             else {
@@ -948,14 +948,14 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                 nextBlockNumber = resGetLatestBlockNumberDTO.getBlockNumber();
                 log.info("nextBlockNumber :{}", nextBlockNumber);
 
-                reqCreateBlockByNumberDTO =ReqCreateBlockByNumberDTO.builder()
+                reqCreateBlockChainInfoByNumberDTO = ReqCreateBlockChainInfoByNumberDTO.builder()
                         .blockNumber(nextBlockNumber)
                         .build();
 
-                resCreateBlockDTO = createBlockWithTransactionByNumber(reqCreateBlockByNumberDTO);
+                resCreateBlockChainInfoDTO = createBlockChainInfoByNumber(reqCreateBlockChainInfoByNumberDTO);
             }
         }
 
-        return resCreateBlockDTO;
+        return resCreateBlockChainInfoDTO;
     }
 }

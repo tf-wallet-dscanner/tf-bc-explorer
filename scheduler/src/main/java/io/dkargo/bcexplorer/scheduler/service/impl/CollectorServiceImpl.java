@@ -3,7 +3,7 @@ package io.dkargo.bcexplorer.scheduler.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dkargo.bcexplorer.collector.client.BcExplorerCollectorClient;
 import io.dkargo.bcexplorer.collector.client.BcExplorerCollectorConfigData;
-import io.dkargo.bcexplorer.dto.collector.kas.block.response.ResCreateBlockDTO;
+import io.dkargo.bcexplorer.dto.collector.kas.block.response.ResCreateBlockChainInfoDTO;
 import io.dkargo.bcexplorer.scheduler.service.CollectorService;
 import io.dkargo.dkargohttpclient.DkargoHttpClientResponseException;
 import lombok.extern.slf4j.Slf4j;
@@ -34,9 +34,9 @@ public class CollectorServiceImpl implements CollectorService {
     }
 
     @Override
-    public ResCreateBlockDTO createBlockWithTransaction() {
+    public ResCreateBlockChainInfoDTO createBlockWithTransaction() {
 
-        ResCreateBlockDTO resCreateBlockDTO = null;
+        ResCreateBlockChainInfoDTO resCreateBlockDTO = null;
 
         try {
             log.info("createBlockWithTransaction start!!");

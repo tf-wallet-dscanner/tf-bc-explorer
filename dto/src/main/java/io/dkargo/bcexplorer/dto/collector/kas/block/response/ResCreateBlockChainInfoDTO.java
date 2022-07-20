@@ -10,7 +10,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class ResCreateBlockDTO {
+public class ResCreateBlockChainInfoDTO {
 
     @ApiModelProperty(value = "블록 번호", required = true)
     @NotNull

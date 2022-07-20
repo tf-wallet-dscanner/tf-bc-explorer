@@ -9,9 +9,9 @@ import javax.validation.constraints.NotNull;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class ReqCreateBlockByNumberDTO {
+public class ReqCreateBlockChainInfoByHashDTO {
 
-    @ApiModelProperty(value = "블록 번호", required = true)
+    @ApiModelProperty(value = "블록 해쉬", required = true)
     @NotNull
-    private Long blockNumber;
+    private String blockHash;
 }
