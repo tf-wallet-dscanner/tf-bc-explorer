@@ -4,13 +4,13 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "blockerrors")
+@Document(collection = "bccommerrors")
 @Builder
 @Setter
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class BlockError {
+public class BcCommError {
 
     @Id
     private String id;
@@ -20,6 +20,9 @@ public class BlockError {
     private String jsonrpc;
 
     private Error error;
+
+    // Caver 메소드 명
+    private String caverRequestType;
 
     // KAS 메소드 명
     private String kasRequestType;

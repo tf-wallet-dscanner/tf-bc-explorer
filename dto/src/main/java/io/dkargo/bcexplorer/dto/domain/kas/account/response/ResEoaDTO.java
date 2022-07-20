@@ -33,6 +33,8 @@ public class ResEoaDTO {
     @AllArgsConstructor
     public static class Result {
 
+        private String address;
+
         private Integer accType;
 
         private String balance;

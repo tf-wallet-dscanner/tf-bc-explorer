@@ -1,5 +1,6 @@
-package io.dkargo.bcexplorer.dto.collector.kas.block.request;
+package io.dkargo.bcexplorer.dto.domain.kas.bccommerror.request;
 
+import io.dkargo.bcexplorer.core.type.CaverRequestType;
 import io.dkargo.bcexplorer.core.type.KASRequestType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -8,7 +9,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class ReqBlockErrorDTO {
+public class ReqBcCommErrorDTO {
 
     @ApiModelProperty(value = "id")
     private Long id;
@@ -18,6 +19,9 @@ public class ReqBlockErrorDTO {
 
     @ApiModelProperty(value = "error")
     private Error error;
+
+    @ApiModelProperty(value = "caverRequestType")
+    private CaverRequestType caverRequestType;
 
     @ApiModelProperty(value = "kasRequestType")
     private KASRequestType kasRequestType;

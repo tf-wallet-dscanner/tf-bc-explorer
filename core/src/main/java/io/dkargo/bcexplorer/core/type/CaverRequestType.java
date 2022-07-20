@@ -11,21 +11,18 @@ import java.util.*;
 
 @Getter
 @AllArgsConstructor
-public enum KASRequestType {
+public enum CaverRequestType {
 
     GET_BLOCK_BY_NUMBER("GET_BLOCK_BY_NUMBER", "getBlockByNumber"),
-    GET_BLOCK_BY_HASH("GET_BLOCK_BY_HASH", "getBlockByHash"),
     GET_BLOCK_RECEIPTS("GET_BLOCK_RECEIPTS", "getBlockReceipts"),
-    GET_BLOCK_WITH_CONSENSUS_INFO_BY_NUMBER("GET_BLOCK_WITH_CONSENSUS_INFO_BY_NUMBER", "getBlockWithConsensusInfoByNumber"),
-    GET_BLOCK_WITH_CONSENSUS_INFO_BY_HASH("GET_BLOCK_WITH_CONSENSUS_INFO_BY_HASH", "getBlockWithConsensusInfoByHash"),
-    GET_ACCOUNT_BY_ADDRESS("GET_ACCOUNT_BY_ADDRESS", "getAccountByAddress");
+    GET_BLOCK_WITH_CONSENSUS_INFO_BY_NUMBER("GET_BLOCK_WITH_CONSENSUS_INFO_BY_NUMBER", "getBlockWithConsensusInfoByNumber");
 
     private String value;
     private String description;
 
     @JsonCreator
-    public static KASRequestType enumOf(String value) {
-        return Arrays.stream(KASRequestType.values())
+    public static CaverRequestType enumOf(String value) {
+        return Arrays.stream(CaverRequestType.values())
                 .filter(t -> t.getValue().equals(value))
                 .findAny().orElseThrow(() -> new DkargoException(ErrorCodeEnum.INVALID_FORMAT));
     }
@@ -35,7 +32,7 @@ public enum KASRequestType {
 
     public static List<Map> getEnumToListMap() {
         List<Map> resultList = new ArrayList<>();
-        for(KASRequestType type : KASRequestType.values()) {
+        for(CaverRequestType type : CaverRequestType.values()) {
             HashMap<String, String> map = new HashMap<>();
             map.put("value",type.getValue());
             map.put("description",type.getDescription());

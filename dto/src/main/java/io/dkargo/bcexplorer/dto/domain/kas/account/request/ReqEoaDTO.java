@@ -13,9 +13,6 @@ public class ReqEoaDTO {
     @ApiModelProperty(value = "jsonrpc")
     private String jsonrpc;
 
-    @ApiModelProperty(value = "createAt")
-    private String createAt;
-
     @ApiModelProperty(value = "resultByGetAccount")
     private ResGetAccountDTO.Result resultByGetAccount;
 }

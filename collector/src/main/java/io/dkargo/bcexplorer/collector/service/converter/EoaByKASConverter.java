@@ -12,15 +12,8 @@ public class EoaByKASConverter {
     // req -> eoa
     public static Eoa of(ReqEoaDTO reqEoaDTO) {
 
-        String createAt = null;
-
-        if (reqEoaDTO.getCreateAt() != null) {
-            createAt = reqEoaDTO.getCreateAt();
-        } else {
-            createAt = CommonConverter.currentDateTime();
-        }
-
         Eoa.Result result = Eoa.Result.builder()
+                .address(reqEoaDTO.getResultByGetAccount().getAccount().getAddress())
                 .accType(reqEoaDTO.getResultByGetAccount().getAccType())
                 .balance(reqEoaDTO.getResultByGetAccount().getAccount().getBalance())
                 // 계산
@@ -35,7 +28,7 @@ public class EoaByKASConverter {
         return Eoa.builder()
                 .jsonrpc(reqEoaDTO.getJsonrpc())
                 .result(result)
-                .createAt(createAt)
+                .createAt(CommonConverter.currentDateTime())
                 .updateAt(CommonConverter.currentDateTime())
                 .build();
     }
@@ -44,6 +37,7 @@ public class EoaByKASConverter {
     public static ResEoaDTO of(Eoa eoa) {
 
         ResEoaDTO.Result result = ResEoaDTO.Result.builder()
+                .address(eoa.getResult().getAddress())
                 .accType(eoa.getResult().getAccType())
                 .balance(eoa.getResult().getBalance())
                 .balanceToDouble(eoa.getResult().getBalanceToDouble())

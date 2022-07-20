@@ -10,13 +10,10 @@ import io.dkargo.bcexplorer.domain.repository.ScaRepository;
 import io.dkargo.bcexplorer.dto.collector.kas.account.response.ResGetAccountDTO;
 import io.dkargo.bcexplorer.dto.collector.kas.account.response.ResGetEoaDTO;
 import io.dkargo.bcexplorer.dto.collector.kas.account.response.ResGetScaDTO;
-import io.gsonfire.util.Mapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import xyz.groundx.caver_ext_kas.CaverExtKAS;
-
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -28,7 +25,7 @@ public class AccountByKASServiceImpl implements AccountByKASService {
     private final EoaRepository eoaRepository;
     private final ScaRepository scaRepository;
 
-    private static ResGetAccountDTO getAccount(Account account) {
+    private static ResGetAccountDTO getAccount(Account account, String address) {
 
         ResGetAccountDTO.Result result = null;
         if(account.getResult() != null) {
@@ -49,6 +46,7 @@ public class AccountByKASServiceImpl implements AccountByKASService {
                         ResGetEoaDTO resGetEoaDTO = gson.fromJson(CommonConverter.objectToString(account.getResult().getAccount()), ResGetEoaDTO.class);
 
                         accountInResult = ResGetAccountDTO.Result.Account.builder()
+                                .address(address)
                                 .balance(resGetEoaDTO.getBalance())
                                 .humanReadable(resGetEoaDTO.getHumanReadable())
                                 .nonce(resGetEoaDTO.getNonce())
@@ -61,6 +59,7 @@ public class AccountByKASServiceImpl implements AccountByKASService {
                         ResGetScaDTO resGetScaDTO = gson.fromJson(CommonConverter.objectToString(account.getResult().getAccount()), ResGetScaDTO.class);
 
                         accountInResult = ResGetAccountDTO.Result.Account.builder()
+                                .address(address)
                                 .balance(resGetScaDTO.getBalance())
                                 .humanReadable(resGetScaDTO.getHumanReadable())
                                 .nonce(resGetScaDTO.getNonce())
@@ -115,7 +114,7 @@ public class AccountByKASServiceImpl implements AccountByKASService {
             Account account = caverExtKAS.rpc.klay.getAccount(address).send();
             log.info("account : {}", CommonConverter.objectToString(account));
 
-            resGetAccountDTO = getAccount(account);
+            resGetAccountDTO = getAccount(account, address);
         } catch (Exception e) {
             e.printStackTrace();
         }

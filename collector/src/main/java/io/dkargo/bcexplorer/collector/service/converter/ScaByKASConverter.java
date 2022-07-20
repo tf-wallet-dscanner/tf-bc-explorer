@@ -12,15 +12,8 @@ public class ScaByKASConverter {
     // req -> sca
     public static Sca of(ReqScaDTO reqScaDTO) {
 
-        String createAt = null;
-
-        if (reqScaDTO.getCreateAt() != null) {
-            createAt = reqScaDTO.getCreateAt();
-        } else {
-            createAt = CommonConverter.currentDateTime();
-        }
-
         Sca.Result result = Sca.Result.builder()
+                .address(reqScaDTO.getResultByGetAccount().getAccount().getAddress())
                 .accType(reqScaDTO.getResultByGetAccount().getAccType())
                 .balance(reqScaDTO.getResultByGetAccount().getAccount().getBalance())
                 // 계산
@@ -38,7 +31,7 @@ public class ScaByKASConverter {
         return Sca.builder()
                 .jsonrpc(reqScaDTO.getJsonrpc())
                 .result(result)
-                .createAt(createAt)
+                .createAt(CommonConverter.currentDateTime())
                 .updateAt(CommonConverter.currentDateTime())
                 .build();
     }
@@ -47,6 +40,7 @@ public class ScaByKASConverter {
     public static ResScaDTO of(Sca sca) {
 
         ResScaDTO.Result result = ResScaDTO.Result.builder()
+                .address(sca.getResult().getAddress())
                 .accType(sca.getResult().getAccType())
                 .balance(sca.getResult().getBalance())
                 .balanceToDouble(sca.getResult().getBalanceToDouble())

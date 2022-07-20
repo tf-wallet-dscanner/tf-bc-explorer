@@ -42,6 +42,9 @@ public class ResGetAccountDTO {
         @AllArgsConstructor
         public static class Account {
 
+            @ApiModelProperty(value = "address")
+            private String address;
+
             @ApiModelProperty(value = "balance")
             private String balance;
 

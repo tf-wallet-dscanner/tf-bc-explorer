@@ -3,6 +3,8 @@ package io.dkargo.bcexplorer.api.service.impl;
 import io.dkargo.bcexplorer.api.service.TransactionByKASService;
 import io.dkargo.bcexplorer.api.service.converter.TransactionByKASConverter;
 import io.dkargo.bcexplorer.core.converter.CommonConverter;
+import io.dkargo.bcexplorer.core.error.DkargoException;
+import io.dkargo.bcexplorer.core.error.ErrorCodeEnum;
 import io.dkargo.bcexplorer.domain.entity.Transaction;
 import io.dkargo.bcexplorer.domain.repository.TransactionRepository;
 import io.dkargo.bcexplorer.dto.api.kas.transaction.response.ResGetTransactionDTO;
@@ -32,6 +34,10 @@ public class TransactionByKASServiceImpl implements TransactionByKASService {
     public ResGetTransactionDTO getTransactionByHash(String transactionHash) {
 
         Transaction transaction = transactionRepository.findByResult_TransactionHash(transactionHash);
+
+        if(transaction == null) {
+            throw new DkargoException(ErrorCodeEnum.DATA_NOT_FOUND);
+        }
 
         ResTransactionDTO resTransactionDTO = TransactionByKASConverter.of(transaction);
 
