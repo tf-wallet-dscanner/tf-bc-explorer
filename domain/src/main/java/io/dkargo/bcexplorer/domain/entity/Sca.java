@@ -38,14 +38,14 @@ public class Sca {
         private String balance;
 
         // 계산 값
-        private Double balanceToDouble;
+        private String balanceByFormat;
 
         private Boolean humanReadable;
 
         private String nonce;
 
         // 계산 값
-        private Long totalTransaction;
+        private Integer totalTransaction;
 
         private String type;
 
@@ -56,11 +56,11 @@ public class Sca {
         private String storageRoot;
     }
 
-    public void update(ResGetAccountDTO resGetAccountDTO, Double balanceToDouble, Long totalTransaction) {
+    public void update(ResGetAccountDTO resGetAccountDTO, String balanceByFormat, Integer totalTransaction) {
 
         this.result.accType = resGetAccountDTO.getResult().getAccType();
         this.result.balance = resGetAccountDTO.getResult().getAccount().getBalance();
-        this.result.balanceToDouble = balanceToDouble;
+        this.result.balanceByFormat = balanceByFormat;
         this.result.humanReadable = resGetAccountDTO.getResult().getAccount().getHumanReadable();
         this.result.nonce = resGetAccountDTO.getResult().getAccount().getNonce();
         this.result.totalTransaction = totalTransaction;

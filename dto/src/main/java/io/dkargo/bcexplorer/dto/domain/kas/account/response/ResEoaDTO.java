@@ -40,14 +40,14 @@ public class ResEoaDTO {
         private String balance;
 
         // 계산 값
-        private Double balanceToDouble;
+        private String balanceByFormat;
 
         private Boolean humanReadable;
 
         private String nonce;
 
         // 계산 값
-        private Long totalTransaction;
+        private Integer totalTransaction;
 
         private String type;
     }

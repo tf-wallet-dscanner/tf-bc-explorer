@@ -68,7 +68,7 @@ public class TransactionByKASServiceImpl implements TransactionByKASService {
 
         Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "id");
 
-        Page<Transaction> transactionPage = transactionRepository.findByResult_BlockNumber(CommonConverter.longToHex(blockNumber), pageable);
+        Page<Transaction> transactionPage = transactionRepository.findAllByResult_BlockNumber(CommonConverter.longToHex(blockNumber), pageable);
 
         List<Transaction>  transactions = transactionPage.getContent();
 

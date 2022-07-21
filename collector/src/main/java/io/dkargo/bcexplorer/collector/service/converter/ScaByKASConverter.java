@@ -17,11 +17,11 @@ public class ScaByKASConverter {
                 .accType(reqScaDTO.getResultByGetAccount().getAccType())
                 .balance(reqScaDTO.getResultByGetAccount().getAccount().getBalance())
                 // 계산
-                .balanceToDouble(1004D)
+                .balanceByFormat("0.0000002")
                 .humanReadable(reqScaDTO.getResultByGetAccount().getAccount().getHumanReadable())
                 .nonce(reqScaDTO.getResultByGetAccount().getAccount().getNonce())
                 // 계산
-                .totalTransaction(1004L)
+                .totalTransaction(1004)
                 .type(reqScaDTO.getResultByGetAccount().getAccount().getType())
                 .codeFormat(reqScaDTO.getResultByGetAccount().getAccount().getCodeFormat())
                 .codeHash(reqScaDTO.getResultByGetAccount().getAccount().getCodeHash())
@@ -43,7 +43,7 @@ public class ScaByKASConverter {
                 .address(sca.getResult().getAddress())
                 .accType(sca.getResult().getAccType())
                 .balance(sca.getResult().getBalance())
-                .balanceToDouble(sca.getResult().getBalanceToDouble())
+                .balanceByFormat(sca.getResult().getBalanceByFormat())
                 .humanReadable(sca.getResult().getHumanReadable())
                 .nonce(sca.getResult().getNonce())
                 .totalTransaction(sca.getResult().getTotalTransaction())

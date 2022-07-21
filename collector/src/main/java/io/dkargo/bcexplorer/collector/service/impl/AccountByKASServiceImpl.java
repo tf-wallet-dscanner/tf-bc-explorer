@@ -5,8 +5,8 @@ import com.google.gson.GsonBuilder;
 import com.klaytn.caver.methods.response.Account;
 import io.dkargo.bcexplorer.collector.service.AccountByKASService;
 import io.dkargo.bcexplorer.core.converter.CommonConverter;
-import io.dkargo.bcexplorer.domain.repository.EoaRepository;
-import io.dkargo.bcexplorer.domain.repository.ScaRepository;
+import io.dkargo.bcexplorer.domain.entity.Transaction;
+import io.dkargo.bcexplorer.domain.repository.TransactionRepository;
 import io.dkargo.bcexplorer.dto.collector.kas.account.response.ResGetAccountDTO;
 import io.dkargo.bcexplorer.dto.collector.kas.account.response.ResGetEoaDTO;
 import io.dkargo.bcexplorer.dto.collector.kas.account.response.ResGetScaDTO;
@@ -15,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import xyz.groundx.caver_ext_kas.CaverExtKAS;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -22,10 +24,9 @@ public class AccountByKASServiceImpl implements AccountByKASService {
 
     private final CaverExtKAS caverExtKAS;
 
-    private final EoaRepository eoaRepository;
-    private final ScaRepository scaRepository;
+    private final TransactionRepository transactionRepository;
 
-    private static ResGetAccountDTO getAccount(Account account, String address) {
+    private static ResGetAccountDTO getAccount(Account account, String address, Integer totalTransaction) {
 
         ResGetAccountDTO.Result result = null;
         if(account.getResult() != null) {
@@ -42,27 +43,37 @@ public class AccountByKASServiceImpl implements AccountByKASService {
                 switch (account.getResult().getAccount().getType().toString()) {
 
                     case "EOA" :
-                        log.info("EOA!!");
                         ResGetEoaDTO resGetEoaDTO = gson.fromJson(CommonConverter.objectToString(account.getResult().getAccount()), ResGetEoaDTO.class);
+
+                        // balance 생성
+                        String balanceByEoa = CommonConverter.bigDecimalToFormatString(CommonConverter.hexToBigDecimal(resGetEoaDTO.getBalance()));
+                        log.info("balanceByEoa :{}", balanceByEoa);
 
                         accountInResult = ResGetAccountDTO.Result.Account.builder()
                                 .address(address)
                                 .balance(resGetEoaDTO.getBalance())
+                                .balanceByFormat(balanceByEoa)
                                 .humanReadable(resGetEoaDTO.getHumanReadable())
                                 .nonce(resGetEoaDTO.getNonce())
+                                .totalTransaction(totalTransaction)
                                 .type(resGetEoaDTO.getType())
                                 .build();
                         break;
 
                     case "SCA" :
-                        log.info("SCA");
                         ResGetScaDTO resGetScaDTO = gson.fromJson(CommonConverter.objectToString(account.getResult().getAccount()), ResGetScaDTO.class);
+
+                        // balance 생성
+                        String balanceBySca = CommonConverter.bigDecimalToFormatString(CommonConverter.hexToBigDecimal(resGetScaDTO.getBalance()));
+                        log.info("balanceBySca :{}", balanceBySca);
 
                         accountInResult = ResGetAccountDTO.Result.Account.builder()
                                 .address(address)
                                 .balance(resGetScaDTO.getBalance())
+                                .balanceByFormat(balanceBySca)
                                 .humanReadable(resGetScaDTO.getHumanReadable())
                                 .nonce(resGetScaDTO.getNonce())
+                                .totalTransaction(totalTransaction)
                                 .type(resGetScaDTO.getType())
                                 .codeFormat(resGetScaDTO.getCodeFormat())
                                 .codeHash(resGetScaDTO.getCodeHash())
@@ -106,6 +117,7 @@ public class AccountByKASServiceImpl implements AccountByKASService {
 
     }
 
+    @Override
     public ResGetAccountDTO getAccountByAddress(String address) {
 
         ResGetAccountDTO resGetAccountDTO = null;
@@ -114,7 +126,10 @@ public class AccountByKASServiceImpl implements AccountByKASService {
             Account account = caverExtKAS.rpc.klay.getAccount(address).send();
             log.info("account : {}", CommonConverter.objectToString(account));
 
-            resGetAccountDTO = getAccount(account, address);
+            // totalTransaction 값을 위함
+            List<Transaction> transactions = transactionRepository.findAllByResult_FromOrResult_To(address, address);
+
+            resGetAccountDTO = getAccount(account, address, transactions.size());
         } catch (Exception e) {
             e.printStackTrace();
         }

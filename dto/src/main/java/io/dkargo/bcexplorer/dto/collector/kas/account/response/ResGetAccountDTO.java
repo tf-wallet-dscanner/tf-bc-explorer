@@ -48,6 +48,9 @@ public class ResGetAccountDTO {
             @ApiModelProperty(value = "balance")
             private String balance;
 
+            // 계산 값
+            private String balanceByFormat;
+
             @ApiModelProperty(value = "humanReadable")
             private Boolean humanReadable;
 
@@ -69,6 +72,10 @@ public class ResGetAccountDTO {
 
             @ApiModelProperty(value = "nonce")
             private String nonce;
+
+            // 계산 값
+            @ApiModelProperty(value = "totalTransaction")
+            private Integer totalTransaction;
 
             @ApiModelProperty(value = "type")
             private String type;

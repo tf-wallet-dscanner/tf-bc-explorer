@@ -31,7 +31,7 @@ public class CommonConverter {
         return Long.decode(hexadecimal);
     }
 
-    // 16 진수 -> 10 진수 (BigInteger) --- amount에 사용 ---
+    // 16 진수 -> 10 진수 (BigInteger) --- amount, balance에 사용 ---
     public static BigDecimal hexToBigDecimal(String hexadecimal) {
 
         BigInteger decimal = new BigInteger(hexadecimal.substring(2), 16);

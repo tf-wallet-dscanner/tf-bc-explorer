@@ -17,11 +17,11 @@ public class EoaByKASConverter {
                 .accType(reqEoaDTO.getResultByGetAccount().getAccType())
                 .balance(reqEoaDTO.getResultByGetAccount().getAccount().getBalance())
                 // 계산
-                .balanceToDouble(1004D)
+                .balanceByFormat("0.31222")
                 .humanReadable(reqEoaDTO.getResultByGetAccount().getAccount().getHumanReadable())
                 .nonce(reqEoaDTO.getResultByGetAccount().getAccount().getNonce())
                 // 계산
-                .totalTransaction(1004L)
+                .totalTransaction(1004)
                 .type(reqEoaDTO.getResultByGetAccount().getAccount().getType())
                 .build();
 
@@ -40,7 +40,7 @@ public class EoaByKASConverter {
                 .address(eoa.getResult().getAddress())
                 .accType(eoa.getResult().getAccType())
                 .balance(eoa.getResult().getBalance())
-                .balanceToDouble(eoa.getResult().getBalanceToDouble())
+                .balanceByFormat(eoa.getResult().getBalanceByFormat())
                 .humanReadable(eoa.getResult().getHumanReadable())
                 .nonce(eoa.getResult().getNonce())
                 .totalTransaction(eoa.getResult().getTotalTransaction())

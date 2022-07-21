@@ -602,7 +602,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                 eoas.add(EoaByKASConverter.of(reqEoaDTOByFrom));
             } else {
                 // 수정 할 EOA 정보 수정 후 EOA 리스트에 추가
-                eoaByFrom.update(resGetAccountDTOByFrom, 9999D, 9999L);
+                eoaByFrom.update(resGetAccountDTOByFrom, "0.00001", 9999);
                 eoas.add(eoaByFrom);
             }
             // ------------------------------------------------------------------------
@@ -633,7 +633,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                             eoas.add(EoaByKASConverter.of(reqEoaDTOByTo));
                         } else {
                             // 수정 할 EOA 정보 수정 후 EOA 리스트에 추가
-                            eoaByTo.update(resGetAccountDTOByTo, 9999D, 9999L);
+                            eoaByTo.update(resGetAccountDTOByTo, "0.00001", 9999);
                             eoas.add(eoaByTo);
                         }
                         break;
@@ -651,7 +651,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                             scas.add(ScaByKASConverter.of(reqScaDTOByTo));
                         } else {
                             // 수정 할 SCA 정보 수정 후 SCA 리스트에 추가
-                            scaByTo.update(resGetAccountDTOByTo, 9207D, 9207L);
+                            scaByTo.update(resGetAccountDTOByTo, "0.00002", 9207);
                             scas.add(scaByTo);
                         }
                         break;
@@ -786,7 +786,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                 eoas.add(EoaByKASConverter.of(reqEoaDTOByFrom));
             } else {
                 // 수정 할 EOA 정보 수정 후 EOA 리스트에 추가
-                eoaByFrom.update(resGetAccountDTOByFrom, 9999D, 9999L);
+                eoaByFrom.update(resGetAccountDTOByFrom, "0.00001", 9999);
                 eoas.add(eoaByFrom);
             }
             // ------------------------------------------------------------------------
@@ -817,7 +817,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                             eoas.add(EoaByKASConverter.of(reqEoaDTOByTo));
                         } else {
                             // 수정 할 EOA 정보 수정 후 EOA 리스트에 추가
-                            eoaByTo.update(resGetAccountDTOByTo, 9999D, 9999L);
+                            eoaByTo.update(resGetAccountDTOByTo, "0.00001", 9999);
                             eoas.add(eoaByTo);
                         }
                         break;
@@ -835,7 +835,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                             scas.add(ScaByKASConverter.of(reqScaDTOByTo));
                         } else {
                             // 수정 할 SCA 정보 수정 후 SCA 리스트에 추가
-                            scaByTo.update(resGetAccountDTOByTo, 9207D, 9207L);
+                            scaByTo.update(resGetAccountDTOByTo, "0.00003", 9207);
                             scas.add(scaByTo);
                         }
                         break;
