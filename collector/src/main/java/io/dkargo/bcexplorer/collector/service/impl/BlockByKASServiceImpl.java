@@ -602,7 +602,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                 eoas.add(EoaByKASConverter.of(reqEoaDTOByFrom));
             } else {
                 // 수정 할 EOA 정보 수정 후 EOA 리스트에 추가
-                eoaByFrom.update(resGetAccountDTOByFrom, "0.00001", 9999);
+                eoaByFrom.update(resGetAccountDTOByFrom, resGetAccountDTOByFrom.getResult().getAccount().getBalanceByFormat(), resGetAccountDTOByFrom.getResult().getAccount().getTotalTransaction());
                 eoas.add(eoaByFrom);
             }
             // ------------------------------------------------------------------------
@@ -633,7 +633,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                             eoas.add(EoaByKASConverter.of(reqEoaDTOByTo));
                         } else {
                             // 수정 할 EOA 정보 수정 후 EOA 리스트에 추가
-                            eoaByTo.update(resGetAccountDTOByTo, "0.00001", 9999);
+                            eoaByTo.update(resGetAccountDTOByTo, resGetAccountDTOByTo.getResult().getAccount().getBalanceByFormat(), resGetAccountDTOByTo.getResult().getAccount().getTotalTransaction());
                             eoas.add(eoaByTo);
                         }
                         break;
@@ -651,7 +651,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                             scas.add(ScaByKASConverter.of(reqScaDTOByTo));
                         } else {
                             // 수정 할 SCA 정보 수정 후 SCA 리스트에 추가
-                            scaByTo.update(resGetAccountDTOByTo, "0.00002", 9207);
+                            scaByTo.update(resGetAccountDTOByTo, resGetAccountDTOByTo.getResult().getAccount().getBalanceByFormat(), resGetAccountDTOByTo.getResult().getAccount().getTotalTransaction());
                             scas.add(scaByTo);
                         }
                         break;
@@ -672,12 +672,18 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                         throw new DkargoException(ErrorCodeEnum.BAD_REQUEST);
                     }
 
-                    // 저장 할 SCA 정보 생성 후 SCA 리스트에 추가
-                    ReqScaDTO reqScaDTOByContractAddress = ReqScaDTO.builder()
-                            .jsonrpc(resGetAccountDTOByContractAddress.getJsonrpc())
-                            .resultByGetAccount(resGetAccountDTOByContractAddress.getResult())
-                            .build();
-                    scas.add(ScaByKASConverter.of(reqScaDTOByContractAddress));
+                    Sca scaByContractAddress =  scaRepository.findByResult_address(result.getContractAddress());
+
+                    if (scaByContractAddress == null) {
+                        // 저장 할 SCA 정보 생성 후 SCA 리스트에 추가
+                        ReqScaDTO reqScaDTOByContractAddress = ReqScaDTO.builder()
+                                .jsonrpc(resGetAccountDTOByContractAddress.getJsonrpc())
+                                .resultByGetAccount(resGetAccountDTOByContractAddress.getResult())
+                                .build();
+                        scas.add(ScaByKASConverter.of(reqScaDTOByContractAddress));
+                    } else {
+                        scaByContractAddress.update(resGetAccountDTOByContractAddress, resGetAccountDTOByContractAddress.getResult().getAccount().getBalanceByFormat(), resGetAccountDTOByContractAddress.getResult().getAccount().getTotalTransaction());
+                    }
                 } else {
                     log.info("Chain Data Anchoring");
                 }
@@ -786,7 +792,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                 eoas.add(EoaByKASConverter.of(reqEoaDTOByFrom));
             } else {
                 // 수정 할 EOA 정보 수정 후 EOA 리스트에 추가
-                eoaByFrom.update(resGetAccountDTOByFrom, "0.00001", 9999);
+                eoaByFrom.update(resGetAccountDTOByFrom, resGetAccountDTOByFrom.getResult().getAccount().getBalanceByFormat(), resGetAccountDTOByFrom.getResult().getAccount().getTotalTransaction());
                 eoas.add(eoaByFrom);
             }
             // ------------------------------------------------------------------------
@@ -817,7 +823,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                             eoas.add(EoaByKASConverter.of(reqEoaDTOByTo));
                         } else {
                             // 수정 할 EOA 정보 수정 후 EOA 리스트에 추가
-                            eoaByTo.update(resGetAccountDTOByTo, "0.00001", 9999);
+                            eoaByTo.update(resGetAccountDTOByTo, resGetAccountDTOByTo.getResult().getAccount().getBalanceByFormat(), resGetAccountDTOByTo.getResult().getAccount().getTotalTransaction());
                             eoas.add(eoaByTo);
                         }
                         break;
@@ -835,7 +841,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                             scas.add(ScaByKASConverter.of(reqScaDTOByTo));
                         } else {
                             // 수정 할 SCA 정보 수정 후 SCA 리스트에 추가
-                            scaByTo.update(resGetAccountDTOByTo, "0.00003", 9207);
+                            scaByTo.update(resGetAccountDTOByTo, resGetAccountDTOByTo.getResult().getAccount().getBalanceByFormat(), resGetAccountDTOByTo.getResult().getAccount().getTotalTransaction());
                             scas.add(scaByTo);
                         }
                         break;
@@ -856,12 +862,18 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                         throw new DkargoException(ErrorCodeEnum.BAD_REQUEST);
                     }
 
-                    // 저장 할 SCA 정보 생성 후 SCA 리스트에 추가
-                    ReqScaDTO reqScaDTOByContractAddress = ReqScaDTO.builder()
-                            .jsonrpc(resGetAccountDTOByContractAddress.getJsonrpc())
-                            .resultByGetAccount(resGetAccountDTOByContractAddress.getResult())
-                            .build();
-                    scas.add(ScaByKASConverter.of(reqScaDTOByContractAddress));
+                    Sca scaByContractAddress = scaRepository.findByResult_address(result.getContractAddress());
+
+                    if (scaByContractAddress == null) {
+                        // 저장 할 SCA 정보 생성 후 SCA 리스트에 추가
+                        ReqScaDTO reqScaDTOByContractAddress = ReqScaDTO.builder()
+                                .jsonrpc(resGetAccountDTOByContractAddress.getJsonrpc())
+                                .resultByGetAccount(resGetAccountDTOByContractAddress.getResult())
+                                .build();
+                        scas.add(ScaByKASConverter.of(reqScaDTOByContractAddress));
+                    } else {
+                        scaByContractAddress.update(resGetAccountDTOByContractAddress, resGetAccountDTOByContractAddress.getResult().getAccount().getBalanceByFormat(), resGetAccountDTOByContractAddress.getResult().getAccount().getTotalTransaction());
+                    }
                 } else {
                     log.info("Chain Data Anchoring");
                 }

@@ -17,11 +17,11 @@ public class EoaByKASConverter {
                 .accType(reqEoaDTO.getResultByGetAccount().getAccType())
                 .balance(reqEoaDTO.getResultByGetAccount().getAccount().getBalance())
                 // 계산
-                .balanceByFormat("0.31222")
+                .balanceByFormat(reqEoaDTO.getResultByGetAccount().getAccount().getBalanceByFormat())
                 .humanReadable(reqEoaDTO.getResultByGetAccount().getAccount().getHumanReadable())
                 .nonce(reqEoaDTO.getResultByGetAccount().getAccount().getNonce())
                 // 계산
-                .totalTransaction(1004)
+                .totalTransaction(reqEoaDTO.getResultByGetAccount().getAccount().getTotalTransaction())
                 .type(reqEoaDTO.getResultByGetAccount().getAccount().getType())
                 .build();
 

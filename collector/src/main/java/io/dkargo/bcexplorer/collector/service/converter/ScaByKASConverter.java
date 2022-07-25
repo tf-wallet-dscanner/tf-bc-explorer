@@ -17,11 +17,11 @@ public class ScaByKASConverter {
                 .accType(reqScaDTO.getResultByGetAccount().getAccType())
                 .balance(reqScaDTO.getResultByGetAccount().getAccount().getBalance())
                 // 계산
-                .balanceByFormat("0.0000002")
+                .balanceByFormat(reqScaDTO.getResultByGetAccount().getAccount().getBalanceByFormat())
                 .humanReadable(reqScaDTO.getResultByGetAccount().getAccount().getHumanReadable())
                 .nonce(reqScaDTO.getResultByGetAccount().getAccount().getNonce())
                 // 계산
-                .totalTransaction(1004)
+                .totalTransaction(reqScaDTO.getResultByGetAccount().getAccount().getTotalTransaction())
                 .type(reqScaDTO.getResultByGetAccount().getAccount().getType())
                 .codeFormat(reqScaDTO.getResultByGetAccount().getAccount().getCodeFormat())
                 .codeHash(reqScaDTO.getResultByGetAccount().getAccount().getCodeHash())

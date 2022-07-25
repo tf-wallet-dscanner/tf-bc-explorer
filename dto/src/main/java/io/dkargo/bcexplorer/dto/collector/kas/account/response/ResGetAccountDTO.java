@@ -49,6 +49,7 @@ public class ResGetAccountDTO {
             private String balance;
 
             // 계산 값
+            @ApiModelProperty(value = "balanceByFormat")
             private String balanceByFormat;
 
             @ApiModelProperty(value = "humanReadable")
