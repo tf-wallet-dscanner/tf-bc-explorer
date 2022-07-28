@@ -675,6 +675,25 @@ public class BlockByKASServiceImpl implements BlockByKASService {
             }
         }
 
+        io.dkargo.bcexplorer.domain.entity.Block block = null;
+
+        // 저장 할 트랜잭션이 1개 이상 있으면 블록 + 트랜잭션 저장
+        if(transactions.size() > 0) {
+
+            // 블록 정보 저장 (블록 + consensus 정보)
+            ReqBlockDTO reqBlockDTO = ReqBlockDTO.builder()
+                    .jsonrpc(resGetBlockDTO.getJsonrpc())
+                    .resultByGetBlock(resGetBlockDTO.getResult())
+                    .resultByGetBlockWithConsensusInfo(resGetBlockWithConsensusInfoDTO.getResult())
+                    .totalTxFee(totalTxFee) // 해당 값은 Filter에 해당 하는 값이 아니여도, 모두 저장
+                    .serviceCode(reqCreateBlockChainInfoByNumberDTO.getServiceCode())
+                    .transactionHashs(transactionHashList) // 해당 값은 Filter에 해당 하는 값이 아니여도, 모두 저장
+                    .build();
+            block = blockRepository.save(BlockByKASConverter.of(reqBlockDTO));
+
+            transactionRepository.saveAll(transactions);
+        }
+
         Boolean validTransaction = false;
 
         // EOA/SCA 생성 - from은 무조건 EOA만 존재, to는 EOA,SCA,NULL 존재, contractAddress는 SCA만 존재
@@ -753,21 +772,8 @@ public class BlockByKASServiceImpl implements BlockByKASService {
             }
         }
 
-        // 블록 / 트랜잭션 / 계정 정보 저장 - 한개라도 트랜잭션이 생성되면 해당 블록/트랜잭션/계정 정보 저장
+        // 계정(EOA/SCA) 정보 저장 후 리턴
         if(validTransaction) {
-
-            // 블록 정보 저장 (블록 + consensus 정보)
-            ReqBlockDTO reqBlockDTO = ReqBlockDTO.builder()
-                    .jsonrpc(resGetBlockDTO.getJsonrpc())
-                    .resultByGetBlock(resGetBlockDTO.getResult())
-                    .resultByGetBlockWithConsensusInfo(resGetBlockWithConsensusInfoDTO.getResult())
-                    .totalTxFee(totalTxFee) // 해당 값은 Filter에 해당 하는 값이 아니여도, 모두 저장
-                    .serviceCode(reqCreateBlockChainInfoByNumberDTO.getServiceCode())
-                    .transactionHashs(transactionHashList) // 해당 값은 Filter에 해당 하는 값이 아니여도, 모두 저장
-                    .build();
-            io.dkargo.bcexplorer.domain.entity.Block block = blockRepository.save(BlockByKASConverter.of(reqBlockDTO));
-
-            transactionRepository.saveAll(transactions);
 
             // 계정(EOA/SCA) 정보 저장
             if(eoas.size() > 0) {
