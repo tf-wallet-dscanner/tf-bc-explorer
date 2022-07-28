@@ -36,7 +36,7 @@ public class TransactionByKASServiceImpl implements TransactionByKASService {
         Transaction transaction = transactionRepository.findByResult_TransactionHash(transactionHash);
 
         if(transaction == null) {
-            throw new DkargoException(ErrorCodeEnum.DATA_NOT_FOUND);
+            throw new DkargoException(ErrorCodeEnum.DATA_NOT_FOUND, "트랜잭션 정보가 없습니다.");
         }
 
         ResTransactionDTO resTransactionDTO = TransactionByKASConverter.of(transaction);

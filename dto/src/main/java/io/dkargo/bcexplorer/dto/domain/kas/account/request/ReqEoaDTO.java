@@ -15,4 +15,7 @@ public class ReqEoaDTO {
 
     @ApiModelProperty(value = "resultByGetAccount")
     private ResGetAccountDTO.Result resultByGetAccount;
+
+    @ApiModelProperty(value = "serviceCode")
+    private String serviceCode;
 }

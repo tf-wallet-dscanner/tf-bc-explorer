@@ -33,6 +33,9 @@ public class ResBcCommErrorDTO {
     @ApiModelProperty(value = "rawResponse")
     private String rawResponse;
 
+    @ApiModelProperty(value = "serviceCode")
+    private String serviceCode;
+
     @ApiModelProperty(value = "createAt")
     private String createAt;
 

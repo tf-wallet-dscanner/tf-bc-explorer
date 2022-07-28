@@ -7,4 +7,7 @@ public interface ScaRepository extends MongoRepository<Sca, String> {
 
     // result/to, contractAddress 값을 가지고 Sca 조회
     Sca findByResult_address(String address);
+
+    // result/form,to + serviceCode 값을 가지고 Sca 조회
+    Sca findByResult_AddressAndServiceCode(String address, String serviceCode);
 }

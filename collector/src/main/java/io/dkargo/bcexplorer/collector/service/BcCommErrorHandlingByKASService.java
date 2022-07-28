@@ -10,12 +10,12 @@ import io.dkargo.bcexplorer.dto.collector.kas.block.response.ResGetBlockWithCons
 public interface BcCommErrorHandlingByKASService {
 
     // block
-    BcCommError getBlock(ResGetBlockDTO resGetBlockDTO, KASRequestType kasRequestType);
-    BcCommError getBlockWithConsensusInfo(ResGetBlockWithConsensusInfoDTO resGetBlockWithConsensusInfoDTO, KASRequestType kasRequestType);
-    BcCommError getBlockReceipt(ResGetBlockReceiptDTO resGetBlockReceiptDTO, KASRequestType kasRequestType);
+    BcCommError getBlock(ResGetBlockDTO resGetBlockDTO, KASRequestType kasRequestType, String serviceCode);
+    BcCommError getBlockWithConsensusInfo(ResGetBlockWithConsensusInfoDTO resGetBlockWithConsensusInfoDTO, KASRequestType kasRequestType, String serviceCode);
+    BcCommError getBlockReceipt(ResGetBlockReceiptDTO resGetBlockReceiptDTO, KASRequestType kasRequestType, String serviceCode);
 
     // account
-    BcCommError getAccount(ResGetAccountDTO resGetAccountDTO, KASRequestType kasRequestType);
+    BcCommError getAccount(ResGetAccountDTO resGetAccountDTO, KASRequestType kasRequestType, String serviceCode);
 
 
 }

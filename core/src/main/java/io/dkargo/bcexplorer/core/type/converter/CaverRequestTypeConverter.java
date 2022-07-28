@@ -8,9 +8,9 @@ import java.util.stream.Stream;
 public class CaverRequestTypeConverter implements AttributeConverter<CaverRequestType, String> {
 
     @Override
-    public String convertToDatabaseColumn(CaverRequestType kasRequestType) {
-        if (kasRequestType == null) return null;
-        return kasRequestType.getValue();
+    public String convertToDatabaseColumn(CaverRequestType caverRequestType) {
+        if (caverRequestType == null) return null;
+        return caverRequestType.getValue();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package io.dkargo.bcexplorer.collector.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqCreateBlockChainInfoBySchedulerDTO;
 import io.dkargo.bcexplorer.dto.collector.kas.block.response.ResCreateBlockChainInfoDTO;
 import io.dkargo.dkargohttpclient.DkargoHttpClientResponseException;
 import org.slf4j.Logger;
@@ -28,17 +29,18 @@ public class BcExplorerCollectorClient extends ABcExplorerCollectorClient<BcExpl
     }
 
     /**
-     * 블록 정보와 트랜잭션 정보 생성
+     * 블록 정보와 트랜잭션 정보 및 계정 정보 생성
      *
+     * @param reqCreateBlockChainInfoBySchedulerDTO
      * @return
      * @throws IOException
      * @throws DkargoHttpClientResponseException
      */
     @Override
-    public ResCreateBlockChainInfoDTO createBlockWithTransaction() throws IOException, DkargoHttpClientResponseException {
+    public ResCreateBlockChainInfoDTO createBlockChainInfoByKas(ReqCreateBlockChainInfoBySchedulerDTO reqCreateBlockChainInfoBySchedulerDTO) throws IOException, DkargoHttpClientResponseException {
 
-        String url = getFullUrl(BcExplorerCollectorUrl.CREATE_BLOCK_WITH_TRANSACTION);
+        String url = getFullUrl(BcExplorerCollectorUrl.CREATE_BLOCK_CHAIN_INFO_BY_KAS);
 
-        return httpClient.post(url, ResCreateBlockChainInfoDTO.class, "", headers);
+        return httpClient.post(url, ResCreateBlockChainInfoDTO.class, reqCreateBlockChainInfoBySchedulerDTO, headers);
     }
 }

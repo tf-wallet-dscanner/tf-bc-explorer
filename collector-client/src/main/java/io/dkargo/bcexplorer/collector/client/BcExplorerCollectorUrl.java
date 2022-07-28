@@ -12,7 +12,7 @@ public enum BcExplorerCollectorUrl implements IApiUrl {
 
     COLLECTOR_BY_KAS("/block-by-kas"),
 
-    CREATE_BLOCK_WITH_TRANSACTION(COLLECTOR_BY_KAS.getUrl() + "/blocks/by-scheduler");
+    CREATE_BLOCK_CHAIN_INFO_BY_KAS(COLLECTOR_BY_KAS.getUrl() + "/blocks/by-scheduler");
 
     private String url;
 

@@ -29,6 +29,9 @@ public class ReqBcCommErrorDTO {
     @ApiModelProperty(value = "rawResponse")
     private String rawResponse;
 
+    @ApiModelProperty(value = "serviceCode")
+    private String serviceCode;
+
     @Data
     @Builder
     @NoArgsConstructor(access = AccessLevel.PROTECTED)

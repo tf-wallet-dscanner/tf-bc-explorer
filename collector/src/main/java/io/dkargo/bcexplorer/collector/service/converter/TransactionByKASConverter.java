@@ -90,6 +90,7 @@ public class TransactionByKASConverter {
         return Transaction.builder()
                 .jsonrpc(reqTransactionDTO.getJsonrpc())
                 .result(result)
+                .serviceCode(reqTransactionDTO.getServiceCode())
                 .createAt(CommonConverter.currentDateTime())
                 .build();
     }
@@ -172,6 +173,7 @@ public class TransactionByKASConverter {
                 .id(transaction.getId())
                 .jsonrpc(transaction.getJsonrpc())
                 .result(result)
+                .serviceCode(transaction.getServiceCode())
                 .createAt(transaction.getCreateAt())
                 .build();
     }

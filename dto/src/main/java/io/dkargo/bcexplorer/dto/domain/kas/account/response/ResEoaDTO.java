@@ -21,10 +21,13 @@ public class ResEoaDTO {
     @ApiModelProperty(value = "result")
     private Result result;
 
+    @ApiModelProperty(value = "serviceCode")
+    private String serviceCode;
+
     @ApiModelProperty(value = "createAt")
     private String createAt;
 
-    @ApiModelProperty(value = "createAt")
+    @ApiModelProperty(value = "updateAt")
     private String updateAt;
 
     @Data

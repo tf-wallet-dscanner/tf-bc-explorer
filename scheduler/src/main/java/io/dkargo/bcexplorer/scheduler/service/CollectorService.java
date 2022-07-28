@@ -4,5 +4,5 @@ import io.dkargo.bcexplorer.dto.collector.kas.block.response.ResCreateBlockChain
 
 public interface CollectorService {
 
-    ResCreateBlockChainInfoDTO createBlockWithTransaction();
+    ResCreateBlockChainInfoDTO createBlockChainInfo();
 }

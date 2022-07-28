@@ -17,8 +17,10 @@ public class ManagedAccount {
 
     private String serviceCode;
 
+    private String serviceName;
+
     private String address;
 
-    // EOA/SCA
+    // eoa/sca
     private String accountType;
 }

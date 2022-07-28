@@ -21,6 +21,8 @@ public class Block {
 
     private Result result;
 
+    private String serviceCode;
+
     private String createAt;
 
     @Data
@@ -74,5 +76,8 @@ public class Block {
         private List<String> committee;
 
         private Integer transactionCount;
+
+        // filter에 상관없이 블록에 있는 모든 트랜잭션에 대한 해시 값 저장
+        private List<String> transactionHashs;
     }
 }

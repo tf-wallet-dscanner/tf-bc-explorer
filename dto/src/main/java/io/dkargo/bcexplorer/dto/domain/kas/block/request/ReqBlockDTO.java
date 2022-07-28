@@ -5,6 +5,8 @@ import io.dkargo.bcexplorer.dto.collector.kas.block.response.ResGetBlockWithCons
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,4 +25,10 @@ public class ReqBlockDTO {
     //transaction 에서 계산 된 값.
     @ApiModelProperty(value = "totalTxFee")
     private Double totalTxFee;
+
+    @ApiModelProperty(value = "serviceCode")
+    private String serviceCode;
+
+    @ApiModelProperty(value = "transactionHashs")
+    private List<String> transactionHashs;
 }

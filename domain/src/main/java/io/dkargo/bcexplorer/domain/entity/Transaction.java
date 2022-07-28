@@ -22,6 +22,8 @@ public class Transaction {
 
     private Result result;
 
+    private String serviceCode;
+
     private String createAt;
 
     @Data

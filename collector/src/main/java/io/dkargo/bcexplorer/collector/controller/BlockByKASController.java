@@ -3,6 +3,7 @@ package io.dkargo.bcexplorer.collector.controller;
 import io.dkargo.bcexplorer.collector.service.BlockByKASService;
 import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqCreateBlockChainInfoByHashDTO;
 import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqCreateBlockChainInfoByNumberDTO;
+import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqCreateBlockChainInfoBySchedulerDTO;
 import io.dkargo.bcexplorer.dto.collector.kas.block.response.*;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
@@ -168,24 +169,24 @@ public class BlockByKASController {
         return blockByKASService.createBlockChainInfoByNumber(reqCreateBlockChainInfoByNumberDTO);
     }
 
-    @ApiOperation(
-            value = "블록 해쉬를 통해 블록 정보와 트랜잭션 정보 및 계정 정보 생성",
-            notes = "createBlockChainInfoByHash"
-    )
-    @ApiImplicitParams({
-    })
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "createBlockChainInfoByHash", response = ResCreateBlockChainInfoDTO.class)
-    })
-    @PostMapping("/blocks/hash")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResCreateBlockChainInfoDTO createBlockChainInfoByHash(@Validated @RequestBody ReqCreateBlockChainInfoByHashDTO reqCreateBlockChainInfoByHashDTO) {
+//    @ApiOperation(
+//            value = "블록 해쉬를 통해 블록 정보와 트랜잭션 정보 및 계정 정보 생성",
+//            notes = "createBlockChainInfoByHash"
+//    )
+//    @ApiImplicitParams({
+//    })
+//    @ApiResponses(value = {
+//            @ApiResponse(code = 200, message = "createBlockChainInfoByHash", response = ResCreateBlockChainInfoDTO.class)
+//    })
+//    @PostMapping("/blocks/hash")
+//    @ResponseStatus(HttpStatus.CREATED)
+//    public ResCreateBlockChainInfoDTO createBlockChainInfoByHash(@Validated @RequestBody ReqCreateBlockChainInfoByHashDTO reqCreateBlockChainInfoByHashDTO) {
+//
+//        return blockByKASService.createBlockChainInfoByHash(reqCreateBlockChainInfoByHashDTO);
+//    }
 
-        return blockByKASService.createBlockChainInfoByHash(reqCreateBlockChainInfoByHashDTO);
-    }
-
     @ApiOperation(
-            value = "블록 정보와 트랜잭션 정보 생성 [scheduler 용]",
+            value = "블록 정보와 트랜잭션 정보 및 계정 정보 생성 [scheduler 용]",
             notes = "createBlockChainInfoByScheduler"
     )
     @ApiImplicitParams({
@@ -195,8 +196,8 @@ public class BlockByKASController {
     })
     @PostMapping("/blocks/by-scheduler")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResCreateBlockChainInfoDTO createBlockChainInfoByScheduler() {
+    public ResCreateBlockChainInfoDTO createBlockChainInfoByScheduler(@Validated @RequestBody ReqCreateBlockChainInfoBySchedulerDTO reqCreateBlockChainInfoBySchedulerDTO) {
 
-        return blockByKASService.createBlockChainInfoByScheduler();
+        return blockByKASService.createBlockChainInfoByScheduler(reqCreateBlockChainInfoBySchedulerDTO);
     }
 }

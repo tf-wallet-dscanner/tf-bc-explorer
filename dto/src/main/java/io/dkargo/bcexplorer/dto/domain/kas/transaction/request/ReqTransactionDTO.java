@@ -23,4 +23,7 @@ public class ReqTransactionDTO {
 
     @ApiModelProperty(value = "blockHash")
     private String blockHash;
+
+    @ApiModelProperty(value = "serviceCode")
+    private String serviceCode;
 }

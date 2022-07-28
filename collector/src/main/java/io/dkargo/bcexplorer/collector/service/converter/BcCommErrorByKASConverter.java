@@ -25,6 +25,7 @@ public class BcCommErrorByKASConverter {
                 .caverRequestType(reqBcCommErrorDTO.getCaverRequestType().getValue())
                 .kasRequestType(reqBcCommErrorDTO.getKasRequestType().getValue())
                 .rawResponse(reqBcCommErrorDTO.getRawResponse())
+                .serviceCode(reqBcCommErrorDTO.getServiceCode())
                 .createAt(CommonConverter.currentDateTime())
                 .build();
     }
@@ -46,6 +47,7 @@ public class BcCommErrorByKASConverter {
                 .caverRequestType(bcCommError.getCaverRequestType())
                 .kasRequestType(bcCommError.getKasRequestType())
                 .rawResponse(bcCommError.getRawResponse())
+                .serviceCode(bcCommError.getServiceCode())
                 .createAt(bcCommError.getCreateAt())
                 .build();
     }

@@ -9,9 +9,9 @@ import javax.validation.constraints.NotNull;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class ReqCreateBlockChainInfoByNumberDTO {
+public class ReqCreateBlockChainInfoBySchedulerDTO {
 
-    @ApiModelProperty(value = "사용 노드", required = true)
+    @ApiModelProperty(value = "BC 노드", required = true)
     @NotNull
     private String chain;
 
@@ -22,8 +22,4 @@ public class ReqCreateBlockChainInfoByNumberDTO {
     @ApiModelProperty(value = "서비스 코드", required = true)
     @NotNull
     private String serviceCode;
-
-    @ApiModelProperty(value = "블록 번호", required = true)
-    @NotNull
-    private Long blockNumber;
 }

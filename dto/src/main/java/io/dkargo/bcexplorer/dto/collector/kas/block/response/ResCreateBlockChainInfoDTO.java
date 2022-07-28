@@ -12,11 +12,11 @@ import java.util.List;
 @AllArgsConstructor
 public class ResCreateBlockChainInfoDTO {
 
-    @ApiModelProperty(value = "블록 번호", required = true)
+    @ApiModelProperty(value = "블록 번호", required = false)
     @NotNull
     private Long blockNumber;
 
-    @ApiModelProperty(value = "블록 해시", required = true)
+    @ApiModelProperty(value = "블록 해시", required = false)
     @NotNull
     private String blockHash;
 

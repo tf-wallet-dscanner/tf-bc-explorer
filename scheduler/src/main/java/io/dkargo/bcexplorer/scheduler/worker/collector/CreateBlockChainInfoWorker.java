@@ -12,13 +12,13 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class CreateBlockWithTransactionWorker extends SchedulerWorkerBase {
+public class CreateBlockChainInfoWorker extends SchedulerWorkerBase {
 
     private final CollectorService collectorService;
 
     @Override
     public void processJob(Map data) {
 
-        ResCreateBlockChainInfoDTO resCreateBlockDTO = collectorService.createBlockWithTransaction();
+        ResCreateBlockChainInfoDTO resCreateBlockDTO = collectorService.createBlockChainInfo();
     }
 }

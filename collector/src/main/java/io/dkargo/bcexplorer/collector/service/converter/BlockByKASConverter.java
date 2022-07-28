@@ -37,11 +37,13 @@ public class BlockByKASConverter {
                 .proposer(reqBlockDTO.getResultByGetBlockWithConsensusInfo().getProposer())
                 .committee(reqBlockDTO.getResultByGetBlockWithConsensusInfo().getCommittee())
                 .transactionCount(reqBlockDTO.getResultByGetBlock().getTransactionCount())
+                .transactionHashs(reqBlockDTO.getTransactionHashs())
                 .build();
 
         return Block.builder()
                 .jsonrpc(reqBlockDTO.getJsonrpc())
                 .result(result)
+                .serviceCode(reqBlockDTO.getServiceCode())
                 .createAt(CommonConverter.currentDateTime())
                 .build();
     }
@@ -78,6 +80,7 @@ public class BlockByKASConverter {
                 .id(block.getId())
                 .jsonrpc(block.getJsonrpc())
                 .result(result)
+                .serviceCode(block.getServiceCode())
                 .createAt(block.getCreateAt())
                 .build();
     }

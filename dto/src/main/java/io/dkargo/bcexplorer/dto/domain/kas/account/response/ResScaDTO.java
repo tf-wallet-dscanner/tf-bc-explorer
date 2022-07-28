@@ -24,7 +24,10 @@ public class ResScaDTO {
     @ApiModelProperty(value = "createAt")
     private String createAt;
 
-    @ApiModelProperty(value = "createAt")
+    @ApiModelProperty(value = "serviceCode")
+    private String serviceCode;
+
+    @ApiModelProperty(value = "updateAt")
     private String updateAt;
 
     @Data

@@ -20,7 +20,7 @@ public class BcCommErrorHandlingByKASServiceImpl implements BcCommErrorHandlingB
 
     // block
     @Override
-    public BcCommError getBlock(ResGetBlockDTO resGetBlockDTO, KASRequestType kasRequestType) {
+    public BcCommError getBlock(ResGetBlockDTO resGetBlockDTO, KASRequestType kasRequestType, String serviceCode) {
 
         ReqBcCommErrorDTO.Error error = ReqBcCommErrorDTO.Error.builder()
                 .code(resGetBlockDTO.getError().getCode())
@@ -34,13 +34,14 @@ public class BcCommErrorHandlingByKASServiceImpl implements BcCommErrorHandlingB
                 .error(error)
                 .kasRequestType(kasRequestType)
                 .rawResponse(resGetBlockDTO.getRawResponse())
+                .serviceCode(serviceCode)
                 .build();
 
         return BcCommErrorByKASConverter.of(reqBcCommErrorDTO);
     }
 
     @Override
-    public BcCommError getBlockWithConsensusInfo(ResGetBlockWithConsensusInfoDTO resGetBlockWithConsensusInfoDTO, KASRequestType kasRequestType) {
+    public BcCommError getBlockWithConsensusInfo(ResGetBlockWithConsensusInfoDTO resGetBlockWithConsensusInfoDTO, KASRequestType kasRequestType, String serviceCode) {
 
         ReqBcCommErrorDTO.Error error = ReqBcCommErrorDTO.Error.builder()
                 .code(resGetBlockWithConsensusInfoDTO.getError().getCode())
@@ -54,13 +55,14 @@ public class BcCommErrorHandlingByKASServiceImpl implements BcCommErrorHandlingB
                 .error(error)
                 .kasRequestType(kasRequestType)
                 .rawResponse(resGetBlockWithConsensusInfoDTO.getRawResponse())
+                .serviceCode(serviceCode)
                 .build();
 
         return BcCommErrorByKASConverter.of(reqBcCommErrorDTO);
     }
 
     @Override
-    public BcCommError getBlockReceipt(ResGetBlockReceiptDTO resGetBlockReceiptDTO, KASRequestType kasRequestType) {
+    public BcCommError getBlockReceipt(ResGetBlockReceiptDTO resGetBlockReceiptDTO, KASRequestType kasRequestType, String serviceCode) {
         ReqBcCommErrorDTO.Error error = ReqBcCommErrorDTO.Error.builder()
                 .code(resGetBlockReceiptDTO.getError().getCode())
                 .message(resGetBlockReceiptDTO.getError().getMessage())
@@ -73,6 +75,7 @@ public class BcCommErrorHandlingByKASServiceImpl implements BcCommErrorHandlingB
                 .error(error)
                 .kasRequestType(kasRequestType)
                 .rawResponse(resGetBlockReceiptDTO.getRawResponse())
+                .serviceCode(serviceCode)
                 .build();
 
         return BcCommErrorByKASConverter.of(reqBcCommErrorDTO);
@@ -80,7 +83,7 @@ public class BcCommErrorHandlingByKASServiceImpl implements BcCommErrorHandlingB
 
     // account
     @Override
-    public BcCommError getAccount(ResGetAccountDTO resGetAccountDTO, KASRequestType kasRequestType) {
+    public BcCommError getAccount(ResGetAccountDTO resGetAccountDTO, KASRequestType kasRequestType, String serviceCode) {
 
         ReqBcCommErrorDTO.Error error = ReqBcCommErrorDTO.Error.builder()
                 .code(resGetAccountDTO.getError().getCode())
@@ -94,6 +97,7 @@ public class BcCommErrorHandlingByKASServiceImpl implements BcCommErrorHandlingB
                 .error(error)
                 .kasRequestType(kasRequestType)
                 .rawResponse(resGetAccountDTO.getRawResponse())
+                .serviceCode(serviceCode)
                 .build();
 
         return BcCommErrorByKASConverter.of(reqBcCommErrorDTO);

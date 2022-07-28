@@ -28,6 +28,7 @@ public class EoaByKASConverter {
         return Eoa.builder()
                 .jsonrpc(reqEoaDTO.getJsonrpc())
                 .result(result)
+                .serviceCode(reqEoaDTO.getServiceCode())
                 .createAt(CommonConverter.currentDateTime())
                 .updateAt(CommonConverter.currentDateTime())
                 .build();
@@ -51,6 +52,7 @@ public class EoaByKASConverter {
                 .id(eoa.getId())
                 .jsonrpc(eoa.getJsonrpc())
                 .result(result)
+                .serviceCode(eoa.getServiceCode())
                 .createAt(eoa.getCreateAt())
                 .updateAt(eoa.getUpdateAt())
                 .build();

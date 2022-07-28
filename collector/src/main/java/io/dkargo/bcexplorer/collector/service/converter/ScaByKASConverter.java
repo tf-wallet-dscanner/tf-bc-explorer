@@ -31,6 +31,7 @@ public class ScaByKASConverter {
         return Sca.builder()
                 .jsonrpc(reqScaDTO.getJsonrpc())
                 .result(result)
+                .serviceCode(reqScaDTO.getServiceCode())
                 .createAt(CommonConverter.currentDateTime())
                 .updateAt(CommonConverter.currentDateTime())
                 .build();
@@ -57,6 +58,7 @@ public class ScaByKASConverter {
                 .id(sca.getId())
                 .jsonrpc(sca.getJsonrpc())
                 .result(result)
+                .serviceCode(sca.getServiceCode())
                 .createAt(sca.getCreateAt())
                 .updateAt(sca.getUpdateAt())
                 .build();

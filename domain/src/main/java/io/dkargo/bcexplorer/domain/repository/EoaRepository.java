@@ -7,5 +7,8 @@ public interface EoaRepository extends MongoRepository<Eoa, String> {
 
 
     // result/from,to 값을 가지고 Eoa 조회
-    Eoa findByResult_address(String address);
+    Eoa findByResult_Address(String address);
+
+    // result/form,to + serviceCode 값을 가지고 Eoa 조회
+    Eoa findByResult_AddressAndServiceCode(String address, String serviceCode);
 }

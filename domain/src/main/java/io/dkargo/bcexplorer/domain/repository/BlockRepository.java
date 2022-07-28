@@ -21,4 +21,8 @@ public interface BlockRepository extends MongoRepository<Block, String>{
 
     // 블록 정보 중 blockNumber 값이 가장 큰 값 1개 조회
     Block findTop1ByOrderByResult_NumberDesc();
+
+    Block findTop1ByServiceCodeOrderByResult_NumberDesc(String serviceCode);
+
+    Block findByResult_NumberAndServiceCode(String number, String serviceCode);
 }

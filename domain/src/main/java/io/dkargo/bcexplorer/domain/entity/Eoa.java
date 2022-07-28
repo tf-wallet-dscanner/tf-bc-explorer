@@ -21,6 +21,8 @@ public class Eoa {
 
     private Result result;
 
+    private String serviceCode;
+
     private String createAt;
 
     private String updateAt;
@@ -50,14 +52,14 @@ public class Eoa {
         private String type;
     }
 
-    public void update(ResGetAccountDTO resGetAccountDTO, String balanceByFormat, Integer totalTransaction) {
+    public void update(ResGetAccountDTO resGetAccountDTO) {
 
         this.result.accType = resGetAccountDTO.getResult().getAccType();
         this.result.balance = resGetAccountDTO.getResult().getAccount().getBalance();
-        this.result.balanceByFormat = balanceByFormat;
+        this.result.balanceByFormat = resGetAccountDTO.getResult().getAccount().getBalanceByFormat();
         this.result.humanReadable = resGetAccountDTO.getResult().getAccount().getHumanReadable();
         this.result.nonce = resGetAccountDTO.getResult().getAccount().getNonce();
-        this.result.totalTransaction = totalTransaction;
+        this.result.totalTransaction = resGetAccountDTO.getResult().getAccount().getTotalTransaction();
         this.updateAt = CommonConverter.currentDateTime();
     }
 

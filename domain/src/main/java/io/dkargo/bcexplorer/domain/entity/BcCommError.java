@@ -29,6 +29,8 @@ public class BcCommError {
 
     private String rawResponse;
 
+    private String serviceCode;
+
     private String createAt;
 
     @Data

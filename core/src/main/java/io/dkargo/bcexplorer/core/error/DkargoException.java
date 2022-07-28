@@ -18,7 +18,7 @@ public class DkargoException extends RuntimeException {
     }
 
     public DkargoException(ErrorCodeEnum error, String message) {
-        super(message);
+        super(error.getMessage() + " - [" + message + "]");
         this.status = error.getStatus();
         this.code = error.getCode();
     }

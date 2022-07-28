@@ -11,13 +11,14 @@ import io.dkargo.bcexplorer.core.error.DkargoException;
 import io.dkargo.bcexplorer.core.error.ErrorCodeEnum;
 import io.dkargo.bcexplorer.core.type.KASRequestType;
 import io.dkargo.bcexplorer.domain.entity.Eoa;
+import io.dkargo.bcexplorer.domain.entity.ManagedAccount;
 import io.dkargo.bcexplorer.domain.entity.Sca;
 import io.dkargo.bcexplorer.domain.repository.*;
 import io.dkargo.bcexplorer.dto.collector.kas.account.response.ResGetAccountDTO;
+import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqCreateBlockChainInfoBySchedulerDTO;
 import io.dkargo.bcexplorer.dto.domain.kas.account.request.ReqEoaDTO;
 import io.dkargo.bcexplorer.dto.domain.kas.account.request.ReqScaDTO;
 import io.dkargo.bcexplorer.dto.domain.kas.block.request.ReqBlockDTO;
-import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqCreateBlockChainInfoByHashDTO;
 import io.dkargo.bcexplorer.dto.collector.kas.block.request.ReqCreateBlockChainInfoByNumberDTO;
 import io.dkargo.bcexplorer.dto.collector.kas.block.response.*;
 import io.dkargo.bcexplorer.dto.domain.kas.transaction.request.ReqTransactionDTO;
@@ -42,6 +43,7 @@ public class BlockByKASServiceImpl implements BlockByKASService {
     private final AccountByKASService accountByKASService;
     private final BcCommErrorHandlingByKASService bcCommErrorHandlingByKASService;
 
+    private final ManagedAccountRepository managedAccountRepository;
     private final BlockRepository blockRepository;
     private final TransactionRepository transactionRepository;
     private final EoaRepository eoaRepository;
@@ -537,402 +539,467 @@ public class BlockByKASServiceImpl implements BlockByKASService {
     @Override
     public ResCreateBlockChainInfoDTO createBlockChainInfoByNumber(ReqCreateBlockChainInfoByNumberDTO reqCreateBlockChainInfoByNumberDTO) {
 
-        // 블록 + 트랜잭션 해시 정보 조회
+        // 존재 기존에 있는 블록인지 확인
+        io.dkargo.bcexplorer.domain.entity.Block existenceBlock = blockRepository.findByResult_NumberAndServiceCode(CommonConverter.longToHex(reqCreateBlockChainInfoByNumberDTO.getBlockNumber()), reqCreateBlockChainInfoByNumberDTO.getServiceCode());
+        if(existenceBlock != null) {
+            throw new DkargoException(ErrorCodeEnum.BAD_REQUEST, "해당 블록 정보가 이미 존재합니다.");
+        }
+
+        // --------------------------------------------------------------------------------------
+        // -------- 특정 서비스에 상관없이 아래 노드 통신 로직은 무조건 통일!! (일단 블록을 까봐야 안다!!) ---------
+        // --------------------------------------------------------------------------------------
+
+        // 블록 + 트랜잭션 해시 정보 조회 (kas는 private 노드에서 불가능 하기때문에, public 노드를 바라보고 kas 통신으로 고정)
         ResGetBlockDTO resGetBlockDTO = getBlockByNumber(reqCreateBlockChainInfoByNumberDTO.getBlockNumber());
 
         // 에러 체크
         if(resGetBlockDTO.getError() != null) {
 
-            bcCommErrorRepository.save(bcCommErrorHandlingByKASService.getBlock(resGetBlockDTO, KASRequestType.GET_BLOCK_BY_NUMBER));
-            throw new DkargoException(ErrorCodeEnum.BAD_REQUEST);
+            bcCommErrorRepository.save(bcCommErrorHandlingByKASService.getBlock(resGetBlockDTO, KASRequestType.GET_BLOCK_BY_NUMBER, reqCreateBlockChainInfoByNumberDTO.getServiceCode()));
+            throw new DkargoException(ErrorCodeEnum.BAD_REQUEST, "KAS[getBlockByNumber] 통신 에러가 발생하였습니다.");
         }
 
-        // 블록 consensus 정보 조회 (proposer, committee)
+        // 블록 consensus 정보 조회 (proposer, committee) (kas는 private 노드에서 불가능 하기때문에, public 노드를 바라보고 kas 통신으로 고정)
         ResGetBlockWithConsensusInfoDTO resGetBlockWithConsensusInfoDTO = getBlockWithConsensusInfoByNumber(reqCreateBlockChainInfoByNumberDTO.getBlockNumber());
 
         // 에러 체크
         if(resGetBlockWithConsensusInfoDTO.getError() != null) {
 
-            bcCommErrorRepository.save(bcCommErrorHandlingByKASService.getBlockWithConsensusInfo(resGetBlockWithConsensusInfoDTO, KASRequestType.GET_BLOCK_WITH_CONSENSUS_INFO_BY_NUMBER));
-            throw new DkargoException(ErrorCodeEnum.BAD_REQUEST);
+            bcCommErrorRepository.save(bcCommErrorHandlingByKASService.getBlockWithConsensusInfo(resGetBlockWithConsensusInfoDTO, KASRequestType.GET_BLOCK_WITH_CONSENSUS_INFO_BY_NUMBER, reqCreateBlockChainInfoByNumberDTO.getServiceCode()));
+            throw new DkargoException(ErrorCodeEnum.BAD_REQUEST, "KAS[getBlockWithConsensusInfo] 통신 에러가 발생하였습니다.");
         }
 
-        // 해당 블록 번호의 트랜잭션 리스트 조회
+        // 해당 블록 번호의 트랜잭션 리스트 조회 - 해당 API를 요청하려면 번호대신 hash값이 필요함 (kas는 private 노드에서 불가능 하기때문에, public 노드를 바라보고 kas 통신으로 고정)
         ResGetBlockReceiptDTO resGetBlockReceiptDTO = getBlockReceiptByHash(resGetBlockDTO.getResult().getHash());
 
         // 에러 체크
         if(resGetBlockReceiptDTO.getError() != null) {
 
-            bcCommErrorRepository.save(bcCommErrorHandlingByKASService.getBlockReceipt(resGetBlockReceiptDTO, KASRequestType.GET_BLOCK_RECEIPTS));
-            throw new DkargoException(ErrorCodeEnum.BAD_REQUEST);
+            bcCommErrorRepository.save(bcCommErrorHandlingByKASService.getBlockReceipt(resGetBlockReceiptDTO, KASRequestType.GET_BLOCK_RECEIPTS, reqCreateBlockChainInfoByNumberDTO.getServiceCode()));
+            throw new DkargoException(ErrorCodeEnum.BAD_REQUEST, "KAS[getBlockReceipt] 통신 에러가 발생하였습니다.");
         }
+
+        // --------------------------------------------------------------------------------------
+        // --------------------------------------------------------------------------------------
+        // --------------------------------------------------------------------------------------
+
+        // 관리 할 data가 all or filter 확인 - serviceCode 첫번째 문자를 통해 확인 가능
+        List<String> addressesByFilter = new ArrayList<>();
+        switch (reqCreateBlockChainInfoByNumberDTO.getServiceCode().substring(0, 1)) {
+
+            case "a" :
+                log.info("all service!!");
+                break;
+
+            case "f" :
+                log.info("filter service!!");
+                List<ManagedAccount> managedAccounts = managedAccountRepository.findAllByServiceCode(reqCreateBlockChainInfoByNumberDTO.getServiceCode());
+
+                if(managedAccounts.size() > 0) {
+
+                    for(ManagedAccount managedAccount : managedAccounts) {
+
+                        addressesByFilter.add(managedAccount.getAddress());
+                    }
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        // 저장 할 트랜잭션 리스트
+        List<io.dkargo.bcexplorer.domain.entity.Transaction> transactions = new ArrayList<>();
 
         // totalTxFee(block 정보) 생성
         // transaction 해시 리스트(response 정보) 생성
-        // account(eoa 리스트/sca 리스트) 생성
+        // account(eoa 리스트/sca 리스트) 생성 하기위한 리스트 생성 (중복제거)
         Double totalTxFee = 0d;
         List<String> transactionHashList = new ArrayList<>();
         List<Eoa> eoas = new ArrayList<>();
         List<Sca> scas = new ArrayList<>();
+
+        List<String> addressesByAll = new ArrayList<>();
+
         for(ResGetBlockReceiptDTO.Result result : resGetBlockReceiptDTO.getResults()) {
 
-            totalTxFee += Double.parseDouble(result.getTxFee());
-            transactionHashList.add(result.getTransactionHash());
-
-            // from : 무조건 EOA 만 존재 ------------------------------------------------
-
-            // from 값이 DB 에 저장되어있는지 확인 후 없으면 저장 List에 추가, 있으면 바로 수정
-            Eoa eoaByFrom = eoaRepository.findByResult_address(result.getFrom());
-
-            // 해당 값의 최신 정보 조회
-            ResGetAccountDTO resGetAccountDTOByFrom = accountByKASService.getAccountByAddress(result.getFrom());
-            // 에러 체크
-            if(resGetAccountDTOByFrom.getError() != null) {
-
-                bcCommErrorRepository.save(bcCommErrorHandlingByKASService.getAccount(resGetAccountDTOByFrom, KASRequestType.GET_ACCOUNT_BY_ADDRESS));
-                throw new DkargoException(ErrorCodeEnum.BAD_REQUEST);
+            // account를 저장을 위해 중복을 제외하여, 모든 address( EOA/SCA : from,to,contractAddress) 리스트 생성)
+            if(!addressesByAll.contains(result.getFrom())){
+                addressesByAll.add(result.getFrom());
+            }
+            if(result.getTo() != null && !addressesByAll.contains(result.getTo())){
+                addressesByAll.add(result.getTo());
+            }
+            if(result.getContractAddress() != null && !addressesByAll.contains(result.getContractAddress())){
+                addressesByAll.add(result.getContractAddress());
             }
 
-            if(eoaByFrom == null) {
-                // 저장 할 EOA 정보 생성 후 EOA 리스트에 추가
-                ReqEoaDTO reqEoaDTOByFrom = ReqEoaDTO.builder()
-                        .jsonrpc(resGetAccountDTOByFrom.getJsonrpc())
-                        .resultByGetAccount(resGetAccountDTOByFrom.getResult())
+            totalTxFee += Double.parseDouble(result.getTxFee()); //이건 블록안에있는 전체 트랜잭션에 대한 계산값이기 때문에 계산식 동일
+
+            // 응답 값과 저장 할 트랜잭션 리스트 생성
+
+            // 서비스가 ALL(전체) 이면
+            if(reqCreateBlockChainInfoByNumberDTO.getServiceCode().substring(0, 1).equals("a")){
+                // 저장된 트랜잭션 리스트에 대한 응답
+                transactionHashList.add(result.getTransactionHash());
+
+                // 생성 할 트랜잭션 리스트에 추가
+                ReqTransactionDTO reqTransactionDTO = ReqTransactionDTO.builder()
+                        .jsonrpc(resGetBlockReceiptDTO.getJsonrpc())
+                        .result(result)
+                        .serviceCode(reqCreateBlockChainInfoByNumberDTO.getServiceCode())
                         .build();
-                eoas.add(EoaByKASConverter.of(reqEoaDTOByFrom));
-            } else {
-                // 수정 할 EOA 정보 수정 후 EOA 리스트에 추가
-                eoaByFrom.update(resGetAccountDTOByFrom, resGetAccountDTOByFrom.getResult().getAccount().getBalanceByFormat(), resGetAccountDTOByFrom.getResult().getAccount().getTotalTransaction());
-                eoas.add(eoaByFrom);
+                transactions.add(TransactionByKASConverter.of(reqTransactionDTO));
+
             }
-            // ------------------------------------------------------------------------
+            // 서비스 Filter(특정) 이면
+            else if(reqCreateBlockChainInfoByNumberDTO.getServiceCode().substring(0, 1).equals("f")){
+                // 해당 주소가 service 관리 주소에 포함되는지 확인
+                if (addressesByFilter.contains(result.getFrom()) || addressesByFilter.contains(result.getTo()) || addressesByFilter.contains(result.getContractAddress())){
+                    // 저장된 트랜잭션 리스트에 대한 응답
+                    transactionHashList.add(result.getTransactionHash());
 
-            // to : EOA or SCA or NUll ------------------------------------------------
-            if(result.getTo() != null) {
-
-                ResGetAccountDTO resGetAccountDTOByTo = accountByKASService.getAccountByAddress(result.getTo());
-                // 에러 체크
-                if(resGetAccountDTOByFrom.getError() != null) {
-
-                    bcCommErrorRepository.save(bcCommErrorHandlingByKASService.getAccount(resGetAccountDTOByTo, KASRequestType.GET_ACCOUNT_BY_ADDRESS));
-                    throw new DkargoException(ErrorCodeEnum.BAD_REQUEST);
+                    // 생성 할 트랜잭션 리스트에 추가
+                    ReqTransactionDTO reqTransactionDTO = ReqTransactionDTO.builder()
+                            .jsonrpc(resGetBlockReceiptDTO.getJsonrpc())
+                            .result(result)
+                            .serviceCode(reqCreateBlockChainInfoByNumberDTO.getServiceCode())
+                            .build();
+                    transactions.add(TransactionByKASConverter.of(reqTransactionDTO));
+                } else {
+                    log.info("Address not included!!");
                 }
+            }
+            else{
+                throw new DkargoException(ErrorCodeEnum.BAD_REQUEST, "serviceCode는 All(a) or Filter(f) 두가지로만 나뉩니다.");
+            }
+        }
 
-                switch (resGetAccountDTOByTo.getResult().getAccount().getType().toString()) {
+        Boolean validTransaction = false;
+
+        // EOA/SCA 생성 - from은 무조건 EOA만 존재, to는 EOA,SCA,NULL 존재, contractAddress는 SCA만 존재
+        for(String addressByAll : addressesByAll) {
+
+            ResGetAccountDTO resGetAccountDTO = null;
+
+            // 서비스가 ALL(전체) 이면
+            if(reqCreateBlockChainInfoByNumberDTO.getServiceCode().substring(0, 1).equals("a")){
+                // 해당 값의 최신 정보 조회 (kas는 private 노드에서 불가능 하기때문에, public 노드를 바라보고 kas 통신으로 고정)
+                resGetAccountDTO = accountByKASService.getAccountByAddress(addressByAll);
+            }
+            // 서비스 Filter(특정) 이면
+            else if(reqCreateBlockChainInfoByNumberDTO.getServiceCode().substring(0, 1).equals("f")){
+                // 해당 주소가 service 관리 주소에 포함되는지 확인
+                if(addressesByFilter.contains(addressByAll)){
+                    // 해당 값의 최신 정보 조회 (kas는 private 노드에서 불가능 하기때문에, public 노드를 바라보고 kas 통신으로 고정)
+                    resGetAccountDTO = accountByKASService.getAccountByAddress(addressByAll);
+                } else {
+                    log.info("Address not included!!");
+                }
+            }
+            else{
+                throw new DkargoException(ErrorCodeEnum.BAD_REQUEST, "serviceCode는 All(a) or Filter(f) 두가지로만 나뉩니다.");
+            }
+
+            // error 체크
+            if(resGetAccountDTO.getError() != null){
+                bcCommErrorRepository.save(bcCommErrorHandlingByKASService.getAccount(resGetAccountDTO, KASRequestType.GET_ACCOUNT_BY_ADDRESS, reqCreateBlockChainInfoByNumberDTO.getServiceCode()));
+                throw new DkargoException(ErrorCodeEnum.BAD_REQUEST, "KAS[getAccount] 통신 에러가 발생하였습니다.");
+            }
+
+            // EOA 또는 SCA 인지 판별 후 저장할 객체 생성 후 저장 할 List에 추가
+            if(resGetAccountDTO != null) {
+
+                switch (resGetAccountDTO.getResult().getAccount().getType()){
 
                     case "EOA" :
-                        // to 값이 DB 에 저장되어있는지 확인 후 없으면 저장 List에 추가, 있으면 바로 수정
-                        Eoa eoaByTo = eoaRepository.findByResult_address(result.getTo());
+                        // DB에 저장되어있는지 확인 후 없으면 그대로, 있으면 업데이트하여 EOA List에 추가
+                        Eoa eoa = eoaRepository.findByResult_AddressAndServiceCode(addressByAll, reqCreateBlockChainInfoByNumberDTO.getServiceCode());
 
-                        if(eoaByTo == null) {
-                            // 저장 할 EOA 정보 생성 후 EOA 리스트에 추가
-                            ReqEoaDTO reqEoaDTOByTo = ReqEoaDTO.builder()
-                                    .jsonrpc(resGetAccountDTOByTo.getJsonrpc())
-                                    .resultByGetAccount(resGetAccountDTOByTo.getResult())
+                        if(eoa == null) {
+                            ReqEoaDTO reqEoaDTO = ReqEoaDTO.builder()
+                                    .jsonrpc(resGetAccountDTO.getJsonrpc())
+                                    .resultByGetAccount(resGetAccountDTO.getResult())
+                                    .serviceCode(reqCreateBlockChainInfoByNumberDTO.getServiceCode())
                                     .build();
-                            eoas.add(EoaByKASConverter.of(reqEoaDTOByTo));
+                            eoas.add(EoaByKASConverter.of(reqEoaDTO));
+                            validTransaction = true;
                         } else {
-                            // 수정 할 EOA 정보 수정 후 EOA 리스트에 추가
-                            eoaByTo.update(resGetAccountDTOByTo, resGetAccountDTOByTo.getResult().getAccount().getBalanceByFormat(), resGetAccountDTOByTo.getResult().getAccount().getTotalTransaction());
-                            eoas.add(eoaByTo);
+                            eoa.update(resGetAccountDTO);
+                            eoas.add(eoa);
+                            validTransaction = true;
                         }
                         break;
 
                     case "SCA" :
-                        // to 값이 DB 에 저장되어있는지 확인 후 없으면 저장 List에 추가, 있으면 바로 수정
-                        Sca scaByTo = scaRepository.findByResult_address(result.getTo());
+                        // DB에 저장되어있는지 확인 후 없으면 그대로, 있으면 업데이트하여 SCA List에 추가
+                        Sca sca = scaRepository.findByResult_AddressAndServiceCode(addressByAll, reqCreateBlockChainInfoByNumberDTO.getServiceCode());
 
-                        if(scaByTo == null) {
-                            // 저장 할 SCA 정보 생성 후 SCA 리스트에 추가
-                            ReqScaDTO reqScaDTOByTo = ReqScaDTO.builder()
-                                    .jsonrpc(resGetAccountDTOByTo.getJsonrpc())
-                                    .resultByGetAccount(resGetAccountDTOByTo.getResult())
+                        if(sca == null) {
+                            ReqScaDTO reqScaDTO = ReqScaDTO.builder()
+                                    .jsonrpc(resGetAccountDTO.getJsonrpc())
+                                    .resultByGetAccount(resGetAccountDTO.getResult())
+                                    .serviceCode(reqCreateBlockChainInfoByNumberDTO.getServiceCode())
                                     .build();
-                            scas.add(ScaByKASConverter.of(reqScaDTOByTo));
+                            scas.add(ScaByKASConverter.of(reqScaDTO));
+                            validTransaction = true;
                         } else {
-                            // 수정 할 SCA 정보 수정 후 SCA 리스트에 추가
-                            scaByTo.update(resGetAccountDTOByTo, resGetAccountDTOByTo.getResult().getAccount().getBalanceByFormat(), resGetAccountDTOByTo.getResult().getAccount().getTotalTransaction());
-                            scas.add(scaByTo);
+                            sca.update(resGetAccountDTO);
+                            scas.add(sca);
+                            validTransaction = true;
                         }
                         break;
-
-                    default :
-                        break;
-                }
-            } else {
-
-                if(result.getContractAddress() != null) {
-
-                    ResGetAccountDTO resGetAccountDTOByContractAddress = accountByKASService.getAccountByAddress(result.getContractAddress());
-
-                    // 에러 체크
-                    if(resGetAccountDTOByFrom.getError() != null) {
-
-                        bcCommErrorRepository.save(bcCommErrorHandlingByKASService.getAccount(resGetAccountDTOByContractAddress, KASRequestType.GET_BLOCK_WITH_CONSENSUS_INFO_BY_NUMBER));
-                        throw new DkargoException(ErrorCodeEnum.BAD_REQUEST);
-                    }
-
-                    Sca scaByContractAddress =  scaRepository.findByResult_address(result.getContractAddress());
-
-                    if (scaByContractAddress == null) {
-                        // 저장 할 SCA 정보 생성 후 SCA 리스트에 추가
-                        ReqScaDTO reqScaDTOByContractAddress = ReqScaDTO.builder()
-                                .jsonrpc(resGetAccountDTOByContractAddress.getJsonrpc())
-                                .resultByGetAccount(resGetAccountDTOByContractAddress.getResult())
-                                .build();
-                        scas.add(ScaByKASConverter.of(reqScaDTOByContractAddress));
-                    } else {
-                        scaByContractAddress.update(resGetAccountDTOByContractAddress, resGetAccountDTOByContractAddress.getResult().getAccount().getBalanceByFormat(), resGetAccountDTOByContractAddress.getResult().getAccount().getTotalTransaction());
-                    }
-                } else {
-                    log.info("Chain Data Anchoring");
                 }
             }
-            // ---------------------------------------------------------------------
         }
 
-        // 블록 정보 저장 (블록 + consensus 정보)
-        ReqBlockDTO reqBlockDTO = ReqBlockDTO.builder()
-                .jsonrpc(resGetBlockDTO.getJsonrpc())
-                .resultByGetBlock(resGetBlockDTO.getResult())
-                .resultByGetBlockWithConsensusInfo(resGetBlockWithConsensusInfoDTO.getResult())
-                .totalTxFee(totalTxFee)
-                .build();
-        io.dkargo.bcexplorer.domain.entity.Block block = blockRepository.save(BlockByKASConverter.of(reqBlockDTO));
+        // 블록 / 트랜잭션 / 계정 정보 저장 - 한개라도 트랜잭션이 생성되면 해당 블록/트랜잭션/계정 정보 저장
+        if(validTransaction) {
 
-        // 트랜잭션 정보 저장
-        List<io.dkargo.bcexplorer.domain.entity.Transaction> transactions = new ArrayList<>();
-        for(ResGetBlockReceiptDTO.Result result : resGetBlockReceiptDTO.getResults()) {
-
-            ReqTransactionDTO reqTransactionDTO = ReqTransactionDTO.builder()
-                    .jsonrpc(resGetBlockReceiptDTO.getJsonrpc())
-                    .result(result)
+            // 블록 정보 저장 (블록 + consensus 정보)
+            ReqBlockDTO reqBlockDTO = ReqBlockDTO.builder()
+                    .jsonrpc(resGetBlockDTO.getJsonrpc())
+                    .resultByGetBlock(resGetBlockDTO.getResult())
+                    .resultByGetBlockWithConsensusInfo(resGetBlockWithConsensusInfoDTO.getResult())
+                    .totalTxFee(totalTxFee) // 해당 값은 Filter에 해당 하는 값이 아니여도, 모두 저장
+                    .serviceCode(reqCreateBlockChainInfoByNumberDTO.getServiceCode())
+                    .transactionHashs(transactionHashList) // 해당 값은 Filter에 해당 하는 값이 아니여도, 모두 저장
                     .build();
-            transactions.add(TransactionByKASConverter.of(reqTransactionDTO));
+            io.dkargo.bcexplorer.domain.entity.Block block = blockRepository.save(BlockByKASConverter.of(reqBlockDTO));
+
+            transactionRepository.saveAll(transactions);
+
+            // 계정(EOA/SCA) 정보 저장
+            if(eoas.size() > 0) {
+                eoaRepository.saveAll(eoas);
+            }
+            if(scas.size() > 0) {
+                scaRepository.saveAll(scas);
+            }
+
+            return new ResCreateBlockChainInfoDTO(CommonConverter.hexToLong(block.getResult().getNumber()), block.getResult().getHash(), transactionHashList);
         }
 
-        transactionRepository.saveAll(transactions);
-
-        // 계정(EOA/SCA) 정보 저장
-        if(eoas.size() > 0) {
-            eoaRepository.saveAll(eoas);
-        }
-        if(scas.size() > 0) {
-            scaRepository.saveAll(scas);
-        }
-
-        return new ResCreateBlockChainInfoDTO(CommonConverter.hexToLong(block.getResult().getNumber()), block.getResult().getHash(), transactionHashList);
+        return new ResCreateBlockChainInfoDTO(null, null, transactionHashList);
     }
 
+//    @Override
+//    public ResCreateBlockChainInfoDTO createBlockChainInfoByHash(ReqCreateBlockChainInfoByHashDTO reqCreateBlockByHashDTO) {
+//
+//        // 블록 + 트랜잭션 해시 정보 조회
+//        ResGetBlockDTO resGetBlockDTO = getBlockByHash(reqCreateBlockByHashDTO.getBlockHash());
+//
+//        // 에러 체크
+//        if(resGetBlockDTO.getError() != null) {
+//
+//            bcCommErrorRepository.save(bcCommErrorHandlingByKASService.getBlock(resGetBlockDTO, KASRequestType.GET_BLOCK_BY_HASH, reqCreateBlockByHashDTO.getServiceCode()));
+//            throw new DkargoException(ErrorCodeEnum.BAD_REQUEST);
+//        }
+//
+//        // 블록 consensus 정보 조회 (proposer, committee)
+//        ResGetBlockWithConsensusInfoDTO resGetBlockWithConsensusInfoDTO = getBlockWithConsensusInfoByHash(reqCreateBlockByHashDTO.getBlockHash());
+//
+//        // 에러 체크
+//        if(resGetBlockWithConsensusInfoDTO.getError() != null) {
+//
+//            bcCommErrorRepository.save(bcCommErrorHandlingByKASService.getBlockWithConsensusInfo(resGetBlockWithConsensusInfoDTO, KASRequestType.GET_BLOCK_WITH_CONSENSUS_INFO_BY_HASH, reqCreateBlockByHashDTO.getServiceCode()));
+//            throw new DkargoException(ErrorCodeEnum.BAD_REQUEST);
+//        }
+//
+//        // 해당 블록의 트랜잭션 리스트 조회
+//        ResGetBlockReceiptDTO resGetBlockReceiptDTO = getBlockReceiptByHash(resGetBlockDTO.getResult().getHash());
+//
+//        // 에러 체크
+//        if(resGetBlockReceiptDTO.getError() != null) {
+//
+//            bcCommErrorRepository.save(bcCommErrorHandlingByKASService.getBlockReceipt(resGetBlockReceiptDTO, KASRequestType.GET_BLOCK_RECEIPTS, reqCreateBlockByHashDTO.getServiceCode()));
+//            throw new DkargoException(ErrorCodeEnum.BAD_REQUEST);
+//        }
+//
+//        // totalTxFee(block 정보) 생성
+//        // transaction 해시 리스트(response 정보) 생성
+//        // account(eoa 리스트/sca 리스트) 생성
+//        Double totalTxFee = 0d;
+//        List<String> transactionHashList = new ArrayList<>();
+//        List<Eoa> eoas = new ArrayList<>();
+//        List<Sca> scas = new ArrayList<>();
+//        for(ResGetBlockReceiptDTO.Result result : resGetBlockReceiptDTO.getResults()) {
+//
+//            totalTxFee += Double.parseDouble(result.getTxFee());
+//            transactionHashList.add(result.getTransactionHash());
+//
+//            // from : 무조건 EOA 만 존재 ------------------------------------------------
+//
+//            // from 값이 DB 에 저장되어있는지 확인 후 없으면 저장 List에 추가, 있으면 바로 수정
+//            Eoa eoaByFrom = eoaRepository.findByResult_address(result.getFrom());
+//
+//            // 해당 값의 최신 정보 조회
+//            ResGetAccountDTO resGetAccountDTOByFrom = accountByKASService.getAccountByAddress(result.getFrom());
+//            // 에러 체크
+//            if(resGetAccountDTOByFrom.getError() != null) {
+//
+//                bcCommErrorRepository.save(bcCommErrorHandlingByKASService.getAccount(resGetAccountDTOByFrom, KASRequestType.GET_ACCOUNT_BY_ADDRESS, reqCreateBlockByHashDTO.getServiceCode()));
+//                throw new DkargoException(ErrorCodeEnum.BAD_REQUEST);
+//            }
+//
+//            if(eoaByFrom == null) {
+//                // 저장 할 EOA 정보 생성 후 EOA 리스트에 추가
+//                ReqEoaDTO reqEoaDTOByFrom = ReqEoaDTO.builder()
+//                        .jsonrpc(resGetAccountDTOByFrom.getJsonrpc())
+//                        .resultByGetAccount(resGetAccountDTOByFrom.getResult())
+//                        .build();
+//                eoas.add(EoaByKASConverter.of(reqEoaDTOByFrom));
+//            } else {
+//                // 수정 할 EOA 정보 수정 후 EOA 리스트에 추가
+//                eoaByFrom.update(resGetAccountDTOByFrom, resGetAccountDTOByFrom.getResult().getAccount().getBalanceByFormat(), resGetAccountDTOByFrom.getResult().getAccount().getTotalTransaction());
+//                eoas.add(eoaByFrom);
+//            }
+//            // ------------------------------------------------------------------------
+//
+//            // to : EOA or SCA or NUll ------------------------------------------------
+//            if(result.getTo() != null) {
+//
+//                ResGetAccountDTO resGetAccountDTOByTo = accountByKASService.getAccountByAddress(result.getTo());
+//                // 에러 체크
+//                if(resGetAccountDTOByFrom.getError() != null) {
+//
+//                    bcCommErrorRepository.save(bcCommErrorHandlingByKASService.getAccount(resGetAccountDTOByTo, KASRequestType.GET_ACCOUNT_BY_ADDRESS, reqCreateBlockByHashDTO.getServiceCode()));
+//                    throw new DkargoException(ErrorCodeEnum.BAD_REQUEST);
+//                }
+//
+//                switch (resGetAccountDTOByTo.getResult().getAccount().getType().toString()) {
+//
+//                    case "EOA" :
+//                        // to 값이 DB 에 저장되어있는지 확인 후 없으면 저장 List에 추가, 있으면 바로 수정
+//                        Eoa eoaByTo = eoaRepository.findByResult_address(result.getTo());
+//
+//                        if(eoaByTo == null) {
+//                            // 저장 할 EOA 정보 생성 후 EOA 리스트에 추가
+//                            ReqEoaDTO reqEoaDTOByTo = ReqEoaDTO.builder()
+//                                    .jsonrpc(resGetAccountDTOByTo.getJsonrpc())
+//                                    .resultByGetAccount(resGetAccountDTOByTo.getResult())
+//                                    .build();
+//                            eoas.add(EoaByKASConverter.of(reqEoaDTOByTo));
+//                        } else {
+//                            // 수정 할 EOA 정보 수정 후 EOA 리스트에 추가
+//                            eoaByTo.update(resGetAccountDTOByTo, resGetAccountDTOByTo.getResult().getAccount().getBalanceByFormat(), resGetAccountDTOByTo.getResult().getAccount().getTotalTransaction());
+//                            eoas.add(eoaByTo);
+//                        }
+//                        break;
+//
+//                    case "SCA" :
+//                        // to 값이 DB 에 저장되어있는지 확인 후 없으면 저장 List에 추가, 있으면 바로 수정
+//                        Sca scaByTo = scaRepository.findByResult_address(result.getTo());
+//
+//                        if(scaByTo == null) {
+//                            // 저장 할 SCA 정보 생성 후 SCA 리스트에 추가
+//                            ReqScaDTO reqScaDTOByTo = ReqScaDTO.builder()
+//                                    .jsonrpc(resGetAccountDTOByTo.getJsonrpc())
+//                                    .resultByGetAccount(resGetAccountDTOByTo.getResult())
+//                                    .build();
+//                            scas.add(ScaByKASConverter.of(reqScaDTOByTo));
+//                        } else {
+//                            // 수정 할 SCA 정보 수정 후 SCA 리스트에 추가
+//                            scaByTo.update(resGetAccountDTOByTo, resGetAccountDTOByTo.getResult().getAccount().getBalanceByFormat(), resGetAccountDTOByTo.getResult().getAccount().getTotalTransaction());
+//                            scas.add(scaByTo);
+//                        }
+//                        break;
+//
+//                    default :
+//                        break;
+//                }
+//            } else {
+//
+//                if(result.getContractAddress() != null) {
+//
+//                    ResGetAccountDTO resGetAccountDTOByContractAddress = accountByKASService.getAccountByAddress(result.getContractAddress());
+//
+//                    // 에러 체크
+//                    if(resGetAccountDTOByFrom.getError() != null) {
+//
+//                        bcCommErrorRepository.save(bcCommErrorHandlingByKASService.getAccount(resGetAccountDTOByContractAddress, KASRequestType.GET_BLOCK_WITH_CONSENSUS_INFO_BY_NUMBER, reqCreateBlockByHashDTO.getServiceCode()));
+//                        throw new DkargoException(ErrorCodeEnum.BAD_REQUEST);
+//                    }
+//
+//                    Sca scaByContractAddress = scaRepository.findByResult_address(result.getContractAddress());
+//
+//                    if (scaByContractAddress == null) {
+//                        // 저장 할 SCA 정보 생성 후 SCA 리스트에 추가
+//                        ReqScaDTO reqScaDTOByContractAddress = ReqScaDTO.builder()
+//                                .jsonrpc(resGetAccountDTOByContractAddress.getJsonrpc())
+//                                .resultByGetAccount(resGetAccountDTOByContractAddress.getResult())
+//                                .build();
+//                        scas.add(ScaByKASConverter.of(reqScaDTOByContractAddress));
+//                    } else {
+//                        scaByContractAddress.update(resGetAccountDTOByContractAddress, resGetAccountDTOByContractAddress.getResult().getAccount().getBalanceByFormat(), resGetAccountDTOByContractAddress.getResult().getAccount().getTotalTransaction());
+//                    }
+//                } else {
+//                    log.info("Chain Data Anchoring");
+//                }
+//            }
+//            // ---------------------------------------------------------------------
+//        }
+//
+//        // 블록 정보 저장 (블록 + consensus 정보)
+//        ReqBlockDTO reqBlockDTO = ReqBlockDTO.builder()
+//                .jsonrpc(resGetBlockDTO.getJsonrpc())
+//                .resultByGetBlock(resGetBlockDTO.getResult())
+//                .resultByGetBlockWithConsensusInfo(resGetBlockWithConsensusInfoDTO.getResult())
+//                .totalTxFee(totalTxFee)
+//                .build();
+//        io.dkargo.bcexplorer.domain.entity.Block block = blockRepository.save(BlockByKASConverter.of(reqBlockDTO));
+//
+//
+//        // 트랜잭션 정보 저장
+//        List<io.dkargo.bcexplorer.domain.entity.Transaction> transactions = new ArrayList<>();
+//        for(ResGetBlockReceiptDTO.Result result : resGetBlockReceiptDTO.getResults()) {
+//
+//            ReqTransactionDTO reqTransactionDTO = ReqTransactionDTO.builder()
+//                    .jsonrpc(resGetBlockReceiptDTO.getJsonrpc())
+//                    .result(result)
+//                    .build();
+//            transactions.add(TransactionByKASConverter.of(reqTransactionDTO));
+//        }
+//
+//        transactionRepository.saveAll(transactions);
+//
+//        // 계정(EOA/SCA) 정보 저장
+//        if(eoas.size() > 0) {
+//            eoaRepository.saveAll(eoas);
+//        }
+//        if(scas.size() > 0) {
+//            scaRepository.saveAll(scas);
+//        }
+//
+//        return new ResCreateBlockChainInfoDTO(CommonConverter.hexToLong(block.getResult().getNumber()), block.getResult().getHash(), transactionHashList);
+//    }
+
     @Override
-    public ResCreateBlockChainInfoDTO createBlockChainInfoByHash(ReqCreateBlockChainInfoByHashDTO reqCreateBlockByHashDTO) {
+    public ResCreateBlockChainInfoDTO createBlockChainInfoByScheduler(ReqCreateBlockChainInfoBySchedulerDTO reqCreateBlockChainInfoBySchedulerDTO) {
 
-        // 블록 + 트랜잭션 해시 정보 조회
-        ResGetBlockDTO resGetBlockDTO = getBlockByHash(reqCreateBlockByHashDTO.getBlockHash());
-
-        // 에러 체크
-        if(resGetBlockDTO.getError() != null) {
-
-            bcCommErrorRepository.save(bcCommErrorHandlingByKASService.getBlock(resGetBlockDTO, KASRequestType.GET_BLOCK_BY_HASH));
+        // private node 에는 kas를 사용할 수 없음 (애초부터 이런 요청은 에러 처리!)
+        if(reqCreateBlockChainInfoBySchedulerDTO.getChain().equals("private")){
             throw new DkargoException(ErrorCodeEnum.BAD_REQUEST);
         }
 
-        // 블록 consensus 정보 조회 (proposer, committee)
-        ResGetBlockWithConsensusInfoDTO resGetBlockWithConsensusInfoDTO = getBlockWithConsensusInfoByHash(reqCreateBlockByHashDTO.getBlockHash());
-
-        // 에러 체크
-        if(resGetBlockWithConsensusInfoDTO.getError() != null) {
-
-            bcCommErrorRepository.save(bcCommErrorHandlingByKASService.getBlockWithConsensusInfo(resGetBlockWithConsensusInfoDTO, KASRequestType.GET_BLOCK_WITH_CONSENSUS_INFO_BY_HASH));
-            throw new DkargoException(ErrorCodeEnum.BAD_REQUEST);
-        }
-
-        // 해당 블록의 트랜잭션 리스트 조회
-        ResGetBlockReceiptDTO resGetBlockReceiptDTO = getBlockReceiptByHash(resGetBlockDTO.getResult().getHash());
-
-        // 에러 체크
-        if(resGetBlockReceiptDTO.getError() != null) {
-
-            bcCommErrorRepository.save(bcCommErrorHandlingByKASService.getBlockReceipt(resGetBlockReceiptDTO, KASRequestType.GET_BLOCK_RECEIPTS));
-            throw new DkargoException(ErrorCodeEnum.BAD_REQUEST);
-        }
-
-        // totalTxFee(block 정보) 생성
-        // transaction 해시 리스트(response 정보) 생성
-        // account(eoa 리스트/sca 리스트) 생성
-        Double totalTxFee = 0d;
-        List<String> transactionHashList = new ArrayList<>();
-        List<Eoa> eoas = new ArrayList<>();
-        List<Sca> scas = new ArrayList<>();
-        for(ResGetBlockReceiptDTO.Result result : resGetBlockReceiptDTO.getResults()) {
-
-            totalTxFee += Double.parseDouble(result.getTxFee());
-            transactionHashList.add(result.getTransactionHash());
-
-            // from : 무조건 EOA 만 존재 ------------------------------------------------
-
-            // from 값이 DB 에 저장되어있는지 확인 후 없으면 저장 List에 추가, 있으면 바로 수정
-            Eoa eoaByFrom = eoaRepository.findByResult_address(result.getFrom());
-
-            // 해당 값의 최신 정보 조회
-            ResGetAccountDTO resGetAccountDTOByFrom = accountByKASService.getAccountByAddress(result.getFrom());
-            // 에러 체크
-            if(resGetAccountDTOByFrom.getError() != null) {
-
-                bcCommErrorRepository.save(bcCommErrorHandlingByKASService.getAccount(resGetAccountDTOByFrom, KASRequestType.GET_ACCOUNT_BY_ADDRESS));
-                throw new DkargoException(ErrorCodeEnum.BAD_REQUEST);
-            }
-
-            if(eoaByFrom == null) {
-                // 저장 할 EOA 정보 생성 후 EOA 리스트에 추가
-                ReqEoaDTO reqEoaDTOByFrom = ReqEoaDTO.builder()
-                        .jsonrpc(resGetAccountDTOByFrom.getJsonrpc())
-                        .resultByGetAccount(resGetAccountDTOByFrom.getResult())
-                        .build();
-                eoas.add(EoaByKASConverter.of(reqEoaDTOByFrom));
-            } else {
-                // 수정 할 EOA 정보 수정 후 EOA 리스트에 추가
-                eoaByFrom.update(resGetAccountDTOByFrom, resGetAccountDTOByFrom.getResult().getAccount().getBalanceByFormat(), resGetAccountDTOByFrom.getResult().getAccount().getTotalTransaction());
-                eoas.add(eoaByFrom);
-            }
-            // ------------------------------------------------------------------------
-
-            // to : EOA or SCA or NUll ------------------------------------------------
-            if(result.getTo() != null) {
-
-                ResGetAccountDTO resGetAccountDTOByTo = accountByKASService.getAccountByAddress(result.getTo());
-                // 에러 체크
-                if(resGetAccountDTOByFrom.getError() != null) {
-
-                    bcCommErrorRepository.save(bcCommErrorHandlingByKASService.getAccount(resGetAccountDTOByTo, KASRequestType.GET_ACCOUNT_BY_ADDRESS));
-                    throw new DkargoException(ErrorCodeEnum.BAD_REQUEST);
-                }
-
-                switch (resGetAccountDTOByTo.getResult().getAccount().getType().toString()) {
-
-                    case "EOA" :
-                        // to 값이 DB 에 저장되어있는지 확인 후 없으면 저장 List에 추가, 있으면 바로 수정
-                        Eoa eoaByTo = eoaRepository.findByResult_address(result.getTo());
-
-                        if(eoaByTo == null) {
-                            // 저장 할 EOA 정보 생성 후 EOA 리스트에 추가
-                            ReqEoaDTO reqEoaDTOByTo = ReqEoaDTO.builder()
-                                    .jsonrpc(resGetAccountDTOByTo.getJsonrpc())
-                                    .resultByGetAccount(resGetAccountDTOByTo.getResult())
-                                    .build();
-                            eoas.add(EoaByKASConverter.of(reqEoaDTOByTo));
-                        } else {
-                            // 수정 할 EOA 정보 수정 후 EOA 리스트에 추가
-                            eoaByTo.update(resGetAccountDTOByTo, resGetAccountDTOByTo.getResult().getAccount().getBalanceByFormat(), resGetAccountDTOByTo.getResult().getAccount().getTotalTransaction());
-                            eoas.add(eoaByTo);
-                        }
-                        break;
-
-                    case "SCA" :
-                        // to 값이 DB 에 저장되어있는지 확인 후 없으면 저장 List에 추가, 있으면 바로 수정
-                        Sca scaByTo = scaRepository.findByResult_address(result.getTo());
-
-                        if(scaByTo == null) {
-                            // 저장 할 SCA 정보 생성 후 SCA 리스트에 추가
-                            ReqScaDTO reqScaDTOByTo = ReqScaDTO.builder()
-                                    .jsonrpc(resGetAccountDTOByTo.getJsonrpc())
-                                    .resultByGetAccount(resGetAccountDTOByTo.getResult())
-                                    .build();
-                            scas.add(ScaByKASConverter.of(reqScaDTOByTo));
-                        } else {
-                            // 수정 할 SCA 정보 수정 후 SCA 리스트에 추가
-                            scaByTo.update(resGetAccountDTOByTo, resGetAccountDTOByTo.getResult().getAccount().getBalanceByFormat(), resGetAccountDTOByTo.getResult().getAccount().getTotalTransaction());
-                            scas.add(scaByTo);
-                        }
-                        break;
-
-                    default :
-                        break;
-                }
-            } else {
-
-                if(result.getContractAddress() != null) {
-
-                    ResGetAccountDTO resGetAccountDTOByContractAddress = accountByKASService.getAccountByAddress(result.getContractAddress());
-
-                    // 에러 체크
-                    if(resGetAccountDTOByFrom.getError() != null) {
-
-                        bcCommErrorRepository.save(bcCommErrorHandlingByKASService.getAccount(resGetAccountDTOByContractAddress, KASRequestType.GET_BLOCK_WITH_CONSENSUS_INFO_BY_NUMBER));
-                        throw new DkargoException(ErrorCodeEnum.BAD_REQUEST);
-                    }
-
-                    Sca scaByContractAddress = scaRepository.findByResult_address(result.getContractAddress());
-
-                    if (scaByContractAddress == null) {
-                        // 저장 할 SCA 정보 생성 후 SCA 리스트에 추가
-                        ReqScaDTO reqScaDTOByContractAddress = ReqScaDTO.builder()
-                                .jsonrpc(resGetAccountDTOByContractAddress.getJsonrpc())
-                                .resultByGetAccount(resGetAccountDTOByContractAddress.getResult())
-                                .build();
-                        scas.add(ScaByKASConverter.of(reqScaDTOByContractAddress));
-                    } else {
-                        scaByContractAddress.update(resGetAccountDTOByContractAddress, resGetAccountDTOByContractAddress.getResult().getAccount().getBalanceByFormat(), resGetAccountDTOByContractAddress.getResult().getAccount().getTotalTransaction());
-                    }
-                } else {
-                    log.info("Chain Data Anchoring");
-                }
-            }
-            // ---------------------------------------------------------------------
-        }
-
-        // 블록 정보 저장 (블록 + consensus 정보)
-        ReqBlockDTO reqBlockDTO = ReqBlockDTO.builder()
-                .jsonrpc(resGetBlockDTO.getJsonrpc())
-                .resultByGetBlock(resGetBlockDTO.getResult())
-                .resultByGetBlockWithConsensusInfo(resGetBlockWithConsensusInfoDTO.getResult())
-                .totalTxFee(totalTxFee)
-                .build();
-        io.dkargo.bcexplorer.domain.entity.Block block = blockRepository.save(BlockByKASConverter.of(reqBlockDTO));
-
-
-        // 트랜잭션 정보 저장
-        List<io.dkargo.bcexplorer.domain.entity.Transaction> transactions = new ArrayList<>();
-        for(ResGetBlockReceiptDTO.Result result : resGetBlockReceiptDTO.getResults()) {
-
-            ReqTransactionDTO reqTransactionDTO = ReqTransactionDTO.builder()
-                    .jsonrpc(resGetBlockReceiptDTO.getJsonrpc())
-                    .result(result)
-                    .build();
-            transactions.add(TransactionByKASConverter.of(reqTransactionDTO));
-        }
-
-        transactionRepository.saveAll(transactions);
-
-        // 계정(EOA/SCA) 정보 저장
-        if(eoas.size() > 0) {
-            eoaRepository.saveAll(eoas);
-        }
-        if(scas.size() > 0) {
-            scaRepository.saveAll(scas);
-        }
-
-        return new ResCreateBlockChainInfoDTO(CommonConverter.hexToLong(block.getResult().getNumber()), block.getResult().getHash(), transactionHashList);
-    }
-
-    @Override
-    public ResCreateBlockChainInfoDTO createBlockChainInfoByScheduler() {
-
-        // DB 저장된 블록 정보 중 블록 번호가 가장 큰(최신) 블록 정보 조회
-        io.dkargo.bcexplorer.domain.entity.Block block = blockRepository.findTop1ByOrderByResult_NumberDesc();
-        log.info("latest blockNumber : {}", CommonConverter.hexToLong(block.getResult().getNumber()));
+        // DB 저장된 블록 정보 중 블록 번호가 가장 큰(최신) 블록 정보 조회 - 요청한 serviceCode에 해당하는 Data 중..
+        io.dkargo.bcexplorer.domain.entity.Block block = blockRepository.findTop1ByServiceCodeOrderByResult_NumberDesc(reqCreateBlockChainInfoBySchedulerDTO.getServiceCode());
 
         Long nextBlockNumber;
         ReqCreateBlockChainInfoByNumberDTO reqCreateBlockChainInfoByNumberDTO;
-        ResCreateBlockChainInfoDTO resCreateBlockChainInfoDTO;
+        ResCreateBlockChainInfoDTO resCreateBlockChainInfoDTO = null;
 
         // DB에 이전 블록 정보가 있을 시 - 존재하는 정보의 다음 번호부터 생성
         if(block != null) {
+            log.info("latest blockNumber : {}", CommonConverter.hexToLong(block.getResult().getNumber()));
 
             nextBlockNumber = CommonConverter.hexToLong(block.getResult().getNumber()) + 1;
             log.info("nextBlockNumber(createBlockNumber) : {}", nextBlockNumber);
 
             reqCreateBlockChainInfoByNumberDTO = ReqCreateBlockChainInfoByNumberDTO.builder()
+                    .chain(reqCreateBlockChainInfoBySchedulerDTO.getChain())
+                    .communication(reqCreateBlockChainInfoBySchedulerDTO.getCommunication())
+                    .serviceCode(reqCreateBlockChainInfoBySchedulerDTO.getServiceCode())
                     .blockNumber(nextBlockNumber)
                     .build();
 
@@ -945,9 +1012,12 @@ public class BlockByKASServiceImpl implements BlockByKASService {
             if(selectBlock) {
 
                 nextBlockNumber = selectBlockNumber;
-                log.info("nextBlockNumber : {}", nextBlockNumber);
+                log.info("nextBlockNumber(createBlockNumber) : {}", nextBlockNumber);
 
                 reqCreateBlockChainInfoByNumberDTO = ReqCreateBlockChainInfoByNumberDTO.builder()
+                        .chain(reqCreateBlockChainInfoBySchedulerDTO.getChain())
+                        .communication(reqCreateBlockChainInfoBySchedulerDTO.getCommunication())
+                        .serviceCode(reqCreateBlockChainInfoBySchedulerDTO.getServiceCode())
                         .blockNumber(nextBlockNumber)
                         .build();
 
@@ -961,6 +1031,9 @@ public class BlockByKASServiceImpl implements BlockByKASService {
                 log.info("nextBlockNumber :{}", nextBlockNumber);
 
                 reqCreateBlockChainInfoByNumberDTO = ReqCreateBlockChainInfoByNumberDTO.builder()
+                        .chain(reqCreateBlockChainInfoBySchedulerDTO.getChain())
+                        .communication(reqCreateBlockChainInfoBySchedulerDTO.getCommunication())
+                        .serviceCode(reqCreateBlockChainInfoBySchedulerDTO.getServiceCode())
                         .blockNumber(nextBlockNumber)
                         .build();
 
